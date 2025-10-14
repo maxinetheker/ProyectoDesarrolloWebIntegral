@@ -1,4 +1,12 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%
+    // Si ya hay una sesión activa, redirigir al dashboard
+    if (session.getAttribute("usuario") != null) {
+        response.sendRedirect("dashboard.jsp");
+        return;
+    }
+%>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -26,15 +34,35 @@
                 <div class="p-8">
                     <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Iniciar Sesión</h2>
                     
-                    <!-- Mensaje de error -->
-                    <% if (request.getAttribute("error") != null) { %>
+                    <!-- Mensaje de error usando JSTL -->
+                    <c:if test="${not empty error}">
                         <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded" role="alert">
                             <div class="flex items-center">
                                 <i class="fas fa-exclamation-circle mr-2"></i>
-                                <p><%= request.getAttribute("error") %></p>
+                                <p><c:out value="${error}" /></p>
                             </div>
                         </div>
-                    <% } %>
+                    </c:if>
+                    
+                    <!-- Mensaje de sesión expirada -->
+                    <c:if test="${param.sessionExpired eq 'true'}">
+                        <div class="bg-amber-100 border-l-4 border-amber-500 text-amber-700 p-4 mb-6 rounded" role="alert">
+                            <div class="flex items-center">
+                                <i class="fas fa-clock mr-2"></i>
+                                <p>Su sesión ha expirado. Por favor, inicie sesión nuevamente.</p>
+                            </div>
+                        </div>
+                    </c:if>
+                    
+                    <!-- Mensaje de éxito (por ejemplo, después de logout) -->
+                    <c:if test="${not empty mensaje}">
+                        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded" role="alert">
+                            <div class="flex items-center">
+                                <i class="fas fa-check-circle mr-2"></i>
+                                <p><c:out value="${mensaje}" /></p>
+                            </div>
+                        </div>
+                    </c:if>
                     
                     <form action="login" method="POST" class="space-y-6">
                         <!-- Campo Usuario -->
@@ -47,8 +75,10 @@
                                 id="usuario" 
                                 name="usuario" 
                                 required
+                                value="${param.usuario}"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition duration-200"
                                 placeholder="Ingrese su usuario"
+                                autofocus
                             >
                         </div>
                         
