@@ -1,9 +1,9 @@
 package dao;
 
-import dto.UsuarioDTO;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import model.Usuario;
 import singleton.DatabaseConnection;
 
 /**
@@ -14,7 +14,7 @@ public class UsuarioDAO {
     /**
      * Valida las credenciales de un usuario
      */
-    public UsuarioDTO validarUsuario(String usuario, String contrasena) {
+    public Usuario validarUsuario(String usuario, String contrasena) {
         String sql = "SELECT u.*, r.rol as nombre_rol FROM USUARIO u " +
                      "INNER JOIN ROL r ON u.id_rol = r.id " +
                      "WHERE u.usuario = ? AND u.contrasena = ? AND u.activo = 1";
@@ -54,7 +54,7 @@ public class UsuarioDAO {
     /**
      * Obtiene un usuario por ID
      */
-    public UsuarioDTO obtenerPorId(int id) {
+    public Usuario obtenerPorId(int id) {
         String sql = "SELECT u.*, r.rol as nombre_rol FROM USUARIO u " +
                      "INNER JOIN ROL r ON u.id_rol = r.id " +
                      "WHERE u.id = ?";
@@ -79,8 +79,8 @@ public class UsuarioDAO {
     /**
      * Lista todos los usuarios activos
      */
-    public List<UsuarioDTO> listarTodos() {
-        List<UsuarioDTO> usuarios = new ArrayList<>();
+    public List<Usuario> listarTodos() {
+        List<Usuario> usuarios = new ArrayList<>();
         String sql = "SELECT u.*, r.rol as nombre_rol FROM USUARIO u " +
                      "INNER JOIN ROL r ON u.id_rol = r.id " +
                      "WHERE u.activo = 1 ORDER BY u.nombre";
@@ -103,7 +103,7 @@ public class UsuarioDAO {
     /**
      * Crea un nuevo usuario
      */
-    public boolean crear(UsuarioDTO usuario) {
+    public boolean crear(Usuario usuario) {
         String sql = "INSERT INTO USUARIO (usuario, nombre, apellido, email, contrasena, " +
                      "telefono, direccion, id_rol, activo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         
@@ -131,7 +131,7 @@ public class UsuarioDAO {
     /**
      * Actualiza un usuario existente
      */
-    public boolean actualizar(UsuarioDTO usuario) {
+    public boolean actualizar(Usuario usuario) {
         String sql = "UPDATE USUARIO SET nombre = ?, apellido = ?, email = ?, " +
                      "telefono = ?, direccion = ?, id_rol = ? WHERE id = ?";
         
@@ -173,10 +173,10 @@ public class UsuarioDAO {
     }
     
     /**
-     * Mapea un ResultSet a un UsuarioDTO
+     * Mapea un ResultSet a un Usuario
      */
-    private UsuarioDTO mapearUsuario(ResultSet rs) throws SQLException {
-        UsuarioDTO usuario = new UsuarioDTO();
+    private Usuario mapearUsuario(ResultSet rs) throws SQLException {
+        Usuario usuario = new Usuario();
         usuario.setId(rs.getInt("id"));
         usuario.setUsuario(rs.getString("usuario"));
         usuario.setNombre(rs.getString("nombre"));

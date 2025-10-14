@@ -1,8 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="dto.UsuarioDTO" %>
+<%@ page import="model.Usuario" %>
 <%
     // Verificar si hay sesión activa
-    UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
+    Usuario usuario = (Usuario) session.getAttribute("usuario");
     if (usuario == null) {
         response.sendRedirect("login.jsp");
         return;

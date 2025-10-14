@@ -1,11 +1,11 @@
-package dto;
+package model;
 
 import java.sql.Timestamp;
 
 /**
- * Data Transfer Object para Rol
+ * Modelo de Rol
  */
-public class RolDTO {
+public class Rol {
     private int id;
     private String rol;
     private String descripcion;
@@ -13,9 +13,9 @@ public class RolDTO {
     private boolean activo;
     
     // Constructores
-    public RolDTO() {}
+    public Rol() {}
     
-    public RolDTO(int id, String rol, String descripcion, boolean activo) {
+    public Rol(int id, String rol, String descripcion, boolean activo) {
         this.id = id;
         this.rol = rol;
         this.descripcion = descripcion;

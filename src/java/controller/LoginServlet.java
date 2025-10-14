@@ -1,7 +1,7 @@
-package model;
+package controller;
 
 import dao.UsuarioDAO;
-import dto.UsuarioDTO;
+import model.Usuario;
 import util.PasswordUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -50,15 +50,15 @@ public class LoginServlet extends HttpServlet {
         String contrasenaEncriptada = PasswordUtil.hashPassword(contrasena);
         
         // Validar usuario
-        UsuarioDTO usuarioDTO = usuarioDAO.validarUsuario(usuario, contrasenaEncriptada);
+        Usuario usuarioModel = usuarioDAO.validarUsuario(usuario, contrasenaEncriptada);
         
-        if (usuarioDTO != null) {
+        if (usuarioModel != null) {
             // Usuario válido, crear sesión
             HttpSession session = request.getSession();
-            session.setAttribute("usuario", usuarioDTO);
-            session.setAttribute("usuarioId", usuarioDTO.getId());
-            session.setAttribute("usuarioNombre", usuarioDTO.getNombreCompleto());
-            session.setAttribute("usuarioRol", usuarioDTO.getNombreRol());
+            session.setAttribute("usuario", usuarioModel);
+            session.setAttribute("usuarioId", usuarioModel.getId());
+            session.setAttribute("usuarioNombre", usuarioModel.getNombreCompleto());
+            session.setAttribute("usuarioRol", usuarioModel.getNombreRol());
             session.setMaxInactiveInterval(30 * 60); // 30 minutos
             
             // Redirigir al dashboard

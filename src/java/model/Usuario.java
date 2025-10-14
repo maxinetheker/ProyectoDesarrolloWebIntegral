@@ -1,11 +1,11 @@
-package dto;
+package model;
 
 import java.sql.Timestamp;
 
 /**
- * Data Transfer Object para Usuario
+ * Modelo de Usuario
  */
-public class UsuarioDTO {
+public class Usuario {
     private int id;
     private String usuario;
     private String nombre;
@@ -21,9 +21,9 @@ public class UsuarioDTO {
     private boolean activo;
     
     // Constructores
-    public UsuarioDTO() {}
+    public Usuario() {}
     
-    public UsuarioDTO(int id, String usuario, String nombre, String apellido, String email, 
+    public Usuario(int id, String usuario, String nombre, String apellido, String email, 
                       int idRol, String nombreRol, boolean activo) {
         this.id = id;
         this.usuario = usuario;
