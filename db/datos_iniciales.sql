@@ -3,7 +3,7 @@
 -- ============================================
 
 -- Asegurarse de estar en la base de datos correcta
-USE biblioteca;
+USE biblioteca_escolar;
 
 -- Insertar roles (si no existen)
 INSERT INTO ROL (id, rol, descripcion, activo) VALUES

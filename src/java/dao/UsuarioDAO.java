@@ -19,8 +19,20 @@ public class UsuarioDAO {
                      "INNER JOIN ROL r ON u.id_rol = r.id " +
                      "WHERE u.usuario = ? AND u.contrasena = ? AND u.activo = 1";
         
-        try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        DatabaseConnection dbInstance = DatabaseConnection.getInstance();
+        if (dbInstance == null) {
+            System.err.println("✗ ERROR: No se pudo obtener instancia de conexión a BD");
+            return null;
+        }
+        
+        Connection conn = dbInstance.getConnection();
+        if (conn == null) {
+            System.err.println("✗ ERROR: La conexión a la base de datos es null");
+            System.err.println("  Verifica la configuración en DatabaseConfig.java");
+            return null;
+        }
+        
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             
             stmt.setString(1, usuario);
             stmt.setString(2, contrasena);
@@ -33,6 +45,7 @@ public class UsuarioDAO {
             
         } catch (SQLException e) {
             System.err.println("Error al validar usuario: " + e.getMessage());
+            e.printStackTrace();
         }
         
         return null;
