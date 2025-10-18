@@ -16,7 +16,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-50 min-h-screen flex items-center justify-center">
+<body class="bg-[rgba(255,255,255,0.7)] bg-blend-overlay bg-[url('assets/images/fondo_login.jpg')] bg-cover bg-center min-h-screen flex items-center justify-center">
     <div class="container mx-auto px-4">
         <div class="max-w-md mx-auto">
             <!-- Card de Login -->
@@ -24,7 +24,7 @@
                 <!-- Header -->
                 <div class="bg-slate-800 p-8 text-center">
                     <div class="inline-block p-4 bg-white rounded-lg mb-4 shadow-md">
-                        <i class="fas fa-book-reader text-5xl text-slate-700"></i>
+                        <a href="/ProyectoFinal"><img src="assets/images/logo.png" alt="I.E. Sagrado Corazón de María" class="h-14 w-14 "></a>
                     </div>
                     <h1 class="text-3xl font-bold text-white mb-2">Sistema de Biblioteca</h1>
                     <p class="text-slate-300">Gestión Integral de Préstamos</p>
@@ -108,7 +108,7 @@
                 </div>
                 
                 <!-- Footer -->
-                <div class="bg-gray-50 px-8 py-4 border-t border-gray-200">
+         <!--       <div class="bg-gray-50 px-8 py-4 border-t border-gray-200">
                     <div class="text-center text-sm text-gray-600">
                         <p class="mb-2"><i class="fas fa-info-circle mr-1"></i> Usuarios de prueba:</p>
                         <div class="space-y-1">
@@ -116,14 +116,14 @@
                             <p><strong>Usuario:</strong> usuario / user123</p>
                         </div>
                     </div>
-                </div>
+                </div>-->
             </div>
             
             <!-- Footer fuera de la card -->
             <div class="text-center mt-6 text-gray-600">
                 <p class="text-sm">
                     <i class="fas fa-shield-alt mr-1"></i>
-                    Sistema seguro con encriptación SHA-256
+                 
                 </p>
             </div>
         </div>
