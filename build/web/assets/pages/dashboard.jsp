@@ -7,7 +7,7 @@
     Usuario usuario = (Usuario) session.getAttribute("usuario");
     if (usuario == null) {
         // No hay sesión, redirigir al login con mensaje
-        response.sendRedirect("login.jsp?sessionExpired=true");
+        response.sendRedirect("pages/login.jsp?sessionExpired=true");
         return;
     }
     

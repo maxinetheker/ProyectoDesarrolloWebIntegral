@@ -3,7 +3,7 @@
 <%
     // Si ya hay una sesión activa, redirigir al dashboard
     if (session.getAttribute("usuario") != null) {
-        response.sendRedirect("dashboard.jsp");
+        response.sendRedirect("pages/dashboard.jsp");
         return;
     }
 %>

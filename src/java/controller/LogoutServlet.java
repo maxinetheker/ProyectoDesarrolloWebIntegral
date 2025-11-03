@@ -26,7 +26,7 @@ public class LogoutServlet extends HttpServlet {
         
         // Redirigir al login con mensaje de sesión cerrada
         request.setAttribute("mensaje", "Sesión cerrada correctamente");
-        request.getRequestDispatcher("login.jsp").forward(request, response);
+        request.getRequestDispatcher("pages/login.jsp").forward(request, response);
     }
     
     @Override

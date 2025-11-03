@@ -21,14 +21,14 @@ public class UsuarioDAO {
         
         DatabaseConnection dbInstance = DatabaseConnection.getInstance();
         if (dbInstance == null) {
-            System.err.println("✗ ERROR: No se pudo obtener instancia de conexión a BD");
+            System.err.println("ERROR: No se pudo obtener instancia de conexión a BD");
             return null;
         }
         
         Connection conn = dbInstance.getConnection();
         if (conn == null) {
-            System.err.println("✗ ERROR: La conexión a la base de datos es null");
-            System.err.println("  Verifica la configuración en DatabaseConfig.java");
+            System.err.println("ERROR: La conexión a la base de datos es null");
+            System.err.println("Verifica la configuración en DatabaseConfig.java");
             return null;
         }
         
@@ -155,7 +155,7 @@ public class UsuarioDAO {
     }
     
     /**
-     * Desactiva un usuario (borrado lógico)
+     * Desactiva un usuario por id
      */
     public boolean desactivar(int id) {
         String sql = "UPDATE USUARIO SET activo = 0 WHERE id = ?";
@@ -170,6 +170,79 @@ public class UsuarioDAO {
             System.err.println("Error al desactivar usuario: " + e.getMessage());
             return false;
         }
+    }
+    
+    /**
+     * Desactiva un usuario por nombre de usuario 
+     */
+    public boolean desactivar(String usuario) {
+        String sql = "UPDATE USUARIO SET activo = 0 WHERE usuario = ?";
+        
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setString(1, usuario);
+            return stmt.executeUpdate() > 0;
+            
+        } catch (SQLException e) {
+            System.err.println("Error al desactivar usuario: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    /**
+     * Activa/desbloquea un usuario por nombre de usuario
+     */
+    public boolean activar(String usuario) {
+        String sql = "UPDATE USUARIO SET activo = 1 WHERE usuario = ?";
+        
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setString(1, usuario);
+            return stmt.executeUpdate() > 0;
+            
+        } catch (SQLException e) {
+            System.err.println("Error al activar usuario: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    /**
+     * Busca un usuario por nombre de usuario (sin validar contraseña ni estado activo)
+     */
+    public Usuario buscarPorUsuario(String usuario) {
+        String sql = "SELECT u.*, r.rol as nombre_rol FROM USUARIO u " +
+                     "INNER JOIN ROL r ON u.id_rol = r.id " +
+                     "WHERE u.usuario = ?";
+        
+        DatabaseConnection dbInstance = DatabaseConnection.getInstance();
+        if (dbInstance == null) {
+            System.err.println("ERROR: No se pudo obtener instancia de conexión a BD");
+            return null;
+        }
+        
+        Connection conn = dbInstance.getConnection();
+        if (conn == null) {
+            System.err.println("ERROR: La conexión a la base de datos es null");
+            return null;
+        }
+        
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setString(1, usuario);
+            ResultSet rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                return mapearUsuario(rs);
+            }
+            
+        } catch (SQLException e) {
+            System.err.println("Error al buscar usuario: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return null;
     }
     
     /**

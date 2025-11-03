@@ -3,7 +3,14 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/kervi.falcon/Documents/NetBeansProjects/ProyectoFinal/web/index.html</file>
+            <file>file:/C:/Users/kervi/OneDrive/Documents/Desarrollo%20Web%20Integral%20Informe/Avance%201-%20Proyecto%20Final%20Java/web/login.jsp</file>
+            <file>file:/C:/Users/kervi/OneDrive/Documents/Desarrollo%20Web%20Integral%20Informe/Avance%201-%20Proyecto%20Final%20Java/web/index.html</file>
+            <file>file:/C:/Users/kervi/OneDrive/Documents/Desarrollo%20Web%20Integral%20Informe/Avance%201-%20Proyecto%20Final%20Java/web/dashboard.jsp</file>
+            <file>file:/C:/Users/kervi/OneDrive/Documents/Desarrollo%20Web%20Integral%20Informe/Avance%201-%20Proyecto%20Final%20Java/src/java/controller/LoginServlet.java</file>
+            <file>file:/C:/Users/kervi/OneDrive/Documents/Desarrollo%20Web%20Integral%20Informe/Avance%201-%20Proyecto%20Final%20Java/src/java/dao/UsuarioDAO.java</file>
+            <file>file:/C:/Users/kervi/OneDrive/Documents/Desarrollo%20Web%20Integral%20Informe/Avance%201-%20Proyecto%20Final%20Java/src/java/controller/LogoutServlet.java</file>
+            <file>file:/C:/Users/kervi/OneDrive/Documents/Desarrollo%20Web%20Integral%20Informe/Avance%201-%20Proyecto%20Final%20Java/src/java/model/Rol.java</file>
+            <file>file:/C:/Users/kervi/OneDrive/Documents/Desarrollo%20Web%20Integral%20Informe/Avance%201-%20Proyecto%20Final%20Java/src/java/model/Usuario.java</file>
         </group>
     </open-files>
 </project-private>
