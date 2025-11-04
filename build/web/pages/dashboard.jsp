@@ -26,7 +26,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Sistema de Biblioteca</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/assets/css/font-awesome.all.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-50">
     <!-- Navbar Principal -->
@@ -88,7 +88,6 @@
             </p>
         </div>
         
-        <!-- Aquí puedes agregar más contenido del dashboard -->
     </div>
 </body>
 </html>

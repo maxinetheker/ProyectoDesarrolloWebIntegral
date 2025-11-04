@@ -31,7 +31,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Usuarios - Sistema de Biblioteca</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/assets/css/font-awesome.all.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-50">
     <!-- Navbar Principal -->
@@ -269,19 +269,19 @@
 
                 <!-- Contenido del Carnet -->
                 <div id="carnet-contenido" class="mt-6 flex justify-center">
-                    <div class="border-2 border-slate-700 rounded-lg p-4 bg-gradient-to-br from-slate-50 to-white shadow-xl" style="width: 7cm; min-height: 4.5cm;">
+                    <div class="border-2 border-slate-700 rounded-lg p-2 bg-gradient-to-br from-slate-50 to-white shadow-xl" style="width: 8.5cm; height: 5.4cm; display: flex; flex-direction: column;">
                         <!-- Header del Carnet -->
-                        <div class="header text-center border-b-2 border-slate-700 pb-2 mb-3">
-                            <h2 class="text-base font-bold text-slate-800">BIBLIOTECA ESCOLAR</h2>
+                        <div class="header text-center border-b-2 border-slate-700 pb-1 mb-1" style="flex-shrink: 0;">
+                            <h2 class="text-sm font-bold text-slate-800">BIBLIOTECA ESCOLAR</h2>
                             <p class="text-xs text-slate-600">I.E. Sagrado Corazón de María</p>
                         </div>
 
                         <!-- Datos del Usuario -->
-                        <div class="datos space-y-1 mb-3">
+                        <div class="datos mb-1" style="flex-shrink: 0;">
                             <div>
-                                <p class="text-center text-sm font-bold text-slate-800 mb-1" id="carnet-nombre"></p>
+                                <p class="text-center text-xs font-bold text-slate-800 mb-0.5" id="carnet-nombre"></p>
                             </div>
-                            <div class="grid grid-cols-2 gap-x-2 gap-y-1 text-xs">
+                            <div class="grid grid-cols-2 gap-x-2 gap-y-0 text-xs">
                                 <div class="dato">
                                     <strong class="text-slate-700">Usuario:</strong>
                                     <span id="carnet-usuario" class="text-slate-600"></span>
@@ -306,11 +306,11 @@
                         </div>
 
                         <!-- Código de Barras -->
-                        <div class="codigo border-t-2 border-slate-300 pt-2 mt-2">
-                            <div class="flex justify-center">
+                        <div class="codigo border-t-2 border-slate-300 pt-1" style="flex: 1; display: flex; flex-direction: column; justify-content: center; min-height: 0;">
+                            <div class="flex justify-center" style="flex-shrink: 0;">
                                 <svg id="codigo-barras"></svg>
                             </div>
-                            <p class="vencimiento text-center text-xs text-slate-600 mt-2">
+                            <p class="vencimiento text-center text-xs text-slate-600 mt-0.5" style="flex-shrink: 0;">
                                 <i class="fas fa-calendar-alt mr-1"></i>
                                 Válido hasta: <strong id="carnet-vencimiento"></strong>
                             </p>

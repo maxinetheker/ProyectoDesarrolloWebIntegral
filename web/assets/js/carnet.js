@@ -127,11 +127,11 @@ function mostrarCarnet(usuario, codigo, fechaCaducidad, estaVencido, tipo) {
     try {
         JsBarcode('#codigo-barras', codigo, {
             format: 'CODE128',
-            width: 1.5,
-            height: 40,
+            width: 1,
+            height: 30,
             displayValue: true,
-            fontSize: 11,
-            margin: 5,
+            fontSize: 9,
+            margin: 2,
             background: '#ffffff',
             lineColor: '#000000'
         });
@@ -248,17 +248,26 @@ function imprimirCarnet() {
     
     ventanaImpresion.document.write('<html><head><title>Carnet de Biblioteca</title>');
     ventanaImpresion.document.write('<style>');
-    ventanaImpresion.document.write('body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }');
-    ventanaImpresion.document.write('.carnet { width: 7cm; min-height: 4.5cm; border: 2px solid #334155; padding: 12px; margin: auto; background: white; }');
-    ventanaImpresion.document.write('.header { text-align: center; border-bottom: 2px solid #334155; padding-bottom: 6px; margin-bottom: 8px; }');
-    ventanaImpresion.document.write('.header h2 { margin: 0; font-size: 14px; color: #1e293b; }');
-    ventanaImpresion.document.write('.header p { margin: 2px 0; font-size: 10px; color: #475569; }');
-    ventanaImpresion.document.write('.datos { margin: 8px 0; }');
-    ventanaImpresion.document.write('.dato { margin: 3px 0; font-size: 10px; }');
+    ventanaImpresion.document.write('* { margin: 0; padding: 0; box-sizing: border-box; }');
+    ventanaImpresion.document.write('body { font-family: Arial, sans-serif; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }');
+    ventanaImpresion.document.write('.carnet { width: 8.5cm; height: 5.4cm; border: 2px solid #334155; border-radius: 8px; padding: 8px; background: linear-gradient(to bottom right, #f8fafc, white); box-sizing: border-box; display: flex; flex-direction: column; }');
+    ventanaImpresion.document.write('.header { text-align: center; border-bottom: 2px solid #334155; padding-bottom: 4px; margin-bottom: 4px; flex-shrink: 0; }');
+    ventanaImpresion.document.write('.header h2 { margin: 0; font-size: 13px; color: #1e293b; font-weight: bold; }');
+    ventanaImpresion.document.write('.header p { margin: 2px 0 0 0; font-size: 10px; color: #475569; }');
+    ventanaImpresion.document.write('.datos { margin-bottom: 4px; flex-shrink: 0; }');
+    ventanaImpresion.document.write('.datos > div:first-child { text-align: center; margin-bottom: 2px; }');
+    ventanaImpresion.document.write('.datos > div:first-child p { font-size: 10px; font-weight: bold; color: #1e293b; }');
+    ventanaImpresion.document.write('.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 8px; }');
+    ventanaImpresion.document.write('.dato { font-size: 10px; line-height: 1.3; }');
+    ventanaImpresion.document.write('.dato.col-span-2 { grid-column: span 2; }');
     ventanaImpresion.document.write('.dato strong { color: #334155; }');
-    ventanaImpresion.document.write('.codigo { text-align: center; margin-top: 6px; border-top: 1px solid #cbd5e1; padding-top: 6px; }');
-    ventanaImpresion.document.write('.vencimiento { text-align: center; font-size: 9px; color: #475569; margin-top: 4px; }');
-    ventanaImpresion.document.write('@media print { body { margin: 0; padding: 0; } .carnet { border: 1px solid #000; } }');
+    ventanaImpresion.document.write('.dato span { color: #475569; }');
+    ventanaImpresion.document.write('.codigo { border-top: 2px solid #cbd5e1; padding-top: 4px; flex: 1; display: flex; flex-direction: column; justify-content: center; min-height: 0; }');
+    ventanaImpresion.document.write('.codigo > div { text-align: center; flex-shrink: 0; }');
+    ventanaImpresion.document.write('.codigo svg { max-width: 100%; height: auto; display: block; margin: 0 auto; }');
+    ventanaImpresion.document.write('.vencimiento { text-align: center; font-size: 9px; color: #475569; margin-top: 2px; flex-shrink: 0; }');
+    ventanaImpresion.document.write('.vencimiento strong { color: #334155; }');
+    ventanaImpresion.document.write('@media print { body { margin: 0; padding: 0; } .carnet { page-break-inside: avoid; } }');
     ventanaImpresion.document.write('</style>');
     ventanaImpresion.document.write('</head><body>');
     ventanaImpresion.document.write('<div class="carnet">' + carnetContent + '</div>');

@@ -14,7 +14,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inicio de Sesión - Sistema de Biblioteca</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/assets/css/font-awesome.all.min.css" rel="stylesheet">
 </head>
 <body class="bg-[rgba(255,255,255,0.7)] bg-blend-overlay bg-[url('../assets/images/fondo_login.jpg')] bg-cover bg-center min-h-screen flex items-center justify-center">
     <div class="container mx-auto px-4">
