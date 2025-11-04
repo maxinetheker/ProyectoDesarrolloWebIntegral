@@ -59,7 +59,7 @@
 
     <!-- Subheader con Pestañas -->
     <div class="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-40">
-        <div class="container mx-auto px-2 sm:px-4">
+        <div class="container mx-auto px-2 sm:px-4 relative">
             <!-- Mobile menu button -->
             <div class="sm:hidden flex items-center justify-between py-2">
                 <button id="menu-button" type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-slate-700 hover:bg-gray-100 focus:outline-none">
@@ -86,7 +86,7 @@
             </nav>
             
             <!-- Mobile menu -->
-            <nav id="mobile-menu" class="hidden sm:hidden border-t border-gray-200" role="navigation">
+            <nav id="mobile-menu" class="hidden sm:hidden absolute top-full left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50" role="navigation">
                 <a href="dashboard.jsp" 
                    class="block px-4 py-3 font-medium text-sm border-l-4 border-slate-700 bg-slate-50 text-slate-700">
                     <i class="fas fa-home mr-2"></i>Dashboard
