@@ -1,8 +1,6 @@
 package config;
 
-/**
- * Configuración de la base de datos
- */
+
 public class DatabaseConfig {
     // Configuración de conexión MySQL
     public static final String DB_DRIVER = "com.mysql.cj.jdbc.Driver";

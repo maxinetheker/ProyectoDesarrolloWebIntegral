@@ -29,7 +29,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-50">
-    <!-- Navbar -->
+    <!-- Navbar Principal -->
     <nav class="bg-slate-800 shadow-md border-b border-slate-700">
         <div class="container mx-auto px-4">
             <div class="flex justify-between items-center py-4">
@@ -55,6 +55,24 @@
             </div>
         </div>
     </nav>
+
+    <!-- Subheader con Pestañas -->
+    <div class="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-40">
+        <div class="container mx-auto px-4">
+            <nav class="flex space-x-1" role="navigation">
+                <a href="dashboard.jsp" 
+                   class="px-6 py-3 font-medium text-sm transition-all duration-200 border-b-2 border-slate-700 text-slate-700">
+                    <i class="fas fa-home mr-2"></i>Dashboard
+                </a>
+                <c:if test="${esAdmin}">
+                    <a href="usuarios.jsp"
+                       class="px-6 py-3 font-medium text-sm transition-all duration-200 border-b-2 border-transparent text-gray-600 hover:text-slate-700 hover:border-slate-300">
+                        <i class="fas fa-users mr-2"></i>Usuarios
+                    </a>
+                </c:if>
+            </nav>
+        </div>
+    </div>
     
     <!-- Container Principal -->
     <div class="container mx-auto px-4 py-8">
@@ -70,6 +88,7 @@
             </p>
         </div>
         
-
+        <!-- Aquí puedes agregar más contenido del dashboard -->
+    </div>
 </body>
 </html>
