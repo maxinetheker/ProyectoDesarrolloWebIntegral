@@ -31,25 +31,26 @@
 <body class="bg-gray-50">
     <!-- Navbar Principal -->
     <nav class="bg-slate-800 shadow-md border-b border-slate-700">
-        <div class="container mx-auto px-4">
-            <div class="flex justify-between items-center py-4">
-                <div class="flex items-center space-x-4">
-                    <div class=""><img src="../assets/images/logo.png" alt="I.E. Sagrado Corazón de María" class="h-14 w-14 "></div>
+        <div class="container mx-auto px-2 sm:px-4">
+            <div class="flex justify-between items-center py-3 sm:py-4">
+                <div class="flex items-center space-x-2 sm:space-x-4">
+                    <div class=""><img src="../assets/images/logo.png" alt="I.E. Sagrado Corazón de María" class="h-10 w-10 sm:h-14 sm:w-14"></div>
                     
                     <div>
-                        <h1 class="text-white text-2xl font-bold">Sistema de Biblioteca</h1>
-                        <p class="text-slate-300 text-sm">Gestión Integral</p>
+                        <h1 class="text-white text-base sm:text-2xl font-bold">Sistema de Biblioteca</h1>
+                        <p class="text-slate-300 text-xs sm:text-sm hidden sm:block">Gestión Integral</p>
                     </div>
                 </div>
-                <div class="flex items-center space-x-4">
-                    <div class="text-right">
-                        <p class="text-white font-semibold"><c:out value="${usuario.nombreCompleto}" /></p>
-                        <p class="text-slate-300 text-sm">
+                <div class="flex items-center space-x-2 sm:space-x-4">
+                    <div class="text-right hidden md:block">
+                        <p class="text-white font-semibold text-sm"><c:out value="${usuario.nombreCompleto}" /></p>
+                        <p class="text-slate-300 text-xs">
                             <i class="fas fa-user-shield"></i> <c:out value="${usuario.nombreRol}" />
                         </p>
                     </div>
-                    <a href="${pageContext.request.contextPath}/logout" class="bg-white text-slate-700 px-4 py-2 rounded-md font-semibold hover:bg-gray-100 transition duration-200 shadow-sm">
-                        <i class="fas fa-sign-out-alt mr-2"></i>Cerrar Sesión
+                    <a href="${pageContext.request.contextPath}/logout" class="bg-white text-slate-700 px-2 py-1.5 sm:px-4 sm:py-2 rounded-md text-xs sm:text-sm font-semibold hover:bg-gray-100 transition duration-200 shadow-sm flex items-center">
+                        <i class="fas fa-sign-out-alt sm:mr-2"></i>
+                        <span class="hidden sm:inline">Cerrar Sesión</span>
                     </a>
                 </div>
             </div>
@@ -58,15 +59,41 @@
 
     <!-- Subheader con Pestañas -->
     <div class="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-40">
-        <div class="container mx-auto px-4">
-            <nav class="flex space-x-1" role="navigation">
+        <div class="container mx-auto px-2 sm:px-4">
+            <!-- Mobile menu button -->
+            <div class="sm:hidden flex items-center justify-between py-2">
+                <button id="menu-button" type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-slate-700 hover:bg-gray-100 focus:outline-none">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                <span class="text-sm font-medium text-slate-700">
+                    <i class="fas fa-home mr-1"></i>Dashboard
+                </span>
+                <div class="w-10"></div>
+            </div>
+            
+            <!-- Desktop menu -->
+            <nav class="hidden sm:flex space-x-1" role="navigation">
                 <a href="dashboard.jsp" 
-                   class="px-6 py-3 font-medium text-sm transition-all duration-200 border-b-2 border-slate-700 text-slate-700">
+                   class="px-4 sm:px-6 py-3 font-medium text-xs sm:text-sm transition-all duration-200 border-b-2 border-slate-700 text-slate-700">
                     <i class="fas fa-home mr-2"></i>Dashboard
                 </a>
                 <c:if test="${esAdmin}">
                     <a href="usuarios.jsp"
-                       class="px-6 py-3 font-medium text-sm transition-all duration-200 border-b-2 border-transparent text-gray-600 hover:text-slate-700 hover:border-slate-300">
+                       class="px-4 sm:px-6 py-3 font-medium text-xs sm:text-sm transition-all duration-200 border-b-2 border-transparent text-gray-600 hover:text-slate-700 hover:border-slate-300">
+                        <i class="fas fa-users mr-2"></i>Usuarios
+                    </a>
+                </c:if>
+            </nav>
+            
+            <!-- Mobile menu -->
+            <nav id="mobile-menu" class="hidden sm:hidden border-t border-gray-200" role="navigation">
+                <a href="dashboard.jsp" 
+                   class="block px-4 py-3 font-medium text-sm border-l-4 border-slate-700 bg-slate-50 text-slate-700">
+                    <i class="fas fa-home mr-2"></i>Dashboard
+                </a>
+                <c:if test="${esAdmin}">
+                    <a href="usuarios.jsp"
+                       class="block px-4 py-3 font-medium text-sm border-l-4 border-transparent text-gray-600 hover:bg-gray-50 hover:border-slate-300">
                         <i class="fas fa-users mr-2"></i>Usuarios
                     </a>
                 </c:if>
@@ -75,19 +102,31 @@
     </div>
     
     <!-- Container Principal -->
-    <div class="container mx-auto px-4 py-8">
+    <div class="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
         <!-- Mensaje de Bienvenida -->
-        <div class="bg-white rounded-lg shadow-sm p-6 mb-8 border border-gray-200">
-            <h2 class="text-3xl font-bold text-gray-800 mb-2">
+        <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-4 sm:mb-8 border border-gray-200">
+            <h2 class="text-xl sm:text-3xl font-bold text-gray-800 mb-2">
                 <i class="fas fa-hand-sparkles text-slate-600 mr-2"></i>
                 ¡Bienvenido, <c:out value="${usuario.nombre}" />!
             </h2>
-            <p class="text-gray-600">
+            <p class="text-sm sm:text-base text-gray-600">
                 <jsp:useBean id="now" class="java.util.Date"/>
                 <fmt:formatDate value="${now}" pattern="dd/MM/yyyy HH:mm" />
             </p>
         </div>
         
     </div>
+    
+    <script>
+        // Toggle mobile menu
+        const menuButton = document.getElementById('menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        if (menuButton && mobileMenu) {
+            menuButton.addEventListener('click', function() {
+                mobileMenu.classList.toggle('hidden');
+            });
+        }
+    </script>
 </body>
 </html>

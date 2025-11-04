@@ -99,7 +99,7 @@ function mostrarUsuarios(usuarios) {
             : '<i class="fas fa-users text-4xl mb-2"></i>' +
               '<p class="text-lg">No hay usuarios registrados</p>';
         
-        tbody.innerHTML = '<tr><td colspan="6" class="px-6 py-12 text-center text-gray-500">' +
+        tbody.innerHTML = '<tr><td colspan="6" class="px-3 sm:px-6 py-8 sm:py-12 text-center text-gray-500 text-sm">' +
             mensaje + '</td></tr>';
         return;
     }
@@ -117,51 +117,52 @@ function mostrarUsuarios(usuarios) {
         const botonEstado = usuario.activo
             ? '<button onclick="cambiarEstado(' + usuario.id + ', false, \'' + escapeHtml(usuario.usuario) + '\')" ' +
               'class="text-orange-600 hover:text-orange-900 transition duration-150" title="Desactivar usuario">' +
-              '<i class="fas fa-ban text-xl"></i></button>'
+              '<i class="fas fa-ban text-base sm:text-xl"></i></button>'
             : '<button onclick="cambiarEstado(' + usuario.id + ', true, \'' + escapeHtml(usuario.usuario) + '\')" ' +
               'class="text-green-600 hover:text-green-900 transition duration-150" title="Activar usuario">' +
-              '<i class="fas fa-check-circle text-xl"></i></button>';
+              '<i class="fas fa-check-circle text-base sm:text-xl"></i></button>';
         
         return '<tr class="hover:bg-gray-50 transition duration-150' + (usuario.activo ? '' : ' opacity-60') + '">' +
-            '<td class="px-6 py-4 whitespace-nowrap">' +
+            '<td class="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">' +
                 '<div class="flex items-center">' +
-                    '<div class="flex-shrink-0 h-10 w-10 bg-slate-100 rounded-full flex items-center justify-center">' +
-                        '<i class="fas fa-user text-slate-600"></i>' +
+                    '<div class="flex-shrink-0 h-8 w-8 sm:h-10 sm:w-10 bg-slate-100 rounded-full flex items-center justify-center">' +
+                        '<i class="fas fa-user text-slate-600 text-sm sm:text-base"></i>' +
                     '</div>' +
-                    '<div class="ml-3">' +
-                        '<div class="text-sm font-medium text-gray-900">' + escapeHtml(usuario.usuario) + '</div>' +
-                        '<div class="text-xs text-gray-500">' +
-                            '<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ' + estadoClass + '">' +
+                    '<div class="ml-2 sm:ml-3">' +
+                        '<div class="text-xs sm:text-sm font-medium text-gray-900">' + escapeHtml(usuario.usuario) + '</div>' +
+                        '<div class="text-xs text-gray-500 lg:hidden">' + escapeHtml(usuario.nombre) + ' ' + escapeHtml(usuario.apellido) + '</div>' +
+                        '<div class="text-xs">' +
+                            '<span class="inline-flex items-center px-1.5 sm:px-2 py-0.5 rounded text-xs font-medium ' + estadoClass + '">' +
                                 '<i class="fas fa-' + estadoIcono + ' mr-1"></i>' + estadoTexto +
                             '</span>' +
                         '</div>' +
                     '</div>' +
                 '</div>' +
             '</td>' +
-            '<td class="px-6 py-4 whitespace-nowrap">' +
+            '<td class="hidden lg:table-cell px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">' +
                 '<div class="text-sm text-gray-900">' + escapeHtml(usuario.nombre) + ' ' + escapeHtml(usuario.apellido) + '</div>' +
             '</td>' +
-            '<td class="px-6 py-4 whitespace-nowrap">' +
-                '<div class="text-sm text-gray-600">' + (usuario.email ? escapeHtml(usuario.email) : '-') + '</div>' +
+            '<td class="hidden md:table-cell px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">' +
+                '<div class="text-xs sm:text-sm text-gray-600">' + (usuario.email ? escapeHtml(usuario.email) : '-') + '</div>' +
             '</td>' +
-            '<td class="px-6 py-4 whitespace-nowrap">' +
-                '<div class="text-sm text-gray-600">' + (usuario.telefono ? escapeHtml(usuario.telefono) : '-') + '</div>' +
+            '<td class="hidden xl:table-cell px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">' +
+                '<div class="text-xs sm:text-sm text-gray-600">' + (usuario.telefono ? escapeHtml(usuario.telefono) : '-') + '</div>' +
             '</td>' +
-            '<td class="px-6 py-4 whitespace-nowrap">' +
-                '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ' + rolClass + '">' +
+            '<td class="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">' +
+                '<span class="px-1.5 sm:px-2 inline-flex text-xs leading-5 font-semibold rounded-full ' + rolClass + '">' +
                     escapeHtml(usuario.nombreRol) +
                 '</span>' +
             '</td>' +
-            '<td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">' +
+            '<td class="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-sm font-medium space-x-1 sm:space-x-2">' +
                 '<button onclick="abrirModalCarnet(' + usuario.id + ', \'' + escapeHtml(usuario.nombre + ' ' + usuario.apellido) + '\', \'' + 
                         escapeHtml(usuario.usuario) + '\', \'' + escapeHtml(usuario.email || '') + '\', \'' + 
                         escapeHtml(usuario.telefono || '') + '\', \'' + escapeHtml(usuario.nombreRol) + '\')" ' +
                         'class="text-purple-600 hover:text-purple-900 transition duration-150" title="Generar/Ver Carnet">' +
-                    '<i class="fas fa-id-card text-xl"></i>' +
+                    '<i class="fas fa-id-card text-base sm:text-xl"></i>' +
                 '</button>' +
                 '<button onclick=\'editarUsuario(' + JSON.stringify(usuario) + ')\' ' +
                         'class="text-blue-600 hover:text-blue-900 transition duration-150" title="Editar usuario">' +
-                    '<i class="fas fa-edit text-xl"></i>' +
+                    '<i class="fas fa-edit text-base sm:text-xl"></i>' +
                 '</button>' +
                 botonEstado +
             '</td>' +
@@ -183,7 +184,7 @@ function mostrarPaginacion(paginaActual, totalPaginas, totalUsuarios) {
     // Botón anterior
     if (paginaActual > 1) {
         botones += '<button onclick="cargarUsuarios(' + (paginaActual - 1) + ', \'' + escapeHtml(terminoBusqueda) + '\')" ' +
-                'class="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 transition duration-150">' +
+                'class="px-2 sm:px-3 py-1 border border-gray-300 rounded-md text-xs sm:text-sm font-medium text-gray-700 hover:bg-gray-50 transition duration-150">' +
                 '<i class="fas fa-chevron-left"></i>' +
             '</button>';
     }
@@ -197,18 +198,18 @@ function mostrarPaginacion(paginaActual, totalPaginas, totalUsuarios) {
                 : 'border-gray-300 text-gray-700 hover:bg-gray-50';
             
             botones += '<button onclick="cargarUsuarios(' + i + ', \'' + escapeHtml(terminoBusqueda) + '\')" ' +
-                    'class="px-3 py-1 border rounded-md text-sm font-medium transition duration-150 ' + claseBoton + '">' +
+                    'class="px-2 sm:px-3 py-1 border rounded-md text-xs sm:text-sm font-medium transition duration-150 ' + claseBoton + '">' +
                     i +
                 '</button>';
         } else if (i === paginaActual - 2 || i === paginaActual + 2) {
-            botones += '<span class="px-2 text-gray-500">...</span>';
+            botones += '<span class="px-1 sm:px-2 text-xs sm:text-sm text-gray-500">...</span>';
         }
     }
 
     // Botón siguiente
     if (paginaActual < totalPaginas) {
         botones += '<button onclick="cargarUsuarios(' + (paginaActual + 1) + ', \'' + escapeHtml(terminoBusqueda) + '\')" ' +
-                'class="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 transition duration-150">' +
+                'class="px-2 sm:px-3 py-1 border border-gray-300 rounded-md text-xs sm:text-sm font-medium text-gray-700 hover:bg-gray-50 transition duration-150">' +
                 '<i class="fas fa-chevron-right"></i>' +
             '</button>';
     }
