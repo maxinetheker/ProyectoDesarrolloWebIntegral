@@ -90,7 +90,6 @@ public class DatabaseConnection {
     
     /**
      * Devuelve una conexión al pool para reutilización
-     * IMPORTANTE: Siempre llamar este método en un bloque finally
      */
     public synchronized void releaseConnection(Connection connection) {
         if (connection != null) {

@@ -222,6 +222,7 @@ public class UsuarioServlet extends HttpServlet {
             String telefono = request.getParameter("telefono");
             String direccion = request.getParameter("direccion");
             String idRolStr = request.getParameter("idRol");
+            String nuevaContrasena = request.getParameter("contrasena");
             
             // Validaciones básicas
             if (idStr == null || idStr.trim().isEmpty() ||
@@ -252,6 +253,17 @@ public class UsuarioServlet extends HttpServlet {
             usuario.setIdRol(idRol);
             
             boolean actualizado = usuarioDAO.actualizar(usuario);
+            
+            // Si se proporcionó una nueva contraseña, actualizarla
+            if (nuevaContrasena != null && !nuevaContrasena.trim().isEmpty()) {
+                String contrasenaHash = PasswordUtil.hashPassword(nuevaContrasena);
+                boolean contrasenaActualizada = usuarioDAO.actualizarContrasena(id, contrasenaHash);
+                
+                if (!contrasenaActualizada) {
+                    enviarRespuestaError(response, "Usuario actualizado pero falló el cambio de contraseña", 500);
+                    return;
+                }
+            }
             
             if (actualizado) {
                 ObjectNode respuesta = objectMapper.createObjectNode();

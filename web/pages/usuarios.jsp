@@ -210,12 +210,13 @@
                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent">
                         </div>
 
-                        <!-- Contraseña (solo al crear) -->
+                        <!-- Contraseña -->
                         <div id="campo-contrasena" class="col-span-1">
                             <label for="usuario-contrasena" class="block text-sm font-medium text-gray-700 mb-1">
-                                Contraseña <span class="text-red-500">*</span>
+                                Contraseña <span id="required-contrasena" class="text-red-500">*</span>
+                                <span id="texto-opcional" class="hidden text-xs text-gray-500">(opcional - dejar vacío si no desea cambiarla)</span>
                             </label>
-                            <input type="password" id="usuario-contrasena" name="contrasena" required
+                            <input type="password" id="usuario-contrasena" name="contrasena" 
                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent">
                         </div>
 
@@ -245,10 +246,104 @@
         </div>
     </div>
 
+    <!-- Modal Carnet de Biblioteca -->
+    <div id="modal-carnet" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div class="relative top-10 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <!-- Encabezado Modal -->
+                <div class="flex justify-between items-center pb-3 border-b border-gray-200">
+                    <h3 class="text-2xl font-bold text-gray-900">
+                        <i class="fas fa-id-card text-slate-600 mr-2"></i>
+                        Carnet de Biblioteca
+                    </h3>
+                    <button onclick="cerrarModalCarnet()" class="text-gray-400 hover:text-gray-600 transition duration-150">
+                        <i class="fas fa-times text-2xl"></i>
+                    </button>
+                </div>
+
+                <!-- Alerta si está vencido -->
+                <div id="alerta-vencido" class="hidden mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+                    <strong class="font-bold">¡Carnet vencido!</strong>
+                    <span class="block sm:inline"> Este carnet ha expirado. Haga clic en "Renovar Carnet" para generar uno nuevo.</span>
+                </div>
+
+                <!-- Contenido del Carnet -->
+                <div id="carnet-contenido" class="mt-6 flex justify-center">
+                    <div class="border-2 border-slate-700 rounded-lg p-4 bg-gradient-to-br from-slate-50 to-white shadow-xl" style="width: 7cm; min-height: 4.5cm;">
+                        <!-- Header del Carnet -->
+                        <div class="header text-center border-b-2 border-slate-700 pb-2 mb-3">
+                            <h2 class="text-base font-bold text-slate-800">BIBLIOTECA ESCOLAR</h2>
+                            <p class="text-xs text-slate-600">I.E. Sagrado Corazón de María</p>
+                        </div>
+
+                        <!-- Datos del Usuario -->
+                        <div class="datos space-y-1 mb-3">
+                            <div>
+                                <p class="text-center text-sm font-bold text-slate-800 mb-1" id="carnet-nombre"></p>
+                            </div>
+                            <div class="grid grid-cols-2 gap-x-2 gap-y-1 text-xs">
+                                <div class="dato">
+                                    <strong class="text-slate-700">Usuario:</strong>
+                                    <span id="carnet-usuario" class="text-slate-600"></span>
+                                </div>
+                                <div class="dato">
+                                    <strong class="text-slate-700">ID:</strong>
+                                    <span id="carnet-id" class="text-slate-600"></span>
+                                </div>
+                                <div class="dato col-span-2">
+                                    <strong class="text-slate-700">Email:</strong>
+                                    <span id="carnet-email" class="text-slate-600 text-xs"></span>
+                                </div>
+                                <div class="dato">
+                                    <strong class="text-slate-700">Teléfono:</strong>
+                                    <span id="carnet-telefono" class="text-slate-600"></span>
+                                </div>
+                                <div class="dato">
+                                    <strong class="text-slate-700">Rol:</strong>
+                                    <span id="carnet-rol" class="text-slate-600 font-semibold"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Código de Barras -->
+                        <div class="codigo border-t-2 border-slate-300 pt-2 mt-2">
+                            <div class="flex justify-center">
+                                <svg id="codigo-barras"></svg>
+                            </div>
+                            <p class="vencimiento text-center text-xs text-slate-600 mt-2">
+                                <i class="fas fa-calendar-alt mr-1"></i>
+                                Válido hasta: <strong id="carnet-vencimiento"></strong>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botones -->
+                <div class="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-200">
+                    <button type="button" onclick="renovarCarnet()" 
+                            class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-md font-medium transition duration-200">
+                        <i class="fas fa-sync-alt mr-2"></i>Renovar Carnet
+                    </button>
+                    <button type="button" onclick="imprimirCarnet()" 
+                            class="bg-slate-700 hover:bg-slate-800 text-white px-4 py-2 rounded-md font-medium transition duration-200">
+                        <i class="fas fa-print mr-2"></i>Imprimir
+                    </button>
+                    <button type="button" onclick="cerrarModalCarnet()" 
+                            class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-md font-medium transition duration-200">
+                        <i class="fas fa-times mr-2"></i>Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Configurar contexto de la aplicación
         window.CONTEXT_PATH = '${pageContext.request.contextPath}';
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     <script src="${pageContext.request.contextPath}/assets/js/usuarios.js"></script>
+    <script src="${pageContext.request.contextPath}/assets/js/carnet.js"></script>
 </body>
 </html>

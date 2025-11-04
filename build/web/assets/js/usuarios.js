@@ -84,10 +84,10 @@ function mostrarUsuarios(usuarios) {
         const botonEstado = usuario.activo
             ? '<button onclick="cambiarEstado(' + usuario.id + ', false, \'' + escapeHtml(usuario.usuario) + '\')" ' +
               'class="text-orange-600 hover:text-orange-900 transition duration-150" title="Desactivar usuario">' +
-              '<i class="fas fa-ban"></i></button>'
+              '<i class="fas fa-ban text-xl"></i></button>'
             : '<button onclick="cambiarEstado(' + usuario.id + ', true, \'' + escapeHtml(usuario.usuario) + '\')" ' +
               'class="text-green-600 hover:text-green-900 transition duration-150" title="Activar usuario">' +
-              '<i class="fas fa-check-circle"></i></button>';
+              '<i class="fas fa-check-circle text-xl"></i></button>';
         
         return '<tr class="hover:bg-gray-50 transition duration-150' + (usuario.activo ? '' : ' opacity-60') + '">' +
             '<td class="px-6 py-4 whitespace-nowrap">' +
@@ -120,9 +120,15 @@ function mostrarUsuarios(usuarios) {
                 '</span>' +
             '</td>' +
             '<td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">' +
+                '<button onclick="abrirModalCarnet(' + usuario.id + ', \'' + escapeHtml(usuario.nombre + ' ' + usuario.apellido) + '\', \'' + 
+                        escapeHtml(usuario.usuario) + '\', \'' + escapeHtml(usuario.email || '') + '\', \'' + 
+                        escapeHtml(usuario.telefono || '') + '\', \'' + escapeHtml(usuario.nombreRol) + '\')" ' +
+                        'class="text-purple-600 hover:text-purple-900 transition duration-150" title="Generar/Ver Carnet">' +
+                    '<i class="fas fa-id-card text-xl"></i>' +
+                '</button>' +
                 '<button onclick=\'editarUsuario(' + JSON.stringify(usuario) + ')\' ' +
                         'class="text-blue-600 hover:text-blue-900 transition duration-150" title="Editar usuario">' +
-                    '<i class="fas fa-edit"></i>' +
+                    '<i class="fas fa-edit text-xl"></i>' +
                 '</button>' +
                 botonEstado +
             '</td>' +
@@ -186,6 +192,8 @@ function abrirModalCrear() {
     document.getElementById('usuario-id').value = '';
     document.getElementById('campo-contrasena').style.display = 'block';
     document.getElementById('usuario-contrasena').required = true;
+    document.getElementById('required-contrasena').classList.remove('hidden');
+    document.getElementById('texto-opcional').classList.add('hidden');
     document.getElementById('usuario-usuario').disabled = false;
     document.getElementById('modalUsuario').classList.remove('hidden');
 }
@@ -205,8 +213,12 @@ function editarUsuario(usuario) {
     document.getElementById('usuario-direccion').value = usuario.direccion || '';
     document.getElementById('usuario-rol').value = usuario.idRol;
     
-    document.getElementById('campo-contrasena').style.display = 'none';
+    // Mostrar campo de contraseña pero hacerlo opcional
+    document.getElementById('campo-contrasena').style.display = 'block';
+    document.getElementById('usuario-contrasena').value = '';
     document.getElementById('usuario-contrasena').required = false;
+    document.getElementById('required-contrasena').classList.add('hidden');
+    document.getElementById('texto-opcional').classList.remove('hidden');
     document.getElementById('usuario-usuario').disabled = true;
     
     document.getElementById('modalUsuario').classList.remove('hidden');
@@ -215,9 +227,19 @@ function editarUsuario(usuario) {
 // Cambiar estado de usuario (activar/desactivar)
 async function cambiarEstado(id, nuevoEstado, usuario) {
     const accion = nuevoEstado ? 'activar' : 'desactivar';
-    const mensaje = '¿Está seguro de ' + accion + ' al usuario "' + usuario + '"?';
     
-    if (!confirm(mensaje)) {
+    const result = await Swal.fire({
+        title: '¿Está seguro?',
+        text: '¿Desea ' + accion + ' al usuario "' + usuario + '"?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#475569',
+        cancelButtonColor: '#9ca3af',
+        confirmButtonText: 'Sí, ' + accion,
+        cancelButtonText: 'Cancelar'
+    });
+    
+    if (!result.isConfirmed) {
         return;
     }
 
@@ -233,14 +255,29 @@ async function cambiarEstado(id, nuevoEstado, usuario) {
         const data = await response.json();
         
         if (data.success) {
-            mostrarAlerta(data.mensaje, 'success');
+            Swal.fire({
+                icon: 'success',
+                title: 'Éxito',
+                text: data.mensaje,
+                confirmButtonColor: '#475569'
+            });
             cargarUsuarios(paginaActual);
         } else {
-            mostrarAlerta(data.mensaje || 'Error al cambiar estado del usuario', 'error');
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: data.mensaje || 'Error al cambiar estado del usuario',
+                confirmButtonColor: '#475569'
+            });
         }
     } catch (error) {
         console.error('Error al cambiar estado del usuario:', error);
-        mostrarAlerta('Error de conexión', 'error');
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Error de conexión',
+            confirmButtonColor: '#475569'
+        });
     }
 }
 

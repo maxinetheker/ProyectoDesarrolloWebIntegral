@@ -280,6 +280,34 @@ public class UsuarioDAO {
     }
     
     /**
+     * Actualiza la contraseña de un usuario
+     */
+    public boolean actualizarContrasena(int id, String nuevaContrasenaHash) {
+        String sql = "UPDATE USUARIO SET contrasena = ? WHERE id = ?";
+        
+        Connection conn = null;
+        try {
+            conn = DatabaseConnection.getInstance().getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            
+            stmt.setString(1, nuevaContrasenaHash);
+            stmt.setInt(2, id);
+            
+            boolean result = stmt.executeUpdate() > 0;
+            stmt.close();
+            return result;
+            
+        } catch (SQLException e) {
+            System.err.println("Error al actualizar contraseña: " + e.getMessage());
+            return false;
+        } finally {
+            if (conn != null) {
+                DatabaseConnection.getInstance().releaseConnection(conn);
+            }
+        }
+    }
+    
+    /**
      * Desactiva un usuario por id
      */
     public boolean desactivar(int id) {
