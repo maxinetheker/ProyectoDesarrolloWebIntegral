@@ -83,7 +83,7 @@
         <div class="bg-white rounded-lg shadow-sm border border-gray-200">
             <!-- Encabezado -->
             <div class="p-6 border-b border-gray-200">
-                <div class="flex justify-between items-center">
+                <div class="flex justify-between items-center mb-4">
                     <div>
                         <h2 class="text-2xl font-bold text-gray-800">
                             <i class="fas fa-users-cog text-slate-600 mr-2"></i>
@@ -91,8 +91,23 @@
                         </h2>
                         <p class="text-gray-600 text-sm mt-1">Administra los usuarios del sistema</p>
                     </div>
+                </div>
+                <div class="flex justify-between items-center gap-4">
+                    <!-- Campo de búsqueda con ícono -->
+                    <div class="relative flex-1 max-w-md">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-search text-gray-400"></i>
+                        </div>
+                        <input 
+                            type="text" 
+                            id="buscar-usuario" 
+                            placeholder="Buscar por usuario, nombre o email..."
+                            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition duration-200"
+                            autocomplete="off"
+                        >
+                    </div>
                     <button onclick="abrirModalCrear()" 
-                            class="bg-slate-700 hover:bg-slate-800 text-white px-4 py-2 rounded-md font-medium transition duration-200 shadow-sm">
+                            class="bg-slate-700 hover:bg-slate-800 text-white px-4 py-2 rounded-md font-medium transition duration-200 shadow-sm whitespace-nowrap">
                         <i class="fas fa-plus mr-2"></i>Nuevo Usuario
                     </button>
                 </div>

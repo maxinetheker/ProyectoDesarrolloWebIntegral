@@ -93,7 +93,7 @@ public class UsuarioServlet extends HttpServlet {
     }
     
     /**
-     * Lista usuarios con paginación
+     * Lista usuarios con paginación y búsqueda opcional
      */
     private void listarUsuarios(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
@@ -110,8 +110,22 @@ public class UsuarioServlet extends HttpServlet {
             }
         }
         
-        List<Usuario> usuarios = usuarioDAO.listarConPaginacion(pagina, registrosPorPagina);
-        int totalUsuarios = usuarioDAO.contarUsuarios();
+        String busqueda = request.getParameter("busqueda");
+        boolean hayBusqueda = busqueda != null && !busqueda.trim().isEmpty();
+        
+        List<Usuario> usuarios;
+        int totalUsuarios;
+        
+        if (hayBusqueda) {
+            // Buscar con filtro
+            usuarios = usuarioDAO.buscarConPaginacion(busqueda.trim(), pagina, registrosPorPagina);
+            totalUsuarios = usuarioDAO.contarUsuariosPorBusqueda(busqueda.trim());
+        } else {
+            // Listar todos
+            usuarios = usuarioDAO.listarConPaginacion(pagina, registrosPorPagina);
+            totalUsuarios = usuarioDAO.contarUsuarios();
+        }
+        
         int totalPaginas = (int) Math.ceil((double) totalUsuarios / registrosPorPagina);
         
         ObjectNode respuesta = objectMapper.createObjectNode();
@@ -137,6 +151,7 @@ public class UsuarioServlet extends HttpServlet {
         respuesta.put("paginaActual", pagina);
         respuesta.put("totalPaginas", totalPaginas);
         respuesta.put("totalUsuarios", totalUsuarios);
+        respuesta.put("busqueda", hayBusqueda ? busqueda : "");
         
         enviarRespuestaJSON(response, respuesta);
     }
@@ -283,7 +298,7 @@ public class UsuarioServlet extends HttpServlet {
     }
     
     /**
-     * Elimina (desactiva) un usuario
+     * Elimina  un usuario
      */
     private void eliminarUsuario(HttpServletRequest request, HttpServletResponse response)
             throws IOException {

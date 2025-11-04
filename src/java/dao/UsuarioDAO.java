@@ -210,6 +210,124 @@ public class UsuarioDAO {
     }
     
     /**
+     * Busca usuarios con paginación
+     */
+    public List<Usuario> buscarConPaginacion(String busqueda, int pagina, int registrosPorPagina) {
+        List<Usuario> usuarios = new ArrayList<>();
+        int offset = (pagina - 1) * registrosPorPagina;
+        
+        String sql = "SELECT u.id, u.usuario, u.nombre, u.apellido, u.email, u.telefono, " +
+                     "u.direccion, u.fecha_creacion, u.fecha_actualizacion, u.id_rol, u.activo, " +
+                     "r.rol as nombre_rol " +
+                     "FROM USUARIO u " +
+                     "INNER JOIN ROL r ON u.id_rol = r.id " +
+                     "WHERE LOWER(u.usuario) LIKE ? " +
+                     "OR LOWER(u.nombre) LIKE ? " +
+                     "OR LOWER(u.apellido) LIKE ? " +
+                     "OR LOWER(u.email) LIKE ? " +
+                     "OR LOWER(CONCAT(u.nombre, ' ', u.apellido)) LIKE ? " +
+                     "ORDER BY u.activo DESC, u.fecha_creacion DESC, u.nombre " +
+                     "LIMIT ? OFFSET ?";
+        
+        Connection conn = null;
+        try {
+            conn = DatabaseConnection.getInstance().getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            
+            String searchPattern = "%" + busqueda.toLowerCase() + "%";
+            stmt.setString(1, searchPattern);
+            stmt.setString(2, searchPattern);
+            stmt.setString(3, searchPattern);
+            stmt.setString(4, searchPattern);
+            stmt.setString(5, searchPattern);
+            stmt.setInt(6, registrosPorPagina);
+            stmt.setInt(7, offset);
+            
+            ResultSet rs = stmt.executeQuery();
+            
+            while (rs.next()) {
+                Usuario usuario = new Usuario();
+                try {
+                    usuario.setId(rs.getInt(1));
+                    usuario.setUsuario(rs.getString(2));
+                    usuario.setNombre(rs.getString(3));
+                    usuario.setApellido(rs.getString(4));
+                    usuario.setEmail(rs.getString(5));
+                    usuario.setTelefono(rs.getString(6));
+                    usuario.setDireccion(rs.getString(7));
+                    usuario.setFechaCreacion(rs.getTimestamp(8));
+                    usuario.setFechaActualizacion(rs.getTimestamp(9));
+                    usuario.setIdRol(rs.getInt(10));
+                    int activoInt = rs.getInt(11);
+                    usuario.setActivo(activoInt == 1);
+                    usuario.setNombreRol(rs.getString(12));
+                    usuarios.add(usuario);
+                } catch (SQLException e) {
+                    System.err.println("Error al mapear usuario en búsqueda: " + e.getMessage());
+                }
+            }
+            
+            rs.close();
+            stmt.close();
+            
+        } catch (SQLException e) {
+            System.err.println("Error al buscar usuarios con paginación: " + e.getMessage());
+        } finally {
+            if (conn != null) {
+                DatabaseConnection.getInstance().releaseConnection(conn);
+            }
+        }
+        
+        return usuarios;
+    }
+    
+    /**
+     * Cuenta el total de usuarios que coinciden con la búsqueda
+     */
+    public int contarUsuariosPorBusqueda(String busqueda) {
+        String sql = "SELECT COUNT(*) as total FROM USUARIO u " +
+                     "WHERE LOWER(u.usuario) LIKE ? " +
+                     "OR LOWER(u.nombre) LIKE ? " +
+                     "OR LOWER(u.apellido) LIKE ? " +
+                     "OR LOWER(u.email) LIKE ? " +
+                     "OR LOWER(CONCAT(u.nombre, ' ', u.apellido)) LIKE ?";
+        
+        Connection conn = null;
+        try {
+            conn = DatabaseConnection.getInstance().getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            
+            String searchPattern = "%" + busqueda.toLowerCase() + "%";
+            stmt.setString(1, searchPattern);
+            stmt.setString(2, searchPattern);
+            stmt.setString(3, searchPattern);
+            stmt.setString(4, searchPattern);
+            stmt.setString(5, searchPattern);
+            
+            ResultSet rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                int total = rs.getInt("total");
+                rs.close();
+                stmt.close();
+                return total;
+            }
+            
+            rs.close();
+            stmt.close();
+            
+        } catch (SQLException e) {
+            System.err.println("Error al contar usuarios por búsqueda: " + e.getMessage());
+        } finally {
+            if (conn != null) {
+                DatabaseConnection.getInstance().releaseConnection(conn);
+            }
+        }
+        
+        return 0;
+    }
+    
+    /**
      * Crea un nuevo usuario
      */
     public boolean crear(Usuario usuario) {

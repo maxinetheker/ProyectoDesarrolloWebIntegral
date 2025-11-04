@@ -2,6 +2,7 @@
 let paginaActual = 1;
 let roles = [];
 let modoEdicion = false;
+let terminoBusqueda = ''; // Término de búsqueda actual
 
 // Cargar roles al iniciar
 async function cargarRoles() {
@@ -33,17 +34,23 @@ async function cargarRoles() {
     }
 }
 
-// Cargar usuarios
-async function cargarUsuarios(pagina) {
+// Cargar usuarios con búsqueda opcional
+async function cargarUsuarios(pagina, busqueda = '') {
     paginaActual = pagina;
+    terminoBusqueda = busqueda;
     
     try {
+        let body = 'accion=listar&pagina=' + pagina;
+        if (busqueda && busqueda.trim()) {
+            body += '&busqueda=' + encodeURIComponent(busqueda.trim());
+        }
+        
         const response = await fetch(getContextPath() + '/usuarios', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: 'accion=listar&pagina=' + pagina
+            body: body
         });
 
         const data = await response.json();
@@ -60,14 +67,40 @@ async function cargarUsuarios(pagina) {
     }
 }
 
+// Filtrar usuarios en tiempo real (con debounce)
+let timeoutBusqueda;
+function filtrarUsuarios(termino) {
+    clearTimeout(timeoutBusqueda);
+    
+    timeoutBusqueda = setTimeout(() => {
+        cargarUsuarios(1, termino);
+    }, 300); // Esperar 300ms después de que el usuario deje de escribir
+}
+
+// Inicializar campo de búsqueda
+function initBusqueda() {
+    const campoBusqueda = document.getElementById('buscar-usuario');
+    if (campoBusqueda) {
+        campoBusqueda.addEventListener('input', function(e) {
+            filtrarUsuarios(e.target.value);
+        });
+    }
+}
+
 // Mostrar usuarios en la tabla
 function mostrarUsuarios(usuarios) {
     const tbody = document.getElementById('tabla-usuarios');
     
     if (usuarios.length === 0) {
+        const mensaje = terminoBusqueda 
+            ? '<i class="fas fa-search text-4xl mb-2"></i>' +
+              '<p class="text-lg">No se encontraron usuarios con "' + escapeHtml(terminoBusqueda) + '"</p>' +
+              '<p class="text-sm text-gray-400 mt-2">Intenta con otro término de búsqueda</p>'
+            : '<i class="fas fa-users text-4xl mb-2"></i>' +
+              '<p class="text-lg">No hay usuarios registrados</p>';
+        
         tbody.innerHTML = '<tr><td colspan="6" class="px-6 py-12 text-center text-gray-500">' +
-            '<i class="fas fa-users text-4xl mb-2"></i>' +
-            '<p class="text-lg">No hay usuarios registrados</p></td></tr>';
+            mensaje + '</td></tr>';
         return;
     }
     console.log(usuarios)
@@ -149,7 +182,7 @@ function mostrarPaginacion(paginaActual, totalPaginas, totalUsuarios) {
 
     // Botón anterior
     if (paginaActual > 1) {
-        botones += '<button onclick="cargarUsuarios(' + (paginaActual - 1) + ')" ' +
+        botones += '<button onclick="cargarUsuarios(' + (paginaActual - 1) + ', \'' + escapeHtml(terminoBusqueda) + '\')" ' +
                 'class="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 transition duration-150">' +
                 '<i class="fas fa-chevron-left"></i>' +
             '</button>';
@@ -163,7 +196,7 @@ function mostrarPaginacion(paginaActual, totalPaginas, totalUsuarios) {
                 ? 'bg-slate-700 text-white border-slate-700' 
                 : 'border-gray-300 text-gray-700 hover:bg-gray-50';
             
-            botones += '<button onclick="cargarUsuarios(' + i + ')" ' +
+            botones += '<button onclick="cargarUsuarios(' + i + ', \'' + escapeHtml(terminoBusqueda) + '\')" ' +
                     'class="px-3 py-1 border rounded-md text-sm font-medium transition duration-150 ' + claseBoton + '">' +
                     i +
                 '</button>';
@@ -174,7 +207,7 @@ function mostrarPaginacion(paginaActual, totalPaginas, totalUsuarios) {
 
     // Botón siguiente
     if (paginaActual < totalPaginas) {
-        botones += '<button onclick="cargarUsuarios(' + (paginaActual + 1) + ')" ' +
+        botones += '<button onclick="cargarUsuarios(' + (paginaActual + 1) + ', \'' + escapeHtml(terminoBusqueda) + '\')" ' +
                 'class="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 transition duration-150">' +
                 '<i class="fas fa-chevron-right"></i>' +
             '</button>';
@@ -261,7 +294,7 @@ async function cambiarEstado(id, nuevoEstado, usuario) {
                 text: data.mensaje,
                 confirmButtonColor: '#475569'
             });
-            cargarUsuarios(paginaActual);
+            cargarUsuarios(paginaActual, terminoBusqueda);
         } else {
             Swal.fire({
                 icon: 'error',
@@ -311,7 +344,7 @@ function initFormulario() {
             if (data.success) {
                 mostrarAlerta(data.mensaje, 'success');
                 cerrarModal();
-                cargarUsuarios(paginaActual);
+                cargarUsuarios(paginaActual, terminoBusqueda);
             } else {
                 mostrarAlerta(data.mensaje || 'Error al guardar usuario', 'error');
             }
@@ -357,6 +390,7 @@ function getContextPath() {
 // Cargar datos al iniciar la página
 document.addEventListener('DOMContentLoaded', function() {
     initFormulario();
+    initBusqueda();
     cargarRoles();
     cargarUsuarios(1);
 });
