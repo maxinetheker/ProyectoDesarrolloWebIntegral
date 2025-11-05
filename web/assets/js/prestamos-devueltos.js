@@ -100,8 +100,16 @@ function renderizarLibrosDevueltos(prestamos) {
             if (diffDias <= 0) {
                 tiempoDevolucion = '<span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">A tiempo</span>';
             } else {
-                tiempoDevolucion = `<span class="px-2 py-1 text-xs font-semibold rounded-full bg-orange-100 text-orange-700">${diffDias} día(s) tarde</span>`;
+                tiempoDevolucion = `<span class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">${diffDias} día(s) tarde</span>`;
             }
+        }
+        
+        // Badge de estado
+        let estadoBadge = '';
+        if (prestamo.estado === 'perdido') {
+            estadoBadge = '<span class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">PERDIDO</span>';
+        } else if (prestamo.estado === 'devuelto') {
+            estadoBadge = '<span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">DEVUELTO</span>';
         }
         
         const multaBadge = prestamo.multa > 0
@@ -129,7 +137,10 @@ function renderizarLibrosDevueltos(prestamos) {
                 <td class="px-3 sm:px-6 py-4">
                     <div class="text-sm font-medium text-gray-900">${fechaDevolucionReal}</div>
                     <div class="text-xs text-gray-500 hidden sm:block">Programado: ${fechaDevolucionProgramada}</div>
-                    <div class="mt-1">${tiempoDevolucion}</div>
+                    <div class="mt-1 flex flex-wrap gap-1">
+                        ${tiempoDevolucion}
+                        ${estadoBadge}
+                    </div>
                 </td>
                 <td class="px-3 sm:px-6 py-4 hidden xl:table-cell">
                     ${multaBadge}

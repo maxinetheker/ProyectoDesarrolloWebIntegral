@@ -97,7 +97,7 @@ public class PrestamoDAO {
             sql.append("FROM entregas e ");
             sql.append("INNER JOIN libro l ON e.id_libro = l.id ");
             sql.append("INNER JOIN usuario u ON e.id_usuario = u.id ");
-            sql.append("WHERE e.fecha_devolucion_real IS NOT NULL AND e.estado = 'devuelto' ");
+            sql.append("WHERE e.fecha_devolucion_real IS NOT NULL AND e.estado IN ('devuelto', 'perdido') ");
             
             if (busqueda != null && !busqueda.isEmpty()) {
                 sql.append("AND (l.nombre LIKE ? OR l.isbn LIKE ? OR u.nombre LIKE ? OR u.apellido LIKE ? OR u.usuario LIKE ?) ");
@@ -283,7 +283,7 @@ public class PrestamoDAO {
     }
     
     public int contarLibrosDevueltos(String busqueda) {
-        return contarPrestamos("e.fecha_devolucion_real IS NOT NULL AND e.estado = 'devuelto'", busqueda);
+        return contarPrestamos("e.fecha_devolucion_real IS NOT NULL AND e.estado IN ('devuelto', 'perdido')", busqueda);
     }
     
     public int contarMultasPendientes(String busqueda) {
