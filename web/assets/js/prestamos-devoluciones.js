@@ -1,6 +1,7 @@
 let paginaActualDevoluciones = 1;
 let totalPaginasDevoluciones = 1;
 let busquedaActualDevoluciones = '';
+let filtroVencimientoActual = 'todos';
 
 document.addEventListener('DOMContentLoaded', function() {
     const inputBuscar = document.getElementById('buscar-devoluciones');
@@ -13,6 +14,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 paginaActualDevoluciones = 1;
                 cargarDevolucionesPendientes();
             }, 500);
+        });
+    }
+    
+    const filtroVencimiento = document.getElementById('filtro-vencimiento');
+    if (filtroVencimiento) {
+        filtroVencimiento.addEventListener('change', function() {
+            filtroVencimientoActual = this.value;
+            paginaActualDevoluciones = 1;
+            cargarDevolucionesPendientes();
         });
     }
 });
@@ -31,6 +41,9 @@ function cargarDevolucionesPendientes() {
     let url = `${window.CONTEXT_PATH}/prestamos?accion=listarDevolucionesPendientes&pagina=${paginaActualDevoluciones}`;
     if (busquedaActualDevoluciones) {
         url += `&busqueda=${encodeURIComponent(busquedaActualDevoluciones)}`;
+    }
+    if (filtroVencimientoActual && filtroVencimientoActual !== 'todos') {
+        url += `&filtroVencimiento=${encodeURIComponent(filtroVencimientoActual)}`;
     }
     
     fetch(url)

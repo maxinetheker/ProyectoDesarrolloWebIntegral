@@ -101,6 +101,7 @@ public class PrestamoServlet extends HttpServlet {
             throws IOException {
         try {
             String busqueda = request.getParameter("busqueda");
+            String filtroVencimiento = request.getParameter("filtroVencimiento");
             int pagina = 1;
             try {
                 pagina = Integer.parseInt(request.getParameter("pagina"));
@@ -109,8 +110,8 @@ public class PrestamoServlet extends HttpServlet {
             }
             
             int registrosPorPagina = 10;
-            List<Prestamo> prestamos = prestamoDAO.listarDevolucionesPendientes(busqueda, pagina, registrosPorPagina);
-            int totalRegistros = prestamoDAO.contarDevolucionesPendientes(busqueda);
+            List<Prestamo> prestamos = prestamoDAO.listarDevolucionesPendientes(busqueda, filtroVencimiento, pagina, registrosPorPagina);
+            int totalRegistros = prestamoDAO.contarDevolucionesPendientes(busqueda, filtroVencimiento);
             int totalPaginas = (int) Math.ceil((double) totalRegistros / registrosPorPagina);
             
             int registroInicio = (pagina - 1) * registrosPorPagina + 1;

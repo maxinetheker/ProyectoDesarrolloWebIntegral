@@ -135,13 +135,22 @@
                         </h2>
                         <p class="text-gray-600 text-xs sm:text-sm mt-1">Préstamos activos que deben ser devueltos</p>
                     </div>
-                    <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
-                        <div class="relative flex-1 max-w-full sm:max-w-md">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="fas fa-search text-gray-400"></i>
+                    <div class="flex flex-col sm:flex-row justify-between items-stretch gap-3 mb-3">
+                        <div class="flex flex-col sm:flex-row gap-3 flex-1">
+                            <div class="relative flex-1 max-w-full sm:max-w-md">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-search text-gray-400"></i>
+                                </div>
+                                <input type="text" id="buscar-devoluciones" placeholder="Buscar por libro, usuario, ISBN..."
+                                    class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 text-sm" autocomplete="off">
                             </div>
-                            <input type="text" id="buscar-devoluciones" placeholder="Buscar por libro, usuario, ISBN, DNI..."
-                                class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 text-sm" autocomplete="off">
+                            <div class="flex-shrink-0 w-full sm:w-48">
+                                <select id="filtro-vencimiento" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 text-sm">
+                                    <option value="todos">Todos los préstamos</option>
+                                    <option value="vencidos">Solo vencidos</option>
+                                    <option value="no_vencidos">Solo no vencidos</option>
+                                </select>
+                            </div>
                         </div>
                         <button onclick="abrirModalNuevoPrestamo()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition duration-200 shadow-sm whitespace-nowrap text-sm">
                             <i class="fas fa-plus mr-2"></i>Nuevo Préstamo

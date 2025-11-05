@@ -9,29 +9,43 @@ import singleton.DatabaseConnection;
 
 public class PrestamoDAO {
     
-    public List<Prestamo> listarDevolucionesPendientes(String busqueda, int pagina, int registrosPorPagina) {
+    public List<Prestamo> listarDevolucionesPendientes(String busqueda, String filtroVencimiento, int pagina, int registrosPorPagina) {
         List<Prestamo> prestamos = new ArrayList<>();
         int offset = (pagina - 1) * registrosPorPagina;
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
         
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT e.id, e.id_libro, e.id_usuario, e.fecha_entrega, e.fecha_devolucion_programada, ");
-        sql.append("e.fecha_devolucion_real, e.estado, e.multa, e.pagado, e.observaciones_entrega, e.observaciones_devolucion, ");
-        sql.append("l.nombre as libro_nombre, l.isbn as libro_isbn, ");
-        sql.append("CONCAT(u.nombre, ' ', u.apellido) as usuario_nombre, u.usuario as usuario_dni ");
-        sql.append("FROM entregas e ");
-        sql.append("INNER JOIN libro l ON e.id_libro = l.id ");
-        sql.append("INNER JOIN usuario u ON e.id_usuario = u.id ");
-        sql.append("WHERE e.estado IN ('prestado', 'vencido') ");
-        
-        if (busqueda != null && !busqueda.isEmpty()) {
-            sql.append("AND (l.nombre LIKE ? OR l.isbn LIKE ? OR u.nombre LIKE ? OR u.apellido LIKE ? OR u.usuario LIKE ?) ");
-        }
-        
-        sql.append("ORDER BY e.fecha_devolucion_programada ASC ");
-        sql.append("LIMIT ? OFFSET ?");
-        
-        try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+        try {
+            StringBuilder sql = new StringBuilder();
+            sql.append("SELECT e.id, e.id_libro, e.id_usuario, e.fecha_entrega, e.fecha_devolucion_programada, ");
+            sql.append("e.fecha_devolucion_real, e.estado, e.multa, e.pagado, e.observaciones_entrega, e.observaciones_devolucion, ");
+            sql.append("l.nombre as libro_nombre, l.isbn as libro_isbn, ");
+            sql.append("CONCAT(u.nombre, ' ', u.apellido) as usuario_nombre, u.usuario as usuario_dni ");
+            sql.append("FROM entregas e ");
+            sql.append("INNER JOIN libro l ON e.id_libro = l.id ");
+            sql.append("INNER JOIN usuario u ON e.id_usuario = u.id ");
+            sql.append("WHERE e.estado IN ('prestado', 'vencido') ");
+            
+            // Filtro de vencimiento
+            if (filtroVencimiento != null && !filtroVencimiento.isEmpty()) {
+                if ("vencidos".equals(filtroVencimiento)) {
+                    sql.append("AND e.fecha_devolucion_programada < NOW() ");
+                } else if ("no_vencidos".equals(filtroVencimiento)) {
+                    sql.append("AND e.fecha_devolucion_programada >= NOW() ");
+                }
+                // Si es "todos", no agregamos filtro adicional
+            }
+            
+            if (busqueda != null && !busqueda.isEmpty()) {
+                sql.append("AND (l.nombre LIKE ? OR l.isbn LIKE ? OR u.nombre LIKE ? OR u.apellido LIKE ? OR u.usuario LIKE ?) ");
+            }
+            
+            sql.append("ORDER BY e.fecha_devolucion_programada ASC ");
+            sql.append("LIMIT ? OFFSET ?");
+            
+            conn = DatabaseConnection.getInstance().getConnection();
+            stmt = conn.prepareStatement(sql.toString());
             
             int paramIndex = 1;
             if (busqueda != null && !busqueda.isEmpty()) {
@@ -46,12 +60,22 @@ public class PrestamoDAO {
             stmt.setInt(paramIndex++, registrosPorPagina);
             stmt.setInt(paramIndex, offset);
             
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
             while (rs.next()) {
                 prestamos.add(mapearPrestamo(rs));
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (conn != null) {
+                DatabaseConnection.getInstance().releaseConnection(conn);
+            }
         }
         
         return prestamos;
@@ -60,26 +84,30 @@ public class PrestamoDAO {
     public List<Prestamo> listarLibrosDevueltos(String busqueda, int pagina, int registrosPorPagina) {
         List<Prestamo> prestamos = new ArrayList<>();
         int offset = (pagina - 1) * registrosPorPagina;
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
         
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT e.id, e.id_libro, e.id_usuario, e.fecha_entrega, e.fecha_devolucion_programada, ");
-        sql.append("e.fecha_devolucion_real, e.estado, e.multa, e.pagado, e.observaciones_entrega, e.observaciones_devolucion, ");
-        sql.append("l.nombre as libro_nombre, l.isbn as libro_isbn, ");
-        sql.append("CONCAT(u.nombre, ' ', u.apellido) as usuario_nombre, u.usuario as usuario_dni ");
-        sql.append("FROM entregas e ");
-        sql.append("INNER JOIN libro l ON e.id_libro = l.id ");
-        sql.append("INNER JOIN usuario u ON e.id_usuario = u.id ");
-        sql.append("WHERE e.estado = 'devuelto' ");
-        
-        if (busqueda != null && !busqueda.isEmpty()) {
-            sql.append("AND (l.nombre LIKE ? OR l.isbn LIKE ? OR u.nombre LIKE ? OR u.apellido LIKE ? OR u.usuario LIKE ?) ");
-        }
-        
-        sql.append("ORDER BY e.fecha_devolucion_real DESC ");
-        sql.append("LIMIT ? OFFSET ?");
-        
-        try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+        try {
+            StringBuilder sql = new StringBuilder();
+            sql.append("SELECT e.id, e.id_libro, e.id_usuario, e.fecha_entrega, e.fecha_devolucion_programada, ");
+            sql.append("e.fecha_devolucion_real, e.estado, e.multa, e.pagado, e.observaciones_entrega, e.observaciones_devolucion, ");
+            sql.append("l.nombre as libro_nombre, l.isbn as libro_isbn, ");
+            sql.append("CONCAT(u.nombre, ' ', u.apellido) as usuario_nombre, u.usuario as usuario_dni ");
+            sql.append("FROM entregas e ");
+            sql.append("INNER JOIN libro l ON e.id_libro = l.id ");
+            sql.append("INNER JOIN usuario u ON e.id_usuario = u.id ");
+            sql.append("WHERE e.estado = 'devuelto' ");
+            
+            if (busqueda != null && !busqueda.isEmpty()) {
+                sql.append("AND (l.nombre LIKE ? OR l.isbn LIKE ? OR u.nombre LIKE ? OR u.apellido LIKE ? OR u.usuario LIKE ?) ");
+            }
+            
+            sql.append("ORDER BY e.fecha_devolucion_real DESC ");
+            sql.append("LIMIT ? OFFSET ?");
+            
+            conn = DatabaseConnection.getInstance().getConnection();
+            stmt = conn.prepareStatement(sql.toString());
             
             int paramIndex = 1;
             if (busqueda != null && !busqueda.isEmpty()) {
@@ -94,12 +122,22 @@ public class PrestamoDAO {
             stmt.setInt(paramIndex++, registrosPorPagina);
             stmt.setInt(paramIndex, offset);
             
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
             while (rs.next()) {
                 prestamos.add(mapearPrestamo(rs));
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (conn != null) {
+                DatabaseConnection.getInstance().releaseConnection(conn);
+            }
         }
         
         return prestamos;
@@ -108,26 +146,30 @@ public class PrestamoDAO {
     public List<Prestamo> listarMultasPendientes(String busqueda, int pagina, int registrosPorPagina) {
         List<Prestamo> prestamos = new ArrayList<>();
         int offset = (pagina - 1) * registrosPorPagina;
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
         
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT e.id, e.id_libro, e.id_usuario, e.fecha_entrega, e.fecha_devolucion_programada, ");
-        sql.append("e.fecha_devolucion_real, e.estado, e.multa, e.pagado, e.observaciones_entrega, e.observaciones_devolucion, ");
-        sql.append("l.nombre as libro_nombre, l.isbn as libro_isbn, ");
-        sql.append("CONCAT(u.nombre, ' ', u.apellido) as usuario_nombre, u.usuario as usuario_dni ");
-        sql.append("FROM entregas e ");
-        sql.append("INNER JOIN libro l ON e.id_libro = l.id ");
-        sql.append("INNER JOIN usuario u ON e.id_usuario = u.id ");
-        sql.append("WHERE e.multa > 0 AND e.pagado = 0 ");
-        
-        if (busqueda != null && !busqueda.isEmpty()) {
-            sql.append("AND (l.nombre LIKE ? OR l.isbn LIKE ? OR u.nombre LIKE ? OR u.apellido LIKE ? OR u.usuario LIKE ?) ");
-        }
-        
-        sql.append("ORDER BY e.multa DESC ");
-        sql.append("LIMIT ? OFFSET ?");
-        
-        try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+        try {
+            StringBuilder sql = new StringBuilder();
+            sql.append("SELECT e.id, e.id_libro, e.id_usuario, e.fecha_entrega, e.fecha_devolucion_programada, ");
+            sql.append("e.fecha_devolucion_real, e.estado, e.multa, e.pagado, e.observaciones_entrega, e.observaciones_devolucion, ");
+            sql.append("l.nombre as libro_nombre, l.isbn as libro_isbn, ");
+            sql.append("CONCAT(u.nombre, ' ', u.apellido) as usuario_nombre, u.usuario as usuario_dni ");
+            sql.append("FROM entregas e ");
+            sql.append("INNER JOIN libro l ON e.id_libro = l.id ");
+            sql.append("INNER JOIN usuario u ON e.id_usuario = u.id ");
+            sql.append("WHERE e.multa > 0 AND e.pagado = 0 ");
+            
+            if (busqueda != null && !busqueda.isEmpty()) {
+                sql.append("AND (l.nombre LIKE ? OR l.isbn LIKE ? OR u.nombre LIKE ? OR u.apellido LIKE ? OR u.usuario LIKE ?) ");
+            }
+            
+            sql.append("ORDER BY e.multa DESC ");
+            sql.append("LIMIT ? OFFSET ?");
+            
+            conn = DatabaseConnection.getInstance().getConnection();
+            stmt = conn.prepareStatement(sql.toString());
             
             int paramIndex = 1;
             if (busqueda != null && !busqueda.isEmpty()) {
@@ -142,12 +184,22 @@ public class PrestamoDAO {
             stmt.setInt(paramIndex++, registrosPorPagina);
             stmt.setInt(paramIndex, offset);
             
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
             while (rs.next()) {
                 prestamos.add(mapearPrestamo(rs));
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (conn != null) {
+                DatabaseConnection.getInstance().releaseConnection(conn);
+            }
         }
         
         return prestamos;
@@ -156,26 +208,30 @@ public class PrestamoDAO {
     public List<Prestamo> listarMultasPagadas(String busqueda, int pagina, int registrosPorPagina) {
         List<Prestamo> prestamos = new ArrayList<>();
         int offset = (pagina - 1) * registrosPorPagina;
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
         
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT e.id, e.id_libro, e.id_usuario, e.fecha_entrega, e.fecha_devolucion_programada, ");
-        sql.append("e.fecha_devolucion_real, e.estado, e.multa, e.pagado, e.observaciones_entrega, e.observaciones_devolucion, ");
-        sql.append("l.nombre as libro_nombre, l.isbn as libro_isbn, ");
-        sql.append("CONCAT(u.nombre, ' ', u.apellido) as usuario_nombre, u.usuario as usuario_dni ");
-        sql.append("FROM entregas e ");
-        sql.append("INNER JOIN libro l ON e.id_libro = l.id ");
-        sql.append("INNER JOIN usuario u ON e.id_usuario = u.id ");
-        sql.append("WHERE e.multa > 0 AND e.pagado = 1 ");
-        
-        if (busqueda != null && !busqueda.isEmpty()) {
-            sql.append("AND (l.nombre LIKE ? OR l.isbn LIKE ? OR u.nombre LIKE ? OR u.apellido LIKE ? OR u.usuario LIKE ?) ");
-        }
-        
-        sql.append("ORDER BY e.fecha_devolucion_real DESC ");
-        sql.append("LIMIT ? OFFSET ?");
-        
-        try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+        try {
+            StringBuilder sql = new StringBuilder();
+            sql.append("SELECT e.id, e.id_libro, e.id_usuario, e.fecha_entrega, e.fecha_devolucion_programada, ");
+            sql.append("e.fecha_devolucion_real, e.estado, e.multa, e.pagado, e.observaciones_entrega, e.observaciones_devolucion, ");
+            sql.append("l.nombre as libro_nombre, l.isbn as libro_isbn, ");
+            sql.append("CONCAT(u.nombre, ' ', u.apellido) as usuario_nombre, u.usuario as usuario_dni ");
+            sql.append("FROM entregas e ");
+            sql.append("INNER JOIN libro l ON e.id_libro = l.id ");
+            sql.append("INNER JOIN usuario u ON e.id_usuario = u.id ");
+            sql.append("WHERE e.multa > 0 AND e.pagado = 1 ");
+            
+            if (busqueda != null && !busqueda.isEmpty()) {
+                sql.append("AND (l.nombre LIKE ? OR l.isbn LIKE ? OR u.nombre LIKE ? OR u.apellido LIKE ? OR u.usuario LIKE ?) ");
+            }
+            
+            sql.append("ORDER BY e.fecha_devolucion_real DESC ");
+            sql.append("LIMIT ? OFFSET ?");
+            
+            conn = DatabaseConnection.getInstance().getConnection();
+            stmt = conn.prepareStatement(sql.toString());
             
             int paramIndex = 1;
             if (busqueda != null && !busqueda.isEmpty()) {
@@ -190,19 +246,40 @@ public class PrestamoDAO {
             stmt.setInt(paramIndex++, registrosPorPagina);
             stmt.setInt(paramIndex, offset);
             
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
             while (rs.next()) {
                 prestamos.add(mapearPrestamo(rs));
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (conn != null) {
+                DatabaseConnection.getInstance().releaseConnection(conn);
+            }
         }
         
         return prestamos;
     }
     
-    public int contarDevolucionesPendientes(String busqueda) {
-        return contarPrestamos("e.estado IN ('prestado', 'vencido')", busqueda);
+    public int contarDevolucionesPendientes(String busqueda, String filtroVencimiento) {
+        String condicion = "e.estado IN ('prestado', 'vencido')";
+        
+        // Agregar filtro de vencimiento
+        if (filtroVencimiento != null && !filtroVencimiento.isEmpty()) {
+            if ("vencidos".equals(filtroVencimiento)) {
+                condicion += " AND e.fecha_devolucion_programada < NOW()";
+            } else if ("no_vencidos".equals(filtroVencimiento)) {
+                condicion += " AND e.fecha_devolucion_programada >= NOW()";
+            }
+        }
+        
+        return contarPrestamos(condicion, busqueda);
     }
     
     public int contarLibrosDevueltos(String busqueda) {
@@ -219,18 +296,23 @@ public class PrestamoDAO {
     
     private int contarPrestamos(String condicionBase, String busqueda) {
         int total = 0;
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT COUNT(*) FROM entregas e ");
-        sql.append("INNER JOIN libro l ON e.id_libro = l.id ");
-        sql.append("INNER JOIN usuario u ON e.id_usuario = u.id ");
-        sql.append("WHERE ").append(condicionBase).append(" ");
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
         
-        if (busqueda != null && !busqueda.isEmpty()) {
-            sql.append("AND (l.nombre LIKE ? OR l.isbn LIKE ? OR u.nombre LIKE ? OR u.apellido LIKE ? OR u.usuario LIKE ?)");
-        }
-        
-        try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+        try {
+            StringBuilder sql = new StringBuilder();
+            sql.append("SELECT COUNT(*) FROM entregas e ");
+            sql.append("INNER JOIN libro l ON e.id_libro = l.id ");
+            sql.append("INNER JOIN usuario u ON e.id_usuario = u.id ");
+            sql.append("WHERE ").append(condicionBase).append(" ");
+            
+            if (busqueda != null && !busqueda.isEmpty()) {
+                sql.append("AND (l.nombre LIKE ? OR l.isbn LIKE ? OR u.nombre LIKE ? OR u.apellido LIKE ? OR u.usuario LIKE ?)");
+            }
+            
+            conn = DatabaseConnection.getInstance().getConnection();
+            stmt = conn.prepareStatement(sql.toString());
             
             if (busqueda != null && !busqueda.isEmpty()) {
                 String searchPattern = "%" + busqueda + "%";
@@ -241,12 +323,22 @@ public class PrestamoDAO {
                 stmt.setString(5, searchPattern);
             }
             
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
             if (rs.next()) {
                 total = rs.getInt(1);
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (conn != null) {
+                DatabaseConnection.getInstance().releaseConnection(conn);
+            }
         }
         
         return total;
