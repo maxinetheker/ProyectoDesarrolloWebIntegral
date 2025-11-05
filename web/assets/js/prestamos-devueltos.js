@@ -28,7 +28,7 @@ function cargarLibrosDevueltos() {
         </tr>
     `;
     
-    let url = `${window.CONTEXT_PATH}/prestamos?accion=listarDevueltos&pagina=${paginaActualDevueltos}`;
+    let url = `${window.CONTEXT_PATH}/prestamos?accion=listarLibrosDevueltos&pagina=${paginaActualDevueltos}`;
     if (busquedaActualDevueltos) {
         url += `&busqueda=${encodeURIComponent(busquedaActualDevueltos)}`;
     }
@@ -93,11 +93,14 @@ function renderizarLibrosDevueltos(prestamos) {
         // Verificar si se devolvió a tiempo
         let tiempoDevolucion = '';
         if (prestamo.fechaDevolucionReal && prestamo.fechaDevolucionEsperada) {
-            const diasRetraso = diasDesde(prestamo.fechaDevolucionEsperada);
-            if (diasRetraso <= 0) {
+            const fechaReal = new Date(prestamo.fechaDevolucionReal);
+            const fechaEsperada = new Date(prestamo.fechaDevolucionEsperada);
+            const diffDias = Math.floor((fechaReal - fechaEsperada) / (1000 * 60 * 60 * 24));
+            
+            if (diffDias <= 0) {
                 tiempoDevolucion = '<span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">A tiempo</span>';
             } else {
-                tiempoDevolucion = `<span class="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">${diasRetraso} día(s) tarde</span>`;
+                tiempoDevolucion = `<span class="px-2 py-1 text-xs font-semibold rounded-full bg-orange-100 text-orange-700">${diffDias} día(s) tarde</span>`;
             }
         }
         
@@ -137,7 +140,7 @@ function renderizarLibrosDevueltos(prestamos) {
                         title="Ver Detalle">
                         <i class="fas fa-info-circle"></i>
                     </button>
-                    <button onclick="deshacerDevolucion(${prestamo.id}, ${prestamo.libroId})" 
+                    <button onclick="deshacerDevolucion(${prestamo.id})" 
                         class="text-red-600 hover:text-red-800 p-2 rounded hover:bg-red-50 transition" 
                         title="Deshacer Devolución">
                         <i class="fas fa-undo"></i>
@@ -279,10 +282,16 @@ function verDetalleDevolucion(id) {
                                 </p>
                             </div>
                             ` : ''}
-                            ${prestamo.observaciones ? `
+                            ${prestamo.observacionesEntrega ? `
+                            <div class="border-b pb-2">
+                                <p class="text-sm font-semibold text-gray-700">Observaciones de Entrega</p>
+                                <p class="text-sm text-gray-600">${escapeHtml(prestamo.observacionesEntrega)}</p>
+                            </div>
+                            ` : ''}
+                            ${prestamo.observacionesDevolucion ? `
                             <div>
-                                <p class="text-sm font-semibold text-gray-700">Observaciones</p>
-                                <p class="text-sm text-gray-600">${escapeHtml(prestamo.observaciones)}</p>
+                                <p class="text-sm font-semibold text-gray-700">Observaciones de Devolución</p>
+                                <p class="text-sm text-gray-600">${escapeHtml(prestamo.observacionesDevolucion)}</p>
                             </div>
                             ` : ''}
                         </div>
@@ -301,7 +310,7 @@ function verDetalleDevolucion(id) {
         });
 }
 
-function deshacerDevolucion(id, libroId) {
+function deshacerDevolucion(id) {
     Swal.fire({
         title: '¿Deshacer devolución?',
         text: 'Esta acción marcará el préstamo como pendiente nuevamente',
@@ -316,7 +325,6 @@ function deshacerDevolucion(id, libroId) {
             const params = new URLSearchParams();
             params.append('accion', 'deshacerDevolucion');
             params.append('id', id);
-            params.append('libroId', libroId);
             
             fetch(`${window.CONTEXT_PATH}/prestamos`, {
                 method: 'POST',

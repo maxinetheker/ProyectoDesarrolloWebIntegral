@@ -97,7 +97,7 @@ public class PrestamoDAO {
             sql.append("FROM entregas e ");
             sql.append("INNER JOIN libro l ON e.id_libro = l.id ");
             sql.append("INNER JOIN usuario u ON e.id_usuario = u.id ");
-            sql.append("WHERE e.estado = 'devuelto' ");
+            sql.append("WHERE e.fecha_devolucion_real IS NOT NULL AND e.estado = 'devuelto' ");
             
             if (busqueda != null && !busqueda.isEmpty()) {
                 sql.append("AND (l.nombre LIKE ? OR l.isbn LIKE ? OR u.nombre LIKE ? OR u.apellido LIKE ? OR u.usuario LIKE ?) ");
@@ -159,7 +159,7 @@ public class PrestamoDAO {
             sql.append("FROM entregas e ");
             sql.append("INNER JOIN libro l ON e.id_libro = l.id ");
             sql.append("INNER JOIN usuario u ON e.id_usuario = u.id ");
-            sql.append("WHERE e.multa > 0 AND e.pagado = 0 ");
+            sql.append("WHERE e.multa > 0 AND (e.pagado = 0 OR e.pagado IS NULL) ");
             
             if (busqueda != null && !busqueda.isEmpty()) {
                 sql.append("AND (l.nombre LIKE ? OR l.isbn LIKE ? OR u.nombre LIKE ? OR u.apellido LIKE ? OR u.usuario LIKE ?) ");
@@ -283,11 +283,11 @@ public class PrestamoDAO {
     }
     
     public int contarLibrosDevueltos(String busqueda) {
-        return contarPrestamos("e.estado = 'devuelto'", busqueda);
+        return contarPrestamos("e.fecha_devolucion_real IS NOT NULL AND e.estado = 'devuelto'", busqueda);
     }
     
     public int contarMultasPendientes(String busqueda) {
-        return contarPrestamos("e.multa > 0 AND e.pagado = 0", busqueda);
+        return contarPrestamos("e.multa > 0 AND (e.pagado = 0 OR e.pagado IS NULL)", busqueda);
     }
     
     public int contarMultasPagadas(String busqueda) {
@@ -354,17 +354,31 @@ public class PrestamoDAO {
                     "INNER JOIN usuario u ON e.id_usuario = u.id " +
                     "WHERE e.id = ?";
         
-        try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = DatabaseConnection.getInstance().getConnection();
+            stmt = conn.prepareStatement(sql);
             stmt.setInt(1, id);
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
             
             if (rs.next()) {
                 return mapearPrestamo(rs);
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (conn != null) {
+                DatabaseConnection.getInstance().releaseConnection(conn);
+            }
         }
         
         return null;
@@ -374,9 +388,12 @@ public class PrestamoDAO {
         String sql = "INSERT INTO entregas (id_libro, id_usuario, fecha_entrega, fecha_devolucion_programada, estado, observaciones_entrega) " +
                     "VALUES (?, ?, ?, ?, 'prestado', ?)";
         
-        try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        
+        try {
+            conn = DatabaseConnection.getInstance().getConnection();
+            stmt = conn.prepareStatement(sql);
             stmt.setInt(1, prestamo.getLibroId());
             stmt.setInt(2, prestamo.getUsuarioId());
             stmt.setTimestamp(3, new Timestamp(prestamo.getFechaPrestamo().getTime()));
@@ -387,84 +404,286 @@ public class PrestamoDAO {
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
+        } finally {
+            try {
+                if (stmt != null) stmt.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (conn != null) {
+                DatabaseConnection.getInstance().releaseConnection(conn);
+            }
         }
     }
     
     public boolean registrarDevolucion(int id, String estado, BigDecimal multa, String observaciones) {
-        String sql = "UPDATE entregas SET fecha_devolucion_real = NOW(), estado = ?, multa = ?, " +
-                    "observaciones_devolucion = ? WHERE id = ?";
+        Connection conn = null;
+        PreparedStatement stmtUpdate = null;
+        PreparedStatement stmtStock = null;
+        PreparedStatement stmtSelect = null;
+        ResultSet rs = null;
         
-        try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try {
+            conn = DatabaseConnection.getInstance().getConnection();
+            conn.setAutoCommit(false);
             
-            stmt.setString(1, estado);
-            stmt.setBigDecimal(2, multa);
-            stmt.setString(3, observaciones);
-            stmt.setInt(4, id);
+            // Primero obtener el id del libro
+            String sqlSelect = "SELECT id_libro FROM entregas WHERE id = ?";
+            stmtSelect = conn.prepareStatement(sqlSelect);
+            stmtSelect.setInt(1, id);
+            rs = stmtSelect.executeQuery();
             
-            return stmt.executeUpdate() > 0;
+            if (!rs.next()) {
+                conn.rollback();
+                return false;
+            }
+            
+            int idLibro = rs.getInt("id_libro");
+            rs.close();
+            stmtSelect.close();
+            
+            // Actualizar el préstamo
+            String sqlUpdate = "UPDATE entregas SET fecha_devolucion_real = NOW(), estado = ?, multa = ?, " +
+                             "observaciones_devolucion = ? WHERE id = ?";
+            stmtUpdate = conn.prepareStatement(sqlUpdate);
+            stmtUpdate.setString(1, estado);
+            stmtUpdate.setBigDecimal(2, multa);
+            stmtUpdate.setString(3, observaciones);
+            stmtUpdate.setInt(4, id);
+            stmtUpdate.executeUpdate();
+            stmtUpdate.close();
+            
+            // Actualizar el stock según el estado
+            String sqlStock;
+            if ("devuelto".equals(estado)) {
+                sqlStock = "UPDATE libro SET stock_disponible = stock_disponible + 1 WHERE id = ?";
+            } else if ("perdido".equals(estado)) {
+
+                sqlStock = "UPDATE libro SET stock = stock - 1 WHERE id = ?";
+            } else {
+                conn.commit();
+                return true;
+            }
+            
+            stmtStock = conn.prepareStatement(sqlStock);
+            stmtStock.setInt(1, idLibro);
+            stmtStock.executeUpdate();
+            
+            conn.commit();
+            return true;
+            
         } catch (SQLException e) {
+            System.err.println("Error al registrar devolución: " + e.getMessage());
             e.printStackTrace();
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
             return false;
+        } finally {
+            if (rs != null) try { rs.close(); } catch (SQLException e) { e.printStackTrace(); }
+            if (stmtSelect != null) try { stmtSelect.close(); } catch (SQLException e) { e.printStackTrace(); }
+            if (stmtUpdate != null) try { stmtUpdate.close(); } catch (SQLException e) { e.printStackTrace(); }
+            if (stmtStock != null) try { stmtStock.close(); } catch (SQLException e) { e.printStackTrace(); }
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                DatabaseConnection.getInstance().releaseConnection(conn);
+            }
         }
     }
     
     public boolean marcarMultaPagada(int id) {
         String sql = "UPDATE entregas SET pagado = 1 WHERE id = ?";
+        Connection conn = null;
+        PreparedStatement stmt = null;
         
-        try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
+        try {
+            conn = DatabaseConnection.getInstance().getConnection();
+            stmt = conn.prepareStatement(sql);
             stmt.setInt(1, id);
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
+        } finally {
+            try {
+                if (stmt != null) stmt.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (conn != null) {
+                DatabaseConnection.getInstance().releaseConnection(conn);
+            }
         }
     }
     
     public boolean desmarcarMultaPagada(int id) {
         String sql = "UPDATE entregas SET pagado = 0 WHERE id = ?";
+        Connection conn = null;
+        PreparedStatement stmt = null;
         
-        try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
+        try {
+            conn = DatabaseConnection.getInstance().getConnection();
+            stmt = conn.prepareStatement(sql);
             stmt.setInt(1, id);
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
+        } finally {
+            try {
+                if (stmt != null) stmt.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (conn != null) {
+                DatabaseConnection.getInstance().releaseConnection(conn);
+            }
+        }
+    }
+    
+    public boolean actualizarMulta(int id, BigDecimal nuevaMulta) {
+        String sql = "UPDATE entregas SET multa = ? WHERE id = ?";
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        
+        try {
+            conn = DatabaseConnection.getInstance().getConnection();
+            stmt = conn.prepareStatement(sql);
+            stmt.setBigDecimal(1, nuevaMulta);
+            stmt.setInt(2, id);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            try {
+                if (stmt != null) stmt.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (conn != null) {
+                DatabaseConnection.getInstance().releaseConnection(conn);
+            }
         }
     }
     
     public boolean deshacerDevolucion(int id) {
-        String sql = "UPDATE entregas SET fecha_devolucion_real = NULL, estado = 'prestado', " +
-                    "multa = 0, pagado = 0, observaciones_devolucion = NULL WHERE id = ?";
+        Connection conn = null;
+        PreparedStatement stmtSelect = null;
+        PreparedStatement stmtUpdate = null;
+        PreparedStatement stmtStock = null;
+        ResultSet rs = null;
         
-        try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try {
+            conn = DatabaseConnection.getInstance().getConnection();
+            conn.setAutoCommit(false);
             
-            stmt.setInt(1, id);
-            return stmt.executeUpdate() > 0;
+            // Paso 1: Obtener el estado y el id_libro del préstamo
+            String sqlSelect = "SELECT estado, id_libro FROM entregas WHERE id = ?";
+            stmtSelect = conn.prepareStatement(sqlSelect);
+            stmtSelect.setInt(1, id);
+            rs = stmtSelect.executeQuery();
+            
+            if (!rs.next()) {
+                conn.rollback();
+                return false;
+            }
+            
+            String estado = rs.getString("estado");
+            int idLibro = rs.getInt("id_libro");
+            
+            // Paso 2: Actualizar el préstamo (marcar como prestado, limpiar multa)
+            String sqlUpdate = "UPDATE entregas SET fecha_devolucion_real = NULL, estado = 'prestado', " +
+                             "multa = 0, pagado = 0, observaciones_devolucion = NULL WHERE id = ?";
+            stmtUpdate = conn.prepareStatement(sqlUpdate);
+            stmtUpdate.setInt(1, id);
+            stmtUpdate.executeUpdate();
+            
+            // Paso 3: Actualizar stock según el estado original
+            String sqlStock;
+            if ("devuelto".equals(estado)) {
+                // Si fue devuelto, restar 1 del stock_disponible (porque el libro vuelve a estar prestado)
+                sqlStock = "UPDATE libro SET stock_disponible = stock_disponible - 1 WHERE id = ?";
+            } else if ("perdido".equals(estado)) {
+                // Si fue perdido, sumar 1 al stock total (porque el libro regresa al inventario)
+                sqlStock = "UPDATE libro SET stock = stock + 1 WHERE id = ?";
+            } else {
+                // Para otros estados, no modificar el stock
+                conn.commit();
+                return true;
+            }
+            
+            stmtStock = conn.prepareStatement(sqlStock);
+            stmtStock.setInt(1, idLibro);
+            stmtStock.executeUpdate();
+            
+            conn.commit();
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
             return false;
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (stmtSelect != null) stmtSelect.close();
+                if (stmtUpdate != null) stmtUpdate.close();
+                if (stmtStock != null) stmtStock.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                DatabaseConnection.getInstance().releaseConnection(conn);
+            }
         }
     }
     
     public boolean usuarioTieneMultasPendientes(int usuarioId) {
         String sql = "SELECT COUNT(*) as total FROM entregas WHERE id_usuario = ? AND multa > 0 AND pagado = 0";
         
-        try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = DatabaseConnection.getInstance().getConnection();
+            stmt = conn.prepareStatement(sql);
             stmt.setInt(1, usuarioId);
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
             if (rs.next()) {
                 return rs.getInt("total") > 0;
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (conn != null) {
+                DatabaseConnection.getInstance().releaseConnection(conn);
+            }
         }
         return false;
     }
@@ -481,17 +700,31 @@ public class PrestamoDAO {
                     "WHERE e.id_libro = ? " +
                     "ORDER BY e.fecha_entrega DESC";
         
-        try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = DatabaseConnection.getInstance().getConnection();
+            stmt = conn.prepareStatement(sql);
             stmt.setInt(1, libroId);
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
             
             while (rs.next()) {
                 prestamos.add(mapearPrestamo(rs));
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (conn != null) {
+                DatabaseConnection.getInstance().releaseConnection(conn);
+            }
         }
         
         return prestamos;

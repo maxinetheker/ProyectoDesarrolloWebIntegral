@@ -109,8 +109,8 @@ function renderizarMultasPendientes(prestamos) {
         const multaBadge = multa > 100
             ? 'bg-red-100 text-red-800'
             : multa > 50
-            ? 'bg-orange-100 text-orange-800'
-            : 'bg-yellow-100 text-yellow-800';
+            ? 'bg-orange-100 text-orange-700'
+            : 'bg-amber-100 text-amber-700';
         
         return `
             <tr class="hover:bg-gray-50 transition-colors">
@@ -139,6 +139,16 @@ function renderizarMultasPendientes(prestamos) {
                     </span>
                 </td>
                 <td class="px-3 sm:px-6 py-4">
+                    <button onclick="verDetalleMultaPendiente(${prestamo.id})" 
+                        class="text-blue-600 hover:text-blue-800 p-2 rounded hover:bg-blue-50 transition mr-2" 
+                        title="Ver Detalle">
+                        <i class="fas fa-info-circle"></i>
+                    </button>
+                    <button onclick="modificarMulta(${prestamo.id}, ${multa})" 
+                        class="text-orange-600 hover:text-orange-800 p-2 rounded hover:bg-orange-50 transition mr-2" 
+                        title="Modificar Multa">
+                        <i class="fas fa-edit"></i>
+                    </button>
                     <button onclick="marcarMultaComoPagada(${prestamo.id}, ${multa})" 
                         class="text-green-600 hover:text-green-800 p-2 rounded hover:bg-green-50 transition" 
                         title="Marcar como Pagado">
@@ -248,13 +258,16 @@ function marcarMultaComoPagada(id, monto) {
         cancelButtonText: 'Cancelar'
     }).then((result) => {
         if (result.isConfirmed) {
-            const formData = new FormData();
-            formData.append('accion', 'marcarMultaPagada');
-            formData.append('id', id);
+            const params = new URLSearchParams();
+            params.append('accion', 'marcarMultaPagada');
+            params.append('id', id);
             
             fetch(`${window.CONTEXT_PATH}/prestamos`, {
                 method: 'POST',
-                body: formData
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: params.toString()
             })
             .then(response => response.json())
             .then(data => {
@@ -277,4 +290,148 @@ function marcarMultaComoPagada(id, monto) {
             });
         }
     });
+}
+
+function modificarMulta(id, multaActual) {
+    Swal.fire({
+        title: 'Modificar Multa',
+        html: `
+            <div class="text-left space-y-3">
+                <p class="text-sm text-gray-700">Multa actual: <strong>S/. ${multaActual.toFixed(2)}</strong></p>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nueva multa (S/.)</label>
+                    <input type="number" id="swal-nueva-multa" value="${multaActual.toFixed(2)}" 
+                           min="0" step="0.01" 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                </div>
+            </div>
+        `,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#ea580c',
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: '<i class="fas fa-save mr-1"></i> Guardar',
+        cancelButtonText: 'Cancelar',
+        preConfirm: () => {
+            const nuevaMulta = parseFloat(document.getElementById('swal-nueva-multa').value);
+            if (isNaN(nuevaMulta) || nuevaMulta < 0) {
+                Swal.showValidationMessage('Ingrese un monto válido');
+                return false;
+            }
+            return nuevaMulta;
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const params = new URLSearchParams();
+            params.append('accion', 'actualizarMulta');
+            params.append('id', id);
+            params.append('multa', result.value);
+            
+            fetch(`${window.CONTEXT_PATH}/prestamos`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: params.toString()
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Multa Actualizada!',
+                        text: `Nueva multa: S/. ${result.value.toFixed(2)}`,
+                        confirmButtonColor: '#334155',
+                        timer: 2000
+                    });
+                    cargarMultasPendientes();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: data.message || 'No se pudo actualizar la multa',
+                        confirmButtonColor: '#334155'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error de conexión al actualizar la multa',
+                    confirmButtonColor: '#334155'
+                });
+            });
+        }
+    });
+}
+
+function verDetalleMultaPendiente(id) {
+    fetch(`${window.CONTEXT_PATH}/prestamos?accion=obtener&id=${id}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const p = data.prestamo;
+                const fechaPrestamo = formatearFecha(p.fechaPrestamo);
+                const fechaDevolucionEsperada = formatearFecha(p.fechaDevolucionEsperada);
+                const fechaDevolucionReal = p.fechaDevolucionReal 
+                    ? formatearFecha(p.fechaDevolucionReal)
+                    : 'No devuelto';
+                
+                Swal.fire({
+                    title: '<i class="fas fa-exclamation-triangle text-amber-600"></i> Detalle de Multa Pendiente',
+                    html: `
+                        <div class="text-left space-y-3">
+                            <div class="bg-amber-50 p-3 rounded border border-amber-200">
+                                <p class="text-sm font-semibold text-amber-700">Multa Pendiente de Pago</p>
+                                <p class="text-2xl font-bold text-amber-600">S/. ${parseFloat(p.multa).toFixed(2)}</p>
+                                <p class="text-xs text-amber-600 mt-1">
+                                    <i class="fas fa-exclamation-circle"></i> Estado: NO PAGADO
+                                </p>
+                            </div>
+                            <div class="border-b pb-2">
+                                <p class="text-sm font-semibold text-gray-700">Libro</p>
+                                <p class="text-sm text-gray-900">${escapeHtml(p.libroNombre)}</p>
+                                <p class="text-xs text-gray-500 font-mono">ISBN: ${escapeHtml(p.libroIsbn)}</p>
+                            </div>
+                            <div class="border-b pb-2">
+                                <p class="text-sm font-semibold text-gray-700">Usuario</p>
+                                <p class="text-sm text-gray-900">${escapeHtml(p.usuarioNombre)}</p>
+                                <p class="text-xs text-gray-500">DNI: ${escapeHtml(p.usuarioDni)}</p>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3 border-b pb-2">
+                                <div>
+                                    <p class="text-xs font-semibold text-gray-700">Fecha Préstamo</p>
+                                    <p class="text-sm text-gray-900">${fechaPrestamo}</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-semibold text-gray-700">Devolución Esperada</p>
+                                    <p class="text-sm text-gray-900">${fechaDevolucionEsperada}</p>
+                                </div>
+                            </div>
+                            <div class="border-b pb-2">
+                                <p class="text-sm font-semibold text-gray-700">Fecha Devolución Real</p>
+                                <p class="text-sm text-gray-900">${fechaDevolucionReal}</p>
+                            </div>
+                            ${p.observacionesDevolucion ? `
+                            <div>
+                                <p class="text-sm font-semibold text-gray-700">Observaciones de Devolución</p>
+                                <p class="text-sm text-gray-600">${escapeHtml(p.observacionesDevolucion)}</p>
+                            </div>
+                            ` : ''}
+                        </div>
+                    `,
+                    confirmButtonColor: '#334155',
+                    confirmButtonText: 'Cerrar',
+                    width: '600px'
+                });
+            } else {
+                mostrarError(data.message || 'Error al obtener detalles');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            mostrarError('Error de conexión');
+        });
 }

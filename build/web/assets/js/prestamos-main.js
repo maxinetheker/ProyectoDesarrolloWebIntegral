@@ -7,8 +7,8 @@ function cambiarSeccion(seccion) {
     // Quitar estilos activos de todos los tabs (móvil y desktop)
     document.querySelectorAll('[id^="tab-"]').forEach(tab => {
         tab.classList.remove('border-blue-600', 'text-blue-600', 'border-green-600', 'text-green-600', 
-                             'border-yellow-600', 'text-yellow-600', 'border-purple-600', 'text-purple-600',
-                             'bg-blue-50', 'bg-green-50', 'bg-yellow-50', 'bg-purple-50');
+                             'border-orange-600', 'text-orange-600', 'border-indigo-600', 'text-indigo-600',
+                             'bg-blue-50', 'bg-green-50', 'bg-orange-50', 'bg-indigo-50');
         tab.classList.add('border-transparent', 'text-gray-600', 'bg-white');
     });
     
@@ -34,10 +34,10 @@ function cambiarSeccion(seccion) {
                 tab.classList.add('border-green-600', 'text-green-600', 'bg-green-50');
                 break;
             case 'multas-pendientes':
-                tab.classList.add('border-yellow-600', 'text-yellow-600', 'bg-yellow-50');
+                tab.classList.add('border-orange-600', 'text-orange-600', 'bg-orange-50');
                 break;
             case 'multas-pagadas':
-                tab.classList.add('border-purple-600', 'text-purple-600', 'bg-purple-50');
+                tab.classList.add('border-indigo-600', 'text-indigo-600', 'bg-indigo-50');
                 break;
         }
     });

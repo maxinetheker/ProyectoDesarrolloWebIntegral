@@ -341,6 +341,7 @@
 
     <script>
         window.CONTEXT_PATH = '${pageContext.request.contextPath}';
+        window.ES_ADMIN = ${esAdmin};
         
         const menuButton = document.getElementById('menu-button');
         const mobileMenu = document.getElementById('mobile-menu');

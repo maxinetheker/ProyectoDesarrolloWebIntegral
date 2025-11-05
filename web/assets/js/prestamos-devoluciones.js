@@ -89,8 +89,8 @@ function renderizarDevoluciones(prestamos) {
                 <i class="fas fa-exclamation-circle mr-1"></i>Vencido (${Math.abs(diasRestantes)} días)
             </span>`;
         } else if (proximoVencer) {
-            estadoBadge = `<span class="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                <i class="fas fa-clock mr-1"></i>Vence en ${diasRestantes} día${diasRestantes !== 1 ? 's' : ''}
+            estadoBadge = `<span class="px-2 py-1 text-xs font-semibold rounded-full bg-orange-100 text-orange-700">
+                ${diasVencidos} día(s) vencido
             </span>`;
         } else {
             estadoBadge = `<span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
@@ -265,9 +265,9 @@ function abrirModalNuevoPrestamo() {
                     </div>
                     
                     <!-- Alerta de carnet vencido (fuera de los divs que se ocultan) -->
-                    <div id="alerta-carnet-vencido" class="mt-2 p-2 bg-yellow-50 border border-yellow-400 text-yellow-800 rounded text-xs hidden">
+                                        <div id="alerta-carnet-vencido" class="mt-2 p-2 bg-amber-50 border border-amber-400 text-amber-800 rounded text-xs hidden">
                         <i class="fas fa-exclamation-triangle mr-1"></i>
-                        <strong>Debe renovar el carnet.</strong> El carnet ha vencido.
+                        <strong>Carnet vencido.</strong> El usuario debe renovar su carnet antes de realizar un préstamo.
                     </div>
                 </div>
                 
@@ -694,51 +694,120 @@ function crearPrestamoValidado(usuarioId, libroId, diasPrestamo, observaciones) 
 
 function abrirModalDevolucion(prestamoId) {
     Swal.fire({
-        title: 'Registrar Devolución',
-        width: '600px',
+        title: '<div class="text-lg sm:text-xl">Registrar Devolución</div>',
+        width: '95%',
+        customClass: {
+            container: 'swal-container-devolucion',
+            popup: 'swal-popup-devolucion'
+        },
         html: `
+            <style>
+                @media (min-width: 640px) {
+                    .swal-popup-devolucion {
+                        max-width: 600px !important;
+                    }
+                }
+                .swal-container-devolucion .swal2-html-container {
+                    max-height: 70vh;
+                    overflow-y: auto;
+                }
+            </style>
             <div class="text-left space-y-4">
                 <div>
-                    <label class="block text-sm font-medium mb-2">Estado de la devolución</label>
-                    <select id="swal-estado" class="swal2-select w-full" style="display: block; width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem;">
-                        <option value="devuelto">Devuelto en buen estado</option>
-                        <option value="perdido">Libro perdido/extraviado</option>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Estado de la devolución</label>
+                    <select id="swal-estado" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                        <option value="devuelto">Devuelto</option>
+                        <option value="perdido">Perdido/Extraviado</option>
                     </select>
+                    <p class="text-xs text-gray-500 mt-1">
+                        <strong>Devuelto:</strong> Se sumará 1 al stock disponible | 
+                        <strong>Perdido:</strong> Se descontará 1 del stock total
+                    </p>
                 </div>
-                <div id="campo-multa" style="display:none;">
-                    <label class="block text-sm font-medium mb-2">Multa (S/.)</label>
-                    <input type="number" id="swal-multa" class="swal2-input" value="0" min="0" step="0.01" 
-                           style="display: block; width: 100%; margin: 0;">
+                
+                <div class="border-t pt-3">
+                    <label class="flex items-center cursor-pointer">
+                        <input type="checkbox" id="check-aplicar-multa" class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500">
+                        <span class="ml-2 text-sm font-medium text-gray-700">Aplicar multa</span>
+                    </label>
+                    <p class="text-xs text-gray-500 mt-1 ml-6">
+                        Marque si el libro está dañado, perdido o requiere penalización
+                    </p>
                 </div>
+                
+                <div id="campo-multa" class="hidden">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Monto de la multa (S/.)
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500 text-sm">S/.</span>
+                        <input type="number" id="swal-multa" value="0.00" min="0" step="0.01" 
+                               class="w-full pl-10 pr-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                               placeholder="0.00">
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">Ingrese el monto de la penalización</p>
+                </div>
+                
                 <div>
-                    <label class="block text-sm font-medium mb-2">Observaciones</label>
-                    <textarea id="swal-observaciones" class="swal2-textarea" rows="3"
-                              placeholder="Observaciones opcionales..." 
-                              style="display: block; width: 100%; margin: 0;"></textarea>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Observaciones
+                        <span class="text-xs text-gray-500 font-normal ml-1">- Opcional</span>
+                    </label>
+                    <textarea id="swal-observaciones" rows="3"
+                              class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                              placeholder="Ej: Libro devuelto con páginas dobladas, Libro extraviado por el usuario..."></textarea>
+                    <p class="text-xs text-gray-500 mt-1">Describa el estado del libro o detalles relevantes</p>
                 </div>
             </div>
         `,
-        confirmButtonText: '<i class="fas fa-check mr-1"></i>Registrar Devolución',
+        confirmButtonText: '<i class="fas fa-check mr-2"></i>Registrar Devolución',
         confirmButtonColor: '#16a34a',
         showCancelButton: true,
         cancelButtonText: 'Cancelar',
         didOpen: () => {
             const estadoSelect = document.getElementById('swal-estado');
+            const checkMulta = document.getElementById('check-aplicar-multa');
             const campoMulta = document.getElementById('campo-multa');
+            const inputMulta = document.getElementById('swal-multa');
             
+            // Al cambiar el estado a "perdido", marcar automáticamente el checkbox de multa
             estadoSelect.addEventListener('change', function() {
                 if (this.value === 'perdido') {
-                    campoMulta.style.display = 'block';
+                    checkMulta.checked = true;
+                    campoMulta.classList.remove('hidden');
+                    inputMulta.value = '0.00';
+                    inputMulta.focus();
+                }
+            });
+            
+            // Mostrar/ocultar campo de multa según el checkbox
+            checkMulta.addEventListener('change', function() {
+                if (this.checked) {
+                    campoMulta.classList.remove('hidden');
+                    inputMulta.focus();
                 } else {
-                    campoMulta.style.display = 'none';
-                    document.getElementById('swal-multa').value = '0';
+                    campoMulta.classList.add('hidden');
+                    inputMulta.value = '0.00';
                 }
             });
         },
         preConfirm: () => {
             const estado = document.getElementById('swal-estado').value;
-            const multa = document.getElementById('swal-multa').value;
-            const observaciones = document.getElementById('swal-observaciones').value;
+            const aplicarMulta = document.getElementById('check-aplicar-multa').checked;
+            const multa = aplicarMulta ? (document.getElementById('swal-multa').value || '0.00') : '0.00';
+            const observaciones = document.getElementById('swal-observaciones').value.trim();
+            
+            // Validar que si es perdido y tiene multa, tenga observaciones
+            if (estado === 'perdido' && !observaciones) {
+                Swal.showValidationMessage('Por favor agregue observaciones sobre el libro perdido');
+                return false;
+            }
+            
+            // Validar que si aplica multa mayor a 0, tenga observaciones
+            if (aplicarMulta && parseFloat(multa) > 0 && !observaciones) {
+                Swal.showValidationMessage('Por favor agregue observaciones sobre el motivo de la multa');
+                return false;
+            }
             
             return { estado, multa, observaciones };
         }
@@ -839,10 +908,10 @@ function verDetallePrestamo(prestamoId) {
                             </div>
                             ` : ''}
                             ${p.multa > 0 ? `
-                            <div class="bg-yellow-50 p-3 rounded border border-yellow-200">
-                                <p class="text-sm font-semibold text-yellow-700">Multa</p>
-                                <p class="text-2xl font-bold text-yellow-600">S/. ${parseFloat(p.multa).toFixed(2)}</p>
-                                <p class="text-xs text-yellow-600 mt-1">
+                            <div class="bg-amber-50 p-3 rounded border border-amber-200">
+                                <p class="text-sm font-semibold text-amber-700">Multa</p>
+                                <p class="text-2xl font-bold text-amber-600">S/. ${parseFloat(p.multa).toFixed(2)}</p>
+                                <p class="text-xs text-amber-600 mt-1">
                                     <i class="fas ${p.pagado ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> 
                                     Estado: ${p.pagado ? 'Pagado' : 'Pendiente'}
                                 </p>

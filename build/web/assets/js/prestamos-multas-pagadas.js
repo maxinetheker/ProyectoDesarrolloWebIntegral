@@ -135,16 +135,18 @@ function renderizarMultasPagadas(prestamos) {
                     </div>
                 </td>
                 <td class="px-3 sm:px-6 py-4">
-                    <button onclick="verDetalleMulta(${prestamo.id})" 
+                    <button onclick="verDetalleMultaPagada(${prestamo.id})" 
                         class="text-blue-600 hover:text-blue-800 p-2 rounded hover:bg-blue-50 transition mr-2" 
                         title="Ver Detalle">
                         <i class="fas fa-info-circle"></i>
                     </button>
+                    ${window.ES_ADMIN ? `
                     <button onclick="deshacerPagoMulta(${prestamo.id})" 
                         class="text-red-600 hover:text-red-800 p-2 rounded hover:bg-red-50 transition" 
-                        title="Deshacer Pago">
+                        title="Deshacer Pago (Solo Admin)">
                         <i class="fas fa-undo"></i>
                     </button>
+                    ` : ''}
                 </td>
             </tr>
         `;
@@ -244,7 +246,7 @@ function cambiarPaginaMultasPag(pagina) {
     cargarMultasPagadas();
 }
 
-function verDetalleMulta(id) {
+function verDetalleMultaPagada(id) {
     fetch(`${window.CONTEXT_PATH}/prestamos?accion=obtener&id=${id}`)
         .then(response => response.json())
         .then(data => {

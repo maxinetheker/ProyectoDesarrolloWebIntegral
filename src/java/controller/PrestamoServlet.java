@@ -89,6 +89,9 @@ public class PrestamoServlet extends HttpServlet {
             case "desmarcarMultaPagada":
                 desmarcarMultaPagada(request, response);
                 break;
+            case "actualizarMulta":
+                actualizarMulta(request, response);
+                break;
             case "deshacerDevolucion":
                 deshacerDevolucion(request, response);
                 break;
@@ -405,17 +408,41 @@ public class PrestamoServlet extends HttpServlet {
         }
     }
     
+    private void actualizarMulta(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        try {
+            int id = Integer.parseInt(request.getParameter("id"));
+            BigDecimal nuevaMulta = new BigDecimal(request.getParameter("multa"));
+            
+            boolean actualizado = prestamoDAO.actualizarMulta(id, nuevaMulta);
+            
+            if (actualizado) {
+                Map<String, Object> resultado = new HashMap<>();
+                resultado.put("success", true);
+                resultado.put("message", "Multa actualizada correctamente");
+                
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+                objectMapper.writeValue(response.getWriter(), resultado);
+            } else {
+                enviarError(response, "Error al actualizar multa");
+            }
+        } catch (NumberFormatException e) {
+            enviarError(response, "Datos inválidos");
+        } catch (Exception e) {
+            e.printStackTrace();
+            enviarError(response, "Error al actualizar multa");
+        }
+    }
+    
     private void deshacerDevolucion(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         try {
             int id = Integer.parseInt(request.getParameter("id"));
-            int libroId = Integer.parseInt(request.getParameter("libroId"));
             
             boolean actualizado = prestamoDAO.deshacerDevolucion(id);
             
             if (actualizado) {
-                libroDAO.ajustarStockDisponible(libroId, -1);
-                
                 Map<String, Object> resultado = new HashMap<>();
                 resultado.put("success", true);
                 resultado.put("message", "Devolución deshecha correctamente");
