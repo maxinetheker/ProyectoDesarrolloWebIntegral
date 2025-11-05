@@ -138,9 +138,14 @@ function renderizarMultasPagadas(prestamos) {
                 </td>
                 <td class="px-3 sm:px-6 py-4">
                     <button onclick="verDetalleMulta(${prestamo.id})" 
-                        class="text-blue-600 hover:text-blue-800 p-2 rounded hover:bg-blue-50 transition" 
+                        class="text-blue-600 hover:text-blue-800 p-2 rounded hover:bg-blue-50 transition mr-2" 
                         title="Ver Detalle">
                         <i class="fas fa-info-circle"></i>
+                    </button>
+                    <button onclick="deshacerPagoMulta(${prestamo.id})" 
+                        class="text-red-600 hover:text-red-800 p-2 rounded hover:bg-red-50 transition" 
+                        title="Deshacer Pago">
+                        <i class="fas fa-undo"></i>
                     </button>
                 </td>
             </tr>
@@ -317,4 +322,44 @@ function verDetalleMulta(id) {
             console.error('Error:', error);
             mostrarError('Error de conexión');
         });
+}
+
+function deshacerPagoMulta(id) {
+    Swal.fire({
+        title: '¿Deshacer pago de multa?',
+        text: 'Esta acción marcará la multa como no pagada',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc2626',
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: 'Sí, deshacer',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const params = new URLSearchParams();
+            params.append('accion', 'desmarcarMultaPagada');
+            params.append('id', id);
+            
+            fetch(`${window.CONTEXT_PATH}/prestamos`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                },
+                body: params.toString()
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    mostrarExito(data.message || 'Pago de multa deshecho correctamente');
+                    cargarMultasPagadas();
+                } else {
+                    mostrarError(data.message || 'Error al deshacer pago');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                mostrarError('Error de conexión');
+            });
+        }
+    });
 }

@@ -86,6 +86,12 @@ public class PrestamoServlet extends HttpServlet {
             case "marcarMultaPagada":
                 marcarMultaPagada(request, response);
                 break;
+            case "desmarcarMultaPagada":
+                desmarcarMultaPagada(request, response);
+                break;
+            case "deshacerDevolucion":
+                deshacerDevolucion(request, response);
+                break;
             default:
                 enviarError(response, "Acción no válida");
         }
@@ -245,6 +251,10 @@ public class PrestamoServlet extends HttpServlet {
             int libroId = Integer.parseInt(request.getParameter("libroId"));
             int usuarioId = Integer.parseInt(request.getParameter("usuarioId"));
             int diasPrestamo = Integer.parseInt(request.getParameter("diasPrestamo"));
+            String observaciones = request.getParameter("observaciones");
+            
+            // Validar que el usuario esté activo
+            // TODO: Agregar validación de multas pendientes
             
             // Verificar que el libro tenga stock disponible
             var libro = libroDAO.obtenerPorId(libroId);
@@ -262,6 +272,7 @@ public class PrestamoServlet extends HttpServlet {
             prestamo.setLibroId(libroId);
             prestamo.setUsuarioId(usuarioId);
             prestamo.setFechaPrestamo(new Date());
+            prestamo.setObservacionesEntrega(observaciones != null && !observaciones.trim().isEmpty() ? observaciones : null);
             
             Calendar cal = Calendar.getInstance();
             cal.add(Calendar.DAY_OF_MONTH, diasPrestamo);
@@ -270,8 +281,7 @@ public class PrestamoServlet extends HttpServlet {
             boolean creado = prestamoDAO.crear(prestamo);
             
             if (creado) {
-                // Actualizar stock disponible
-                libroDAO.actualizarStock(libroId, libro.getStock(), libro.getStockDisponible() - 1);
+                libroDAO.ajustarStockDisponible(libroId, -1);
                 
                 Map<String, Object> resultado = new HashMap<>();
                 resultado.put("success", true);
@@ -313,12 +323,9 @@ public class PrestamoServlet extends HttpServlet {
             boolean actualizado = prestamoDAO.registrarDevolucion(id, estado, multa, observaciones);
             
             if (actualizado) {
-                // Si el libro fue devuelto (no perdido), incrementar stock disponible
-                if ("devuelto".equals(estado) || "vencido".equals(estado)) {
-                    var libro = libroDAO.obtenerPorId(prestamo.getLibroId());
-                    if (libro != null) {
-                        libroDAO.actualizarStock(libro.getId(), libro.getStock(), libro.getStockDisponible() + 1);
-                    }
+                if ("devuelto".equals(estado)) {
+                    libroDAO.ajustarStockDisponible(prestamo.getLibroId(), 1);
+                } else if ("perdido".equals(estado)) {
                 }
                 
                 Map<String, Object> resultado = new HashMap<>();
@@ -362,6 +369,61 @@ public class PrestamoServlet extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
             enviarError(response, "Error al marcar multa como pagada");
+        }
+    }
+    
+    private void desmarcarMultaPagada(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        try {
+            int id = Integer.parseInt(request.getParameter("id"));
+            
+            boolean actualizado = prestamoDAO.desmarcarMultaPagada(id);
+            
+            if (actualizado) {
+                Map<String, Object> resultado = new HashMap<>();
+                resultado.put("success", true);
+                resultado.put("message", "Pago de multa deshecho");
+                
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+                objectMapper.writeValue(response.getWriter(), resultado);
+            } else {
+                enviarError(response, "Error al deshacer pago de multa");
+            }
+        } catch (NumberFormatException e) {
+            enviarError(response, "Datos inválidos");
+        } catch (Exception e) {
+            e.printStackTrace();
+            enviarError(response, "Error al deshacer pago de multa");
+        }
+    }
+    
+    private void deshacerDevolucion(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        try {
+            int id = Integer.parseInt(request.getParameter("id"));
+            int libroId = Integer.parseInt(request.getParameter("libroId"));
+            
+            boolean actualizado = prestamoDAO.deshacerDevolucion(id);
+            
+            if (actualizado) {
+                libroDAO.ajustarStockDisponible(libroId, -1);
+                
+                Map<String, Object> resultado = new HashMap<>();
+                resultado.put("success", true);
+                resultado.put("message", "Devolución deshecha correctamente");
+                
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+                objectMapper.writeValue(response.getWriter(), resultado);
+            } else {
+                enviarError(response, "Error al deshacer devolución");
+            }
+        } catch (NumberFormatException e) {
+            enviarError(response, "Datos inválidos");
+        } catch (Exception e) {
+            e.printStackTrace();
+            enviarError(response, "Error al deshacer devolución");
         }
     }
     

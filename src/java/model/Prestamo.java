@@ -13,8 +13,8 @@ public class Prestamo {
     private String estado; // prestado, devuelto, vencido, perdido
     private BigDecimal multa;
     private boolean pagado;
-    private String observaciones;
-    private boolean activo;
+    private String observacionesEntrega;
+    private String observacionesDevolucion;
     
     // Campos joined para mostrar información completa
     private String libroNombre;
@@ -25,7 +25,6 @@ public class Prestamo {
     public Prestamo() {
         this.multa = BigDecimal.ZERO;
         this.pagado = false;
-        this.activo = true;
     }
     
     // Getters y Setters
@@ -101,20 +100,20 @@ public class Prestamo {
         this.pagado = pagado;
     }
     
-    public String getObservaciones() {
-        return observaciones;
+    public String getObservacionesEntrega() {
+        return observacionesEntrega;
     }
     
-    public void setObservaciones(String observaciones) {
-        this.observaciones = observaciones;
+    public void setObservacionesEntrega(String observacionesEntrega) {
+        this.observacionesEntrega = observacionesEntrega;
     }
     
-    public boolean isActivo() {
-        return activo;
+    public String getObservacionesDevolucion() {
+        return observacionesDevolucion;
     }
     
-    public void setActivo(boolean activo) {
-        this.activo = activo;
+    public void setObservacionesDevolucion(String observacionesDevolucion) {
+        this.observacionesDevolucion = observacionesDevolucion;
     }
     
     // Getters y Setters para campos joined

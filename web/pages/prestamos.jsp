@@ -180,9 +180,129 @@
             </div>
         </div>
 
-        <div id="seccion-libros-devueltos" class="seccion-prestamo hidden"></div>
-        <div id="seccion-multas-pendientes" class="seccion-prestamo hidden"></div>
-        <div id="seccion-multas-pagadas" class="seccion-prestamo hidden"></div>
+        <div id="seccion-libros-devueltos" class="seccion-prestamo hidden">
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                <div class="p-3 sm:p-6 border-b border-gray-200">
+                    <div class="mb-4">
+                        <h2 class="text-xl sm:text-2xl font-bold text-gray-800">
+                            <i class="fas fa-check-circle text-green-600 mr-2"></i>
+                            Libros Devueltos
+                        </h2>
+                        <p class="text-gray-600 text-xs sm:text-sm mt-1">Historial de devoluciones realizadas</p>
+                    </div>
+                    <div class="relative flex-1 max-w-full sm:max-w-md">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-search text-gray-400"></i>
+                        </div>
+                        <input type="text" id="buscar-devueltos" placeholder="Buscar por libro, usuario, ISBN..."
+                            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-200 text-sm" autocomplete="off">
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Libro</th>
+                                <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Usuario</th>
+                                <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">F. Préstamo</th>
+                                <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">F. Devolución</th>
+                                <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Observaciones</th>
+                                <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-devueltos" class="bg-white divide-y divide-gray-200"></tbody>
+                    </table>
+                </div>
+                <div id="paginacion-devueltos" class="px-3 sm:px-6 py-3 sm:py-4 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <div class="text-xs sm:text-sm text-gray-700">
+                        Mostrando <span id="info-registros-devueltos"></span>
+                    </div>
+                    <div id="botones-paginacion-devueltos" class="flex flex-wrap justify-center gap-1 sm:gap-2"></div>
+                </div>
+            </div>
+        </div>
+        <div id="seccion-multas-pendientes" class="seccion-prestamo hidden">
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                <div class="p-3 sm:p-6 border-b border-gray-200">
+                    <div class="mb-4">
+                        <h2 class="text-xl sm:text-2xl font-bold text-gray-800">
+                            <i class="fas fa-exclamation-triangle text-yellow-600 mr-2"></i>
+                            Multas Pendientes
+                        </h2>
+                        <p class="text-gray-600 text-xs sm:text-sm mt-1">Multas por pagar</p>
+                    </div>
+                    <div class="relative flex-1 max-w-full sm:max-w-md">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-search text-gray-400"></i>
+                        </div>
+                        <input type="text" id="buscar-multas-pendientes" placeholder="Buscar por libro, usuario, ID préstamo..."
+                            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition duration-200 text-sm" autocomplete="off">
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                                <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Libro</th>
+                                <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Usuario</th>
+                                <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">F. Devolución</th>
+                                <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Multa</th>
+                                <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-multas-pendientes" class="bg-white divide-y divide-gray-200"></tbody>
+                    </table>
+                </div>
+                <div id="paginacion-multas-pendientes" class="px-3 sm:px-6 py-3 sm:py-4 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <div class="text-xs sm:text-sm text-gray-700">
+                        Mostrando <span id="info-registros-multas-pendientes"></span>
+                    </div>
+                    <div id="botones-paginacion-multas-pendientes" class="flex flex-wrap justify-center gap-1 sm:gap-2"></div>
+                </div>
+            </div>
+        </div>
+        <div id="seccion-multas-pagadas" class="seccion-prestamo hidden">
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                <div class="p-3 sm:p-6 border-b border-gray-200">
+                    <div class="mb-4">
+                        <h2 class="text-xl sm:text-2xl font-bold text-gray-800">
+                            <i class="fas fa-dollar-sign text-purple-600 mr-2"></i>
+                            Multas Pagadas
+                        </h2>
+                        <p class="text-gray-600 text-xs sm:text-sm mt-1">Historial de multas pagadas</p>
+                    </div>
+                    <div class="relative flex-1 max-w-full sm:max-w-md">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-search text-gray-400"></i>
+                        </div>
+                        <input type="text" id="buscar-multas-pagadas" placeholder="Buscar por libro, usuario, ID préstamo..."
+                            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition duration-200 text-sm" autocomplete="off">
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                                <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Libro</th>
+                                <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Usuario</th>
+                                <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">F. Devolución</th>
+                                <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Multa</th>
+                                <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-multas-pagadas" class="bg-white divide-y divide-gray-200"></tbody>
+                    </table>
+                </div>
+                <div id="paginacion-multas-pagadas" class="px-3 sm:px-6 py-3 sm:py-4 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <div class="text-xs sm:text-sm text-gray-700">
+                        Mostrando <span id="info-registros-multas-pagadas"></span>
+                    </div>
+                    <div id="botones-paginacion-multas-pagadas" class="flex flex-wrap justify-center gap-1 sm:gap-2"></div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>

@@ -289,7 +289,7 @@ public class PrestamoDAO {
             stmt.setInt(2, prestamo.getUsuarioId());
             stmt.setTimestamp(3, new Timestamp(prestamo.getFechaPrestamo().getTime()));
             stmt.setDate(4, new java.sql.Date(prestamo.getFechaDevolucionEsperada().getTime()));
-            stmt.setString(5, prestamo.getObservaciones());
+            stmt.setString(5, prestamo.getObservacionesEntrega());
             
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -329,6 +329,52 @@ public class PrestamoDAO {
             e.printStackTrace();
             return false;
         }
+    }
+    
+    public boolean desmarcarMultaPagada(int id) {
+        String sql = "UPDATE entregas SET pagado = 0 WHERE id = ?";
+        
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setInt(1, id);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    public boolean deshacerDevolucion(int id) {
+        String sql = "UPDATE entregas SET fecha_devolucion_real = NULL, estado = 'prestado', " +
+                    "multa = 0, pagado = 0, observaciones_devolucion = NULL WHERE id = ?";
+        
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setInt(1, id);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    public boolean usuarioTieneMultasPendientes(int usuarioId) {
+        String sql = "SELECT COUNT(*) as total FROM entregas WHERE id_usuario = ? AND multa > 0 AND pagado = 0";
+        
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setInt(1, usuarioId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("total") > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
     
     public List<Prestamo> obtenerHistorialPorLibro(int libroId) {
@@ -375,20 +421,8 @@ public class PrestamoDAO {
         prestamo.setEstado(rs.getString("estado"));
         prestamo.setMulta(rs.getBigDecimal("multa"));
         prestamo.setPagado(rs.getBoolean("pagado"));
-        
-        // Concatenar observaciones
-        String obsEntrega = rs.getString("observaciones_entrega");
-        String obsDevolucion = rs.getString("observaciones_devolucion");
-        String observaciones = "";
-        if (obsEntrega != null && !obsEntrega.isEmpty()) {
-            observaciones += obsEntrega;
-        }
-        if (obsDevolucion != null && !obsDevolucion.isEmpty()) {
-            if (!observaciones.isEmpty()) observaciones += " | ";
-            observaciones += obsDevolucion;
-        }
-        prestamo.setObservaciones(observaciones);
-        prestamo.setActivo(true); // Siempre true
+        prestamo.setObservacionesEntrega(rs.getString("observaciones_entrega"));
+        prestamo.setObservacionesDevolucion(rs.getString("observaciones_devolucion"));
         
         prestamo.setLibroNombre(rs.getString("libro_nombre"));
         prestamo.setLibroIsbn(rs.getString("libro_isbn"));

@@ -587,6 +587,49 @@ public class UsuarioDAO {
     }
     
     /**
+     * Busca usuarios activos para autocompletado (por nombre, apellido o usuario)
+     * Retorna máximo 10 resultados
+     */
+    public List<Usuario> buscarParaAutocompletado(String busqueda) {
+        List<Usuario> usuarios = new ArrayList<>();
+        String sql = "SELECT u.*, r.rol as nombre_rol FROM USUARIO u " +
+                     "INNER JOIN ROL r ON u.id_rol = r.id " +
+                     "WHERE u.activo = 1 AND (" +
+                     "u.nombre LIKE ? OR u.apellido LIKE ? OR u.usuario LIKE ?) " +
+                     "ORDER BY u.nombre, u.apellido LIMIT 10";
+        
+        Connection conn = null;
+        try {
+            conn = DatabaseConnection.getInstance().getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            
+            String param = "%" + busqueda + "%";
+            stmt.setString(1, param);
+            stmt.setString(2, param);
+            stmt.setString(3, param);
+            
+            ResultSet rs = stmt.executeQuery();
+            
+            while (rs.next()) {
+                usuarios.add(mapearUsuario(rs));
+            }
+            
+            rs.close();
+            stmt.close();
+            
+        } catch (SQLException e) {
+            System.err.println("Error al buscar usuarios para autocompletado: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            if (conn != null) {
+                DatabaseConnection.getInstance().releaseConnection(conn);
+            }
+        }
+        
+        return usuarios;
+    }
+    
+    /**
      * Mapea un ResultSet a un Usuario
      */
     private Usuario mapearUsuario(ResultSet rs) throws SQLException {

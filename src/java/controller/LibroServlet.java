@@ -46,6 +46,9 @@ public class LibroServlet extends HttpServlet {
                 case "generarIsbn":
                     generarIsbn(request, response);
                     break;
+                case "buscarAutocompletado":
+                    buscarParaAutocompletado(request, response);
+                    break;
                 default:
                     enviarRespuestaError(response, "Acción no válida", 400);
             }
@@ -429,6 +432,39 @@ public class LibroServlet extends HttpServlet {
             respuesta.put("message", "Error: " + e.getMessage());
         }
         
+        enviarRespuestaJSON(response, respuesta);
+    }
+    
+    private void buscarParaAutocompletado(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        
+        String busqueda = request.getParameter("busqueda");
+        
+        ObjectNode respuesta = objectMapper.createObjectNode();
+        
+        if (busqueda == null || busqueda.trim().isEmpty()) {
+            respuesta.put("success", true);
+            respuesta.set("libros", objectMapper.createArrayNode());
+            enviarRespuestaJSON(response, respuesta);
+            return;
+        }
+        
+        List<Libro> libros = libroDAO.buscarParaAutocompletado(busqueda.trim());
+        
+        respuesta.put("success", true);
+        
+        ArrayNode librosArray = objectMapper.createArrayNode();
+        for (Libro libro : libros) {
+            ObjectNode libroNode = objectMapper.createObjectNode();
+            libroNode.put("id", libro.getId());
+            libroNode.put("isbn", libro.getIsbn());
+            libroNode.put("nombre", libro.getNombre());
+            libroNode.put("autor", libro.getAutor());
+            libroNode.put("stockDisponible", libro.getStockDisponible());
+            librosArray.add(libroNode);
+        }
+        
+        respuesta.set("libros", librosArray);
         enviarRespuestaJSON(response, respuesta);
     }
     

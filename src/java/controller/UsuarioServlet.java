@@ -92,6 +92,39 @@ public class UsuarioServlet extends HttpServlet {
         }
     }
     
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        
+        try {
+            // Verificar sesión
+            HttpSession session = request.getSession(false);
+            if (session == null || session.getAttribute("usuario") == null) {
+                enviarRespuestaError(response, "Sesión expirada", 401);
+                return;
+            }
+            
+            String accion = request.getParameter("accion");
+            
+            if (accion == null) {
+                enviarRespuestaError(response, "Acción no especificada", 400);
+                return;
+            }
+            
+            switch (accion) {
+                case "buscarAutocompletado":
+                    buscarParaAutocompletado(request, response);
+                    break;
+                default:
+                    enviarRespuestaError(response, "Acción no válida", 400);
+            }
+        } catch (Exception e) {
+            System.err.println("Error en UsuarioServlet GET: " + e.getMessage());
+            e.printStackTrace();
+            enviarRespuestaError(response, "Error interno del servidor: " + e.getMessage(), 500);
+        }
+    }
+    
     /**
      * Lista usuarios con paginación y búsqueda opcional
      */
@@ -407,6 +440,42 @@ public class UsuarioServlet extends HttpServlet {
         
         respuesta.set("roles", rolesArray);
         
+        enviarRespuestaJSON(response, respuesta);
+    }
+    
+    /**
+     * Busca usuarios para autocompletado
+     */
+    private void buscarParaAutocompletado(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        
+        String busqueda = request.getParameter("busqueda");
+        
+        if (busqueda == null || busqueda.trim().isEmpty()) {
+            ObjectNode respuesta = objectMapper.createObjectNode();
+            respuesta.put("success", true);
+            respuesta.set("usuarios", objectMapper.createArrayNode());
+            enviarRespuestaJSON(response, respuesta);
+            return;
+        }
+        
+        List<Usuario> usuarios = usuarioDAO.buscarParaAutocompletado(busqueda.trim());
+        
+        ObjectNode respuesta = objectMapper.createObjectNode();
+        respuesta.put("success", true);
+        
+        ArrayNode usuariosArray = objectMapper.createArrayNode();
+        for (Usuario u : usuarios) {
+            ObjectNode usuarioNode = objectMapper.createObjectNode();
+            usuarioNode.put("id", u.getId());
+            usuarioNode.put("usuario", u.getUsuario());
+            usuarioNode.put("nombre", u.getNombre());
+            usuarioNode.put("apellido", u.getApellido());
+            usuarioNode.put("nombreCompleto", u.getNombre() + " " + u.getApellido());
+            usuariosArray.add(usuarioNode);
+        }
+        
+        respuesta.set("usuarios", usuariosArray);
         enviarRespuestaJSON(response, respuesta);
     }
     

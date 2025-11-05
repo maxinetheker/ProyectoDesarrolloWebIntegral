@@ -306,6 +306,36 @@ public class LibroDAO {
         return false;
     }
     
+    public boolean ajustarStockDisponible(int id, int ajuste) {
+        String sql = "UPDATE libro SET stock_disponible = stock_disponible + ?, " +
+                    "fecha_actualizacion = NOW() WHERE id = ?";
+        
+        Connection conn = null;
+        PreparedStatement ps = null;
+        
+        try {
+            conn = DatabaseConnection.getInstance().getConnection();
+            ps = conn.prepareStatement(sql);
+            
+            ps.setInt(1, ajuste);
+            ps.setInt(2, id);
+            
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (ps != null) ps.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (conn != null) {
+                DatabaseConnection.getInstance().releaseConnection(conn);
+            }
+        }
+        return false;
+    }
+    
     public boolean cambiarEstado(int id, boolean activo) {
         String sql = "UPDATE libro SET activo = ?, fecha_actualizacion = NOW() WHERE id = ?";
         Connection conn = null;
@@ -361,6 +391,50 @@ public class LibroDAO {
             }
         }
         return false;
+    }
+    
+    /**
+     * Busca libros activos para autocompletado (por ISBN o nombre)
+     * Retorna máximo 10 resultados con stock disponible > 0
+     */
+    public List<Libro> buscarParaAutocompletado(String busqueda) {
+        List<Libro> libros = new ArrayList<>();
+        String sql = "SELECT * FROM libro WHERE activo = 1 AND stock_disponible > 0 AND " +
+                     "(isbn LIKE ? OR nombre LIKE ?) ORDER BY nombre LIMIT 10";
+        
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = DatabaseConnection.getInstance().getConnection();
+            ps = conn.prepareStatement(sql);
+            
+            String param = "%" + busqueda + "%";
+            ps.setString(1, param);
+            ps.setString(2, param);
+            
+            rs = ps.executeQuery();
+            
+            while (rs.next()) {
+                libros.add(mapearLibro(rs));
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (ps != null) ps.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (conn != null) {
+                DatabaseConnection.getInstance().releaseConnection(conn);
+            }
+        }
+        
+        return libros;
     }
     
     private Libro mapearLibro(ResultSet rs) throws SQLException {

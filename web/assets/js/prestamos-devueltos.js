@@ -135,9 +135,14 @@ function renderizarLibrosDevueltos(prestamos) {
                 </td>
                 <td class="px-3 sm:px-6 py-4">
                     <button onclick="verDetalleDevolucion(${prestamo.id})" 
-                        class="text-blue-600 hover:text-blue-800 p-2 rounded hover:bg-blue-50 transition" 
+                        class="text-blue-600 hover:text-blue-800 p-2 rounded hover:bg-blue-50 transition mr-2" 
                         title="Ver Detalle">
                         <i class="fas fa-info-circle"></i>
+                    </button>
+                    <button onclick="deshacerDevolucion(${prestamo.id}, ${prestamo.libroId})" 
+                        class="text-red-600 hover:text-red-800 p-2 rounded hover:bg-red-50 transition" 
+                        title="Deshacer Devolución">
+                        <i class="fas fa-undo"></i>
                     </button>
                 </td>
             </tr>
@@ -294,4 +299,45 @@ function verDetalleDevolucion(id) {
             console.error('Error:', error);
             mostrarError('Error de conexión');
         });
+}
+
+function deshacerDevolucion(id, libroId) {
+    Swal.fire({
+        title: '¿Deshacer devolución?',
+        text: 'Esta acción marcará el préstamo como pendiente nuevamente',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc2626',
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: 'Sí, deshacer',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const params = new URLSearchParams();
+            params.append('accion', 'deshacerDevolucion');
+            params.append('id', id);
+            params.append('libroId', libroId);
+            
+            fetch(`${window.CONTEXT_PATH}/prestamos`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                },
+                body: params.toString()
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    mostrarExito(data.message || 'Devolución deshecha correctamente');
+                    cargarLibrosDevueltos();
+                } else {
+                    mostrarError(data.message || 'Error al deshacer devolución');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                mostrarError('Error de conexión');
+            });
+        }
+    });
 }
