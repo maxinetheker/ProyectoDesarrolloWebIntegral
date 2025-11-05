@@ -107,17 +107,42 @@
 
     <div class="bg-gray-100 border-b border-gray-300">
         <div class="container mx-auto px-2 sm:px-4">
-            <div class="flex space-x-1 overflow-x-auto">
-                <button onclick="cambiarSeccion('devoluciones-pendientes')" id="tab-devoluciones-pendientes" class="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium whitespace-nowrap border-b-2 border-blue-600 text-blue-600">
+            <!-- Mobile Grid Layout (2x2) -->
+            <div class="grid grid-cols-2 gap-0 sm:hidden">
+                <button onclick="cambiarSeccion('devoluciones-pendientes')" id="tab-devoluciones-pendientes" 
+                    class="px-2 py-3 text-xs font-medium border-b-2 border-r border-blue-600 text-blue-600 bg-white">
+                    <i class="fas fa-clock mr-1"></i>Pendientes
+                </button>
+                <button onclick="cambiarSeccion('libros-devueltos')" id="tab-libros-devueltos" 
+                    class="px-2 py-3 text-xs font-medium border-b-2 border-transparent text-gray-600 bg-white hover:text-gray-800">
+                    <i class="fas fa-check-circle mr-1"></i>Devueltos
+                </button>
+                <button onclick="cambiarSeccion('multas-pendientes')" id="tab-multas-pendientes" 
+                    class="px-2 py-3 text-xs font-medium border-b-2 border-r border-transparent text-gray-600 bg-white hover:text-gray-800">
+                    <i class="fas fa-exclamation-triangle mr-1"></i>M. Pendientes
+                </button>
+                <button onclick="cambiarSeccion('multas-pagadas')" id="tab-multas-pagadas" 
+                    class="px-2 py-3 text-xs font-medium border-b-2 border-transparent text-gray-600 bg-white hover:text-gray-800">
+                    <i class="fas fa-dollar-sign mr-1"></i>M. Pagadas
+                </button>
+            </div>
+            
+            <!-- Desktop Horizontal Layout -->
+            <div class="hidden sm:flex space-x-1 overflow-x-auto">
+                <button onclick="cambiarSeccion('devoluciones-pendientes')" id="tab-devoluciones-pendientes-desktop" 
+                    class="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium whitespace-nowrap border-b-2 border-blue-600 text-blue-600">
                     <i class="fas fa-clock mr-1 sm:mr-2"></i>Devoluciones Pendientes
                 </button>
-                <button onclick="cambiarSeccion('libros-devueltos')" id="tab-libros-devueltos" class="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium whitespace-nowrap border-b-2 border-transparent text-gray-600 hover:text-gray-800">
+                <button onclick="cambiarSeccion('libros-devueltos')" id="tab-libros-devueltos-desktop" 
+                    class="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium whitespace-nowrap border-b-2 border-transparent text-gray-600 hover:text-gray-800">
                     <i class="fas fa-check-circle mr-1 sm:mr-2"></i>Libros Devueltos
                 </button>
-                <button onclick="cambiarSeccion('multas-pendientes')" id="tab-multas-pendientes" class="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium whitespace-nowrap border-b-2 border-transparent text-gray-600 hover:text-gray-800">
+                <button onclick="cambiarSeccion('multas-pendientes')" id="tab-multas-pendientes-desktop" 
+                    class="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium whitespace-nowrap border-b-2 border-transparent text-gray-600 hover:text-gray-800">
                     <i class="fas fa-exclamation-triangle mr-1 sm:mr-2"></i>Multas Pendientes
                 </button>
-                <button onclick="cambiarSeccion('multas-pagadas')" id="tab-multas-pagadas" class="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium whitespace-nowrap border-b-2 border-transparent text-gray-600 hover:text-gray-800">
+                <button onclick="cambiarSeccion('multas-pagadas')" id="tab-multas-pagadas-desktop" 
+                    class="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium whitespace-nowrap border-b-2 border-transparent text-gray-600 hover:text-gray-800">
                     <i class="fas fa-dollar-sign mr-1 sm:mr-2"></i>Multas Pagadas
                 </button>
             </div>

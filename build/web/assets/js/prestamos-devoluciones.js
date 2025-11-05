@@ -122,14 +122,22 @@ function renderizarDevoluciones(prestamos) {
                     <div class="mt-1">${estadoBadge}</div>
                 </td>
                 <td class="px-3 sm:px-6 py-4">
-                    <div class="flex flex-col gap-2">
+                    <div class="flex flex-wrap gap-2">
                         <button onclick="abrirModalDevolucion(${prestamo.id})" 
-                            class="px-3 py-1.5 text-xs sm:text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded transition">
-                            <i class="fas fa-undo mr-1"></i>Registrar Devolución
+                            class="p-2 text-white bg-green-600 hover:bg-green-700 rounded transition" title="Registrar Devolución">
+                            <i class="fas fa-undo"></i>
                         </button>
                         <button onclick="abrirModalExtenderPlazo(${prestamo.id}, '${escapeHtml(prestamo.libroNombre)}', '${escapeHtml(prestamo.usuarioNombre)}', '${formatearFecha(prestamo.fechaDevolucionEsperada)}')" 
-                            class="px-3 py-1.5 text-xs sm:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded transition">
-                            <i class="fas fa-calendar-plus mr-1"></i>Extender Plazo
+                            class="p-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition" title="Extender Plazo">
+                            <i class="fas fa-calendar-plus"></i>
+                        </button>
+                        <button onclick="verDetallePrestamo(${prestamo.id})" 
+                            class="p-2 text-white bg-indigo-600 hover:bg-indigo-700 rounded transition" title="Ver Detalles">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button onclick="eliminarPrestamo(${prestamo.id}, '${escapeHtml(prestamo.libroNombre)}')" 
+                            class="p-2 text-white bg-red-600 hover:bg-red-700 rounded transition" title="Eliminar Préstamo">
+                            <i class="fas fa-trash"></i>
                         </button>
                     </div>
                 </td>
@@ -189,39 +197,55 @@ let usuarioSeleccionado = null;
 let libroSeleccionado = null;
 let debounceUsuarioTimer = null;
 let debounceLibroTimer = null;
+let debounceCodigoTimer = null;
 
 function abrirModalNuevoPrestamo() {
     usuarioSeleccionado = null;
     libroSeleccionado = null;
     
     Swal.fire({
-        title: 'Nuevo Préstamo',
-        width: '800px',
+        title: '<div class="text-base sm:text-lg">Nuevo Préstamo</div>',
+        width: '95%',
+        customClass: {
+            container: 'swal-container-responsive',
+            popup: 'swal-popup-responsive'
+        },
         html: `
-            <div class="text-left space-y-6">
+            <style>
+                @media (min-width: 640px) {
+                    .swal-popup-responsive {
+                        max-width: 800px !important;
+                    }
+                }
+                .swal-container-responsive .swal2-html-container {
+                    max-height: 70vh;
+                    overflow-y: auto;
+                }
+            </style>
+            <div class="text-left space-y-4 sm:space-y-6">
                 <!-- Sección Usuario -->
-                <div class="border rounded-lg p-4 bg-gray-50">
-                    <h3 class="font-semibold text-lg mb-3 text-gray-700">1. Seleccionar Usuario</h3>
+                <div class="border rounded-lg p-3 sm:p-4 bg-gray-50">
+                    <h3 class="font-semibold text-base sm:text-lg mb-2 sm:mb-3 text-gray-700">1. Seleccionar Usuario</h3>
                     
-                    <div class="flex gap-2 mb-3">
-                        <button type="button" id="btn-metodo-usuario-buscar" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded font-medium hover:bg-blue-700">
-                            <i class="fas fa-search mr-2"></i>Buscar por Nombre
+                    <div class="grid grid-cols-2 gap-2 mb-3">
+                        <button type="button" id="btn-metodo-usuario-buscar" class="px-2 sm:px-4 py-2 text-xs sm:text-sm bg-blue-600 text-white rounded font-medium hover:bg-blue-700">
+                            <i class="fas fa-search mr-1 sm:mr-2"></i><span class="hidden sm:inline">Buscar por </span>Nombre
                         </button>
-                        <button type="button" id="btn-metodo-usuario-codigo" class="flex-1 px-4 py-2 bg-gray-300 text-gray-700 rounded font-medium hover:bg-gray-400">
-                            <i class="fas fa-barcode mr-2"></i>Código de Barras
+                        <button type="button" id="btn-metodo-usuario-codigo" class="px-2 sm:px-4 py-2 text-xs sm:text-sm bg-gray-300 text-gray-700 rounded font-medium hover:bg-gray-400">
+                            <i class="fas fa-barcode mr-1 sm:mr-2"></i><span class="hidden sm:inline">Código de </span>Barras
                         </button>
                     </div>
                     
                     <!-- Búsqueda por nombre -->
                     <div id="metodo-usuario-buscar" class="metodo-usuario">
                         <div class="relative">
-                            <input type="text" id="input-buscar-usuario" class="w-full px-3 py-2 border rounded" 
+                            <input type="text" id="input-buscar-usuario" class="w-full px-2 sm:px-3 py-2 text-sm border rounded" 
                                    placeholder="Escribe nombre, apellido o usuario..." autocomplete="off">
                             <div id="sugerencias-usuario" class="absolute z-10 w-full bg-white border rounded-b shadow-lg max-h-48 overflow-y-auto hidden"></div>
                         </div>
                         <div id="usuario-seleccionado-info" class="mt-2 p-2 bg-green-50 border border-green-200 rounded hidden">
                             <div class="flex justify-between items-center">
-                                <span class="text-sm font-medium text-green-700"></span>
+                                <span class="text-xs sm:text-sm font-medium text-green-700"></span>
                                 <button type="button" onclick="limpiarUsuarioSeleccionado()" class="text-red-600 hover:text-red-800">
                                     <i class="fas fa-times"></i>
                                 </button>
@@ -231,34 +255,41 @@ function abrirModalNuevoPrestamo() {
                     
                     <!-- Código de barras -->
                     <div id="metodo-usuario-codigo" class="metodo-usuario hidden">
-                        <input type="text" id="input-codigo-usuario" class="w-full px-3 py-2 border rounded" 
-                               placeholder="Escanea el código de barras del usuario..." autocomplete="off">
+                        <div class="relative">
+                            <input type="text" id="input-codigo-usuario" class="w-full px-2 sm:px-3 py-2 text-sm border rounded" 
+                                   placeholder="Escanea el código de barras del usuario..." autocomplete="off">
+                            <div id="sugerencias-codigo-usuario" class="absolute z-10 w-full bg-white border rounded-b shadow-lg max-h-48 overflow-y-auto hidden"></div>
+                        </div>
+                        <div id="alerta-carnet-vencido" class="mt-2 p-2 bg-yellow-50 border border-yellow-400 text-yellow-800 rounded text-xs hidden">
+                            <i class="fas fa-exclamation-triangle mr-1"></i>
+                            <strong>Debe renovar el carnet.</strong> El carnet ha vencido.
+                        </div>
                     </div>
                 </div>
                 
                 <!-- Sección Libro -->
-                <div class="border rounded-lg p-4 bg-gray-50">
-                    <h3 class="font-semibold text-lg mb-3 text-gray-700">2. Seleccionar Libro</h3>
+                <div class="border rounded-lg p-3 sm:p-4 bg-gray-50">
+                    <h3 class="font-semibold text-base sm:text-lg mb-2 sm:mb-3 text-gray-700">2. Seleccionar Libro</h3>
                     
-                    <div class="flex gap-2 mb-3">
-                        <button type="button" id="btn-metodo-libro-nombre" class="flex-1 px-4 py-2 bg-green-600 text-white rounded font-medium hover:bg-green-700">
-                            <i class="fas fa-book mr-2"></i>Buscar por Nombre
+                    <div class="grid grid-cols-2 gap-2 mb-3">
+                        <button type="button" id="btn-metodo-libro-nombre" class="px-2 sm:px-4 py-2 text-xs sm:text-sm bg-green-600 text-white rounded font-medium hover:bg-green-700">
+                            <i class="fas fa-book mr-1 sm:mr-2"></i><span class="hidden sm:inline">Buscar por </span>Nombre
                         </button>
-                        <button type="button" id="btn-metodo-libro-isbn" class="flex-1 px-4 py-2 bg-gray-300 text-gray-700 rounded font-medium hover:bg-gray-400">
-                            <i class="fas fa-hashtag mr-2"></i>Buscar por ISBN
+                        <button type="button" id="btn-metodo-libro-isbn" class="px-2 sm:px-4 py-2 text-xs sm:text-sm bg-gray-300 text-gray-700 rounded font-medium hover:bg-gray-400">
+                            <i class="fas fa-hashtag mr-1 sm:mr-2"></i><span class="hidden sm:inline">Buscar por </span>ISBN
                         </button>
                     </div>
                     
                     <!-- Búsqueda por nombre -->
                     <div id="metodo-libro-nombre" class="metodo-libro">
                         <div class="relative">
-                            <input type="text" id="input-buscar-libro-nombre" class="w-full px-3 py-2 border rounded" 
+                            <input type="text" id="input-buscar-libro-nombre" class="w-full px-2 sm:px-3 py-2 text-sm border rounded" 
                                    placeholder="Escribe el nombre del libro..." autocomplete="off">
                             <div id="sugerencias-libro-nombre" class="absolute z-10 w-full bg-white border rounded-b shadow-lg max-h-48 overflow-y-auto hidden"></div>
                         </div>
                         <div id="libro-seleccionado-info" class="mt-2 p-2 bg-green-50 border border-green-200 rounded hidden">
                             <div class="flex justify-between items-center">
-                                <span class="text-sm font-medium text-green-700"></span>
+                                <span class="text-xs sm:text-sm font-medium text-green-700"></span>
                                 <button type="button" onclick="limpiarLibroSeleccionado()" class="text-red-600 hover:text-red-800">
                                     <i class="fas fa-times"></i>
                                 </button>
@@ -269,7 +300,7 @@ function abrirModalNuevoPrestamo() {
                     <!-- Búsqueda por ISBN -->
                     <div id="metodo-libro-isbn" class="metodo-libro hidden">
                         <div class="relative">
-                            <input type="text" id="input-buscar-libro-isbn" class="w-full px-3 py-2 border rounded" 
+                            <input type="text" id="input-buscar-libro-isbn" class="w-full px-2 sm:px-3 py-2 text-sm border rounded" 
                                    placeholder="Escribe o escanea el ISBN del libro..." autocomplete="off">
                             <div id="sugerencias-libro-isbn" class="absolute z-10 w-full bg-white border rounded-b shadow-lg max-h-48 overflow-y-auto hidden"></div>
                         </div>
@@ -277,24 +308,24 @@ function abrirModalNuevoPrestamo() {
                 </div>
                 
                 <!-- Detalles del préstamo -->
-                <div class="border rounded-lg p-4 bg-gray-50">
-                    <h3 class="font-semibold text-lg mb-3 text-gray-700">3. Detalles del Préstamo</h3>
+                <div class="border rounded-lg p-3 sm:p-4 bg-gray-50">
+                    <h3 class="font-semibold text-base sm:text-lg mb-2 sm:mb-3 text-gray-700">3. Detalles del Préstamo</h3>
                     <div class="space-y-3">
                         <div>
-                            <label class="block text-sm font-medium mb-1">Días de préstamo</label>
-                            <input type="number" id="input-dias-prestamo" class="w-full px-3 py-2 border rounded" 
+                            <label class="block text-xs sm:text-sm font-medium mb-1">Días de préstamo</label>
+                            <input type="number" id="input-dias-prestamo" class="w-full px-2 sm:px-3 py-2 text-sm border rounded" 
                                    value="7" min="1" max="30">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium mb-1">Observaciones (opcional)</label>
-                            <textarea id="input-observaciones-entrega" class="w-full px-3 py-2 border rounded" 
-                                      rows="2" placeholder="Condición del libro al momento de entrega, estado del carnet, etc."></textarea>
+                            <label class="block text-xs sm:text-sm font-medium mb-1">Observaciones (opcional)</label>
+                            <textarea id="input-observaciones-entrega" class="w-full px-2 sm:px-3 py-2 text-sm border rounded" 
+                                      rows="2" placeholder="Condición del libro, estado del carnet, etc."></textarea>
                         </div>
                     </div>
                 </div>
             </div>
         `,
-        confirmButtonText: 'Crear Préstamo',
+        confirmButtonText: '<i class="fas fa-check mr-1"></i>Crear Préstamo',
         confirmButtonColor: '#2563eb',
         showCancelButton: true,
         cancelButtonText: 'Cancelar',
@@ -358,6 +389,22 @@ function configurarEventosModalPrestamo() {
         }, 300);
     });
     
+    // Autocompletado por código de barras
+    document.getElementById('input-codigo-usuario').addEventListener('input', function() {
+        clearTimeout(debounceCodigoTimer);
+        const codigo = this.value.trim();
+        
+        if (codigo.length < 3) {
+            document.getElementById('sugerencias-codigo-usuario').classList.add('hidden');
+            document.getElementById('alerta-carnet-vencido').classList.add('hidden');
+            return;
+        }
+        
+        debounceCodigoTimer = setTimeout(() => {
+            buscarUsuariosPorCodigoBarras(codigo);
+        }, 500);
+    });
+    
     // Autocompletado de libro por nombre
     document.getElementById('input-buscar-libro-nombre').addEventListener('input', function() {
         clearTimeout(debounceLibroTimer);
@@ -390,13 +437,13 @@ function configurarEventosModalPrestamo() {
 }
 
 function mostrarMetodoUsuario(metodo) {
-    // Actualizar botones
+    // Actualizar botones con estilos responsive
     document.getElementById('btn-metodo-usuario-buscar').className = metodo === 'buscar' 
-        ? 'flex-1 px-4 py-2 bg-blue-600 text-white rounded font-medium hover:bg-blue-700'
-        : 'flex-1 px-4 py-2 bg-gray-300 text-gray-700 rounded font-medium hover:bg-gray-400';
+        ? 'px-2 sm:px-4 py-2 text-xs sm:text-sm bg-blue-600 text-white rounded font-medium hover:bg-blue-700'
+        : 'px-2 sm:px-4 py-2 text-xs sm:text-sm bg-gray-300 text-gray-700 rounded font-medium hover:bg-gray-400';
     document.getElementById('btn-metodo-usuario-codigo').className = metodo === 'codigo' 
-        ? 'flex-1 px-4 py-2 bg-blue-600 text-white rounded font-medium hover:bg-blue-700'
-        : 'flex-1 px-4 py-2 bg-gray-300 text-gray-700 rounded font-medium hover:bg-gray-400';
+        ? 'px-2 sm:px-4 py-2 text-xs sm:text-sm bg-blue-600 text-white rounded font-medium hover:bg-blue-700'
+        : 'px-2 sm:px-4 py-2 text-xs sm:text-sm bg-gray-300 text-gray-700 rounded font-medium hover:bg-gray-400';
     
     // Mostrar/ocultar secciones
     document.getElementById('metodo-usuario-buscar').classList.toggle('hidden', metodo !== 'buscar');
@@ -404,13 +451,13 @@ function mostrarMetodoUsuario(metodo) {
 }
 
 function mostrarMetodoLibro(metodo) {
-    // Actualizar botones
+    // Actualizar botones con estilos responsive
     document.getElementById('btn-metodo-libro-nombre').className = metodo === 'nombre'
-        ? 'flex-1 px-4 py-2 bg-green-600 text-white rounded font-medium hover:bg-green-700'
-        : 'flex-1 px-4 py-2 bg-gray-300 text-gray-700 rounded font-medium hover:bg-gray-400';
+        ? 'px-2 sm:px-4 py-2 text-xs sm:text-sm bg-green-600 text-white rounded font-medium hover:bg-green-700'
+        : 'px-2 sm:px-4 py-2 text-xs sm:text-sm bg-gray-300 text-gray-700 rounded font-medium hover:bg-gray-400';
     document.getElementById('btn-metodo-libro-isbn').className = metodo === 'isbn'
-        ? 'flex-1 px-4 py-2 bg-green-600 text-white rounded font-medium hover:bg-green-700'
-        : 'flex-1 px-4 py-2 bg-gray-300 text-gray-700 rounded font-medium hover:bg-gray-400';
+        ? 'px-2 sm:px-4 py-2 text-xs sm:text-sm bg-green-600 text-white rounded font-medium hover:bg-green-700'
+        : 'px-2 sm:px-4 py-2 text-xs sm:text-sm bg-gray-300 text-gray-700 rounded font-medium hover:bg-gray-400';
     
     // Mostrar/ocultar secciones
     document.getElementById('metodo-libro-nombre').classList.toggle('hidden', metodo !== 'nombre');
@@ -469,6 +516,69 @@ function limpiarUsuarioSeleccionado() {
     usuarioSeleccionado = null;
     document.getElementById('input-buscar-usuario').value = '';
     document.getElementById('usuario-seleccionado-info').classList.add('hidden');
+    document.getElementById('input-codigo-usuario').value = '';
+    document.getElementById('alerta-carnet-vencido').classList.add('hidden');
+}
+
+// Búsqueda por código de barras
+function buscarUsuariosPorCodigoBarras(codigo) {
+    fetch(`${window.CONTEXT_PATH}/usuarios?accion=buscarPorCodigoBarras&codigo=${encodeURIComponent(codigo)}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                mostrarSugerenciasCodigoUsuario(data.usuarios);
+            }
+        })
+        .catch(error => {
+            console.error('Error al buscar usuarios por código de barras:', error);
+        });
+}
+
+function mostrarSugerenciasCodigoUsuario(usuarios) {
+    const contenedor = document.getElementById('sugerencias-codigo-usuario');
+    
+    if (usuarios.length === 0) {
+        contenedor.innerHTML = '<div class="p-2 text-gray-500 text-sm">No se encontraron usuarios con ese código</div>';
+        contenedor.classList.remove('hidden');
+        return;
+    }
+    
+    let html = '';
+    usuarios.forEach(usuario => {
+        const vencidoClass = usuario.estaVencido ? 'bg-red-50' : '';
+        const vencidoIcon = usuario.estaVencido ? '<i class="fas fa-exclamation-triangle text-red-600 mr-1"></i>' : '';
+        html += `
+            <div class="p-2 hover:bg-gray-100 cursor-pointer border-b last:border-b-0 ${vencidoClass}" 
+                 onclick="seleccionarUsuarioCodigoBarras(${usuario.id}, '${escapeHtml(usuario.nombreCompleto)}', '${escapeHtml(usuario.usuario)}', '${escapeHtml(usuario.codigo)}', ${usuario.estaVencido})">
+                <div class="font-medium text-sm">${vencidoIcon}${escapeHtml(usuario.nombreCompleto)}</div>
+                <div class="text-xs text-gray-600">Código: ${escapeHtml(usuario.codigo)}</div>
+                ${usuario.estaVencido ? '<div class="text-xs text-red-600 font-medium">⚠️ Carnet vencido</div>' : ''}
+            </div>
+        `;
+    });
+    
+    contenedor.innerHTML = html;
+    contenedor.classList.remove('hidden');
+}
+
+function seleccionarUsuarioCodigoBarras(id, nombreCompleto, usuario, codigo, estaVencido) {
+    usuarioSeleccionado = { id, nombreCompleto, usuario };
+    
+    document.getElementById('input-codigo-usuario').value = codigo;
+    document.getElementById('sugerencias-codigo-usuario').classList.add('hidden');
+    
+    // Mostrar/ocultar alerta de carnet vencido
+    const alertaDiv = document.getElementById('alerta-carnet-vencido');
+    if (estaVencido) {
+        alertaDiv.classList.remove('hidden');
+    } else {
+        alertaDiv.classList.add('hidden');
+    }
+    
+    // Actualizar también el info de usuario seleccionado (por si cambian de método)
+    const infoDiv = document.getElementById('usuario-seleccionado-info');
+    infoDiv.querySelector('span').textContent = `✓ ${nombreCompleto} (${usuario})`;
+    infoDiv.classList.remove('hidden');
 }
 
 function buscarLibrosAutocompletado(busqueda, tipo) {
@@ -576,27 +686,30 @@ function crearPrestamoValidado(usuarioId, libroId, diasPrestamo, observaciones) 
 function abrirModalDevolucion(prestamoId) {
     Swal.fire({
         title: 'Registrar Devolución',
+        width: '600px',
         html: `
             <div class="text-left space-y-4">
                 <div>
-                    <label class="block text-sm font-medium mb-1">Estado de la devolución</label>
-                    <select id="swal-estado" class="swal2-input w-full">
+                    <label class="block text-sm font-medium mb-2">Estado de la devolución</label>
+                    <select id="swal-estado" class="swal2-select w-full" style="display: block; width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem;">
                         <option value="devuelto">Devuelto en buen estado</option>
-                        <option value="vencido">Devuelto con retraso</option>
                         <option value="perdido">Libro perdido/extraviado</option>
                     </select>
                 </div>
                 <div id="campo-multa" style="display:none;">
-                    <label class="block text-sm font-medium mb-1">Multa (S/.)</label>
-                    <input type="number" id="swal-multa" class="swal2-input w-full" value="0" min="0" step="0.01">
+                    <label class="block text-sm font-medium mb-2">Multa (S/.)</label>
+                    <input type="number" id="swal-multa" class="swal2-input" value="0" min="0" step="0.01" 
+                           style="display: block; width: 100%; margin: 0;">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium mb-1">Observaciones</label>
-                    <textarea id="swal-observaciones" class="swal2-textarea w-full" placeholder="Observaciones opcionales"></textarea>
+                    <label class="block text-sm font-medium mb-2">Observaciones</label>
+                    <textarea id="swal-observaciones" class="swal2-textarea" rows="3"
+                              placeholder="Observaciones opcionales..." 
+                              style="display: block; width: 100%; margin: 0;"></textarea>
                 </div>
             </div>
         `,
-        confirmButtonText: 'Registrar Devolución',
+        confirmButtonText: '<i class="fas fa-check mr-1"></i>Registrar Devolución',
         confirmButtonColor: '#16a34a',
         showCancelButton: true,
         cancelButtonText: 'Cancelar',
@@ -605,7 +718,7 @@ function abrirModalDevolucion(prestamoId) {
             const campoMulta = document.getElementById('campo-multa');
             
             estadoSelect.addEventListener('change', function() {
-                if (this.value === 'vencido' || this.value === 'perdido') {
+                if (this.value === 'perdido') {
                     campoMulta.style.display = 'block';
                 } else {
                     campoMulta.style.display = 'none';
@@ -654,6 +767,141 @@ function registrarDevolucion(id, estado, multa, observaciones) {
     .catch(error => {
         console.error('Error:', error);
         mostrarError('Error de conexión');
+    });
+}
+
+function verDetallePrestamo(prestamoId) {
+    fetch(`${window.CONTEXT_PATH}/prestamos?accion=obtener&id=${prestamoId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const p = data.prestamo;
+                const fechaPrestamo = formatearFecha(p.fechaPrestamo) + 
+                    (p.fechaPrestamo.includes(' ') ? ' ' + p.fechaPrestamo.split(' ')[1] : '');
+                const fechaDevolucionProgramada = formatearFecha(p.fechaDevolucionEsperada);
+                const fechaDevolucionReal = p.fechaDevolucionReal 
+                    ? formatearFecha(p.fechaDevolucionReal) + 
+                      (p.fechaDevolucionReal.includes(' ') ? ' ' + p.fechaDevolucionReal.split(' ')[1] : '')
+                    : 'No devuelto';
+                
+                Swal.fire({
+                    title: '<i class="fas fa-info-circle text-indigo-600"></i> Detalle del Préstamo',
+                    width: '700px',
+                    html: `
+                        <div class="text-left space-y-3">
+                            <div class="border-b pb-2">
+                                <p class="text-sm font-semibold text-gray-700">Libro</p>
+                                <p class="text-sm text-gray-900">${escapeHtml(p.libroNombre)}</p>
+                                <p class="text-xs text-gray-500 font-mono">ISBN: ${escapeHtml(p.libroIsbn)}</p>
+                            </div>
+                            <div class="border-b pb-2">
+                                <p class="text-sm font-semibold text-gray-700">Usuario</p>
+                                <p class="text-sm text-gray-900">${escapeHtml(p.usuarioNombre)}</p>
+                                <p class="text-xs text-gray-500">DNI: ${escapeHtml(p.usuarioDni)}</p>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3 border-b pb-2">
+                                <div>
+                                    <p class="text-xs font-semibold text-gray-700">Fecha Préstamo</p>
+                                    <p class="text-sm text-gray-900">${fechaPrestamo}</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-semibold text-gray-700">Devolución Programada</p>
+                                    <p class="text-sm text-gray-900">${fechaDevolucionProgramada}</p>
+                                </div>
+                            </div>
+                            <div class="border-b pb-2">
+                                <p class="text-sm font-semibold text-gray-700">Fecha Devolución Real</p>
+                                <p class="text-sm text-gray-900">${fechaDevolucionReal}</p>
+                            </div>
+                            <div class="border-b pb-2">
+                                <p class="text-sm font-semibold text-gray-700">Estado</p>
+                                <p class="text-sm text-gray-900">${escapeHtml(p.estado)}</p>
+                            </div>
+                            ${p.observacionesEntrega ? `
+                            <div class="border-b pb-2">
+                                <p class="text-sm font-semibold text-gray-700">Observaciones de Entrega</p>
+                                <p class="text-sm text-gray-900 whitespace-pre-wrap">${escapeHtml(p.observacionesEntrega)}</p>
+                            </div>
+                            ` : ''}
+                            ${p.observacionesDevolucion ? `
+                            <div class="border-b pb-2">
+                                <p class="text-sm font-semibold text-gray-700">Observaciones de Devolución</p>
+                                <p class="text-sm text-gray-900 whitespace-pre-wrap">${escapeHtml(p.observacionesDevolucion)}</p>
+                            </div>
+                            ` : ''}
+                            ${p.multa > 0 ? `
+                            <div class="bg-yellow-50 p-3 rounded border border-yellow-200">
+                                <p class="text-sm font-semibold text-yellow-700">Multa</p>
+                                <p class="text-2xl font-bold text-yellow-600">S/. ${parseFloat(p.multa).toFixed(2)}</p>
+                                <p class="text-xs text-yellow-600 mt-1">
+                                    <i class="fas ${p.pagado ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> 
+                                    Estado: ${p.pagado ? 'Pagado' : 'Pendiente'}
+                                </p>
+                            </div>
+                            ` : ''}
+                        </div>
+                    `,
+                    confirmButtonText: 'Cerrar',
+                    confirmButtonColor: '#6366f1'
+                });
+            } else {
+                mostrarError(data.message || 'Error al obtener detalles');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            mostrarError('Error de conexión');
+        });
+}
+
+function eliminarPrestamo(prestamoId, libroNombre) {
+    Swal.fire({
+        title: '¿Eliminar Préstamo?',
+        html: `
+            <div class="text-left">
+                <p class="text-sm text-gray-700 mb-2">¿Estás seguro de eliminar este préstamo?</p>
+                <div class="bg-gray-50 p-3 rounded border">
+                    <p class="text-sm font-semibold text-gray-700">Libro:</p>
+                    <p class="text-sm text-gray-900">${libroNombre}</p>
+                </div>
+                <p class="text-xs text-red-600 mt-3">
+                    <i class="fas fa-exclamation-triangle"></i> Esta acción restaurará el stock del libro y no se puede deshacer.
+                </p>
+            </div>
+        `,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: '<i class="fas fa-trash mr-1"></i>Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const params = new URLSearchParams();
+            params.append('accion', 'eliminarPrestamo');
+            params.append('id', prestamoId);
+            
+            fetch(`${window.CONTEXT_PATH}/prestamos`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                },
+                body: params.toString()
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    mostrarExito(data.message || 'Préstamo eliminado exitosamente');
+                    cargarDevolucionesPendientes();
+                } else {
+                    mostrarError(data.message || 'Error al eliminar préstamo');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                mostrarError('Error de conexión');
+            });
+        }
     });
 }
 

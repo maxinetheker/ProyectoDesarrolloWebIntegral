@@ -557,4 +557,68 @@ public class PrestamoDAO {
             }
         }
     }
+    
+    public boolean eliminarPrestamo(int prestamoId) {
+        Connection conn = null;
+        PreparedStatement stmtSelect = null;
+        PreparedStatement stmtUpdate = null;
+        PreparedStatement stmtDelete = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = DatabaseConnection.getInstance().getConnection();
+            conn.setAutoCommit(false);
+            
+            // Obtener el id_libro del préstamo
+            String sqlSelect = "SELECT id_libro FROM entregas WHERE id = ? AND estado IN ('prestado', 'vencido')";
+            stmtSelect = conn.prepareStatement(sqlSelect);
+            stmtSelect.setInt(1, prestamoId);
+            rs = stmtSelect.executeQuery();
+            
+            if (rs.next()) {
+                int idLibro = rs.getInt("id_libro");
+                
+                // Restaurar el stock del libro
+                String sqlUpdate = "UPDATE libro SET stock_disponible = stock_disponible + 1 WHERE id = ?";
+                stmtUpdate = conn.prepareStatement(sqlUpdate);
+                stmtUpdate.setInt(1, idLibro);
+                stmtUpdate.executeUpdate();
+                
+                // Eliminar el préstamo
+                String sqlDelete = "DELETE FROM entregas WHERE id = ?";
+                stmtDelete = conn.prepareStatement(sqlDelete);
+                stmtDelete.setInt(1, prestamoId);
+                stmtDelete.executeUpdate();
+                
+                conn.commit();
+                return true;
+            } else {
+                conn.rollback();
+                return false;
+            }
+        } catch (SQLException e) {
+            try {
+                if (conn != null) conn.rollback();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            e.printStackTrace();
+            return false;
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (stmtSelect != null) stmtSelect.close();
+                if (stmtUpdate != null) stmtUpdate.close();
+                if (stmtDelete != null) stmtDelete.close();
+                if (conn != null) {
+                    conn.setAutoCommit(true);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (conn != null) {
+                DatabaseConnection.getInstance().releaseConnection(conn);
+            }
+        }
+    }
 }

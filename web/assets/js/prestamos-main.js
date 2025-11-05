@@ -4,11 +4,12 @@ function cambiarSeccion(seccion) {
     // Ocultar todas las secciones
     document.querySelectorAll('.seccion-prestamo').forEach(s => s.classList.add('hidden'));
     
-    // Quitar estilos activos de todos los tabs
+    // Quitar estilos activos de todos los tabs (móvil y desktop)
     document.querySelectorAll('[id^="tab-"]').forEach(tab => {
         tab.classList.remove('border-blue-600', 'text-blue-600', 'border-green-600', 'text-green-600', 
-                             'border-yellow-600', 'text-yellow-600', 'border-purple-600', 'text-purple-600');
-        tab.classList.add('border-transparent', 'text-gray-600');
+                             'border-yellow-600', 'text-yellow-600', 'border-purple-600', 'text-purple-600',
+                             'bg-blue-50', 'bg-green-50', 'bg-yellow-50', 'bg-purple-50');
+        tab.classList.add('border-transparent', 'text-gray-600', 'bg-white');
     });
     
     // Mostrar sección seleccionada
@@ -17,26 +18,29 @@ function cambiarSeccion(seccion) {
         seccionElement.classList.remove('hidden');
     }
     
-    // Activar tab correspondiente
-    const tab = document.getElementById(`tab-${seccion}`);
-    if (tab) {
-        tab.classList.remove('border-transparent', 'text-gray-600');
+    // Activar tabs correspondientes (móvil y desktop)
+    const tabMobile = document.getElementById(`tab-${seccion}`);
+    const tabDesktop = document.getElementById(`tab-${seccion}-desktop`);
+    const tabs = [tabMobile, tabDesktop].filter(t => t !== null);
+    
+    tabs.forEach(tab => {
+        tab.classList.remove('border-transparent', 'text-gray-600', 'bg-white');
         
         switch(seccion) {
             case 'devoluciones-pendientes':
-                tab.classList.add('border-blue-600', 'text-blue-600');
+                tab.classList.add('border-blue-600', 'text-blue-600', 'bg-blue-50');
                 break;
             case 'libros-devueltos':
-                tab.classList.add('border-green-600', 'text-green-600');
+                tab.classList.add('border-green-600', 'text-green-600', 'bg-green-50');
                 break;
             case 'multas-pendientes':
-                tab.classList.add('border-yellow-600', 'text-yellow-600');
+                tab.classList.add('border-yellow-600', 'text-yellow-600', 'bg-yellow-50');
                 break;
             case 'multas-pagadas':
-                tab.classList.add('border-purple-600', 'text-purple-600');
+                tab.classList.add('border-purple-600', 'text-purple-600', 'bg-purple-50');
                 break;
         }
-    }
+    });
     
     seccionActual = seccion;
     

@@ -95,6 +95,9 @@ public class PrestamoServlet extends HttpServlet {
             case "extenderPlazo":
                 extenderPlazo(request, response);
                 break;
+            case "eliminarPrestamo":
+                eliminarPrestamo(request, response);
+                break;
             default:
                 enviarError(response, "Acción no válida");
         }
@@ -503,6 +506,28 @@ public class PrestamoServlet extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
             enviarError(response, "Error al extender el plazo");
+        }
+    }
+    
+    private void eliminarPrestamo(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        try {
+            int id = Integer.parseInt(request.getParameter("id"));
+            
+            boolean eliminado = prestamoDAO.eliminarPrestamo(id);
+            
+            Map<String, Object> resultado = new HashMap<>();
+            resultado.put("success", eliminado);
+            resultado.put("message", eliminado ? "Préstamo eliminado y stock restaurado exitosamente" : "No se pudo eliminar el préstamo");
+            
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            objectMapper.writeValue(response.getWriter(), resultado);
+        } catch (NumberFormatException e) {
+            enviarError(response, "ID inválido");
+        } catch (Exception e) {
+            e.printStackTrace();
+            enviarError(response, "Error al eliminar el préstamo");
         }
     }
     
