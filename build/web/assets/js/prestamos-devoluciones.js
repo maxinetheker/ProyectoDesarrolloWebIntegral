@@ -243,14 +243,6 @@ function abrirModalNuevoPrestamo() {
                                    placeholder="Escribe nombre, apellido o usuario..." autocomplete="off">
                             <div id="sugerencias-usuario" class="absolute z-10 w-full bg-white border rounded-b shadow-lg max-h-48 overflow-y-auto hidden"></div>
                         </div>
-                        <div id="usuario-seleccionado-info" class="mt-2 p-2 bg-green-50 border border-green-200 rounded hidden">
-                            <div class="flex justify-between items-center">
-                                <span class="text-xs sm:text-sm font-medium text-green-700"></span>
-                                <button type="button" onclick="limpiarUsuarioSeleccionado()" class="text-red-600 hover:text-red-800">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                        </div>
                     </div>
                     
                     <!-- Código de barras -->
@@ -260,10 +252,22 @@ function abrirModalNuevoPrestamo() {
                                    placeholder="Escanea el código de barras del usuario..." autocomplete="off">
                             <div id="sugerencias-codigo-usuario" class="absolute z-10 w-full bg-white border rounded-b shadow-lg max-h-48 overflow-y-auto hidden"></div>
                         </div>
-                        <div id="alerta-carnet-vencido" class="mt-2 p-2 bg-yellow-50 border border-yellow-400 text-yellow-800 rounded text-xs hidden">
-                            <i class="fas fa-exclamation-triangle mr-1"></i>
-                            <strong>Debe renovar el carnet.</strong> El carnet ha vencido.
+                    </div>
+                    
+                    <!-- Cuadro de confirmación de usuario (fuera de los divs que se ocultan) -->
+                    <div id="usuario-seleccionado-info" class="mt-2 p-2 bg-green-50 border border-green-200 rounded hidden">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs sm:text-sm font-medium text-green-700"></span>
+                            <button type="button" onclick="limpiarUsuarioSeleccionado()" class="text-red-600 hover:text-red-800">
+                                <i class="fas fa-times"></i>
+                            </button>
                         </div>
+                    </div>
+                    
+                    <!-- Alerta de carnet vencido (fuera de los divs que se ocultan) -->
+                    <div id="alerta-carnet-vencido" class="mt-2 p-2 bg-yellow-50 border border-yellow-400 text-yellow-800 rounded text-xs hidden">
+                        <i class="fas fa-exclamation-triangle mr-1"></i>
+                        <strong>Debe renovar el carnet.</strong> El carnet ha vencido.
                     </div>
                 </div>
                 
@@ -287,14 +291,6 @@ function abrirModalNuevoPrestamo() {
                                    placeholder="Escribe el nombre del libro..." autocomplete="off">
                             <div id="sugerencias-libro-nombre" class="absolute z-10 w-full bg-white border rounded-b shadow-lg max-h-48 overflow-y-auto hidden"></div>
                         </div>
-                        <div id="libro-seleccionado-info" class="mt-2 p-2 bg-green-50 border border-green-200 rounded hidden">
-                            <div class="flex justify-between items-center">
-                                <span class="text-xs sm:text-sm font-medium text-green-700"></span>
-                                <button type="button" onclick="limpiarLibroSeleccionado()" class="text-red-600 hover:text-red-800">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                        </div>
                     </div>
                     
                     <!-- Búsqueda por ISBN -->
@@ -303,6 +299,16 @@ function abrirModalNuevoPrestamo() {
                             <input type="text" id="input-buscar-libro-isbn" class="w-full px-2 sm:px-3 py-2 text-sm border rounded" 
                                    placeholder="Escribe o escanea el ISBN del libro..." autocomplete="off">
                             <div id="sugerencias-libro-isbn" class="absolute z-10 w-full bg-white border rounded-b shadow-lg max-h-48 overflow-y-auto hidden"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Cuadro de confirmación de libro (fuera de los divs que se ocultan) -->
+                    <div id="libro-seleccionado-info" class="mt-2 p-2 bg-green-50 border border-green-200 rounded hidden">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs sm:text-sm font-medium text-green-700"></span>
+                            <button type="button" onclick="limpiarLibroSeleccionado()" class="text-red-600 hover:text-red-800">
+                                <i class="fas fa-times"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -504,9 +510,10 @@ function mostrarSugerenciasUsuario(usuarios) {
 function seleccionarUsuario(id, nombreCompleto, usuario) {
     usuarioSeleccionado = { id, nombreCompleto, usuario };
     
-    document.getElementById('input-buscar-usuario').value = nombreCompleto;
+    document.getElementById('input-buscar-usuario').value = '';
     document.getElementById('sugerencias-usuario').classList.add('hidden');
     
+    // Mostrar el cuadro de confirmación
     const infoDiv = document.getElementById('usuario-seleccionado-info');
     infoDiv.querySelector('span').textContent = `✓ ${nombreCompleto} (${usuario})`;
     infoDiv.classList.remove('hidden');
@@ -517,6 +524,7 @@ function limpiarUsuarioSeleccionado() {
     document.getElementById('input-buscar-usuario').value = '';
     document.getElementById('usuario-seleccionado-info').classList.add('hidden');
     document.getElementById('input-codigo-usuario').value = '';
+    document.getElementById('sugerencias-codigo-usuario').classList.add('hidden');
     document.getElementById('alerta-carnet-vencido').classList.add('hidden');
 }
 
@@ -564,7 +572,7 @@ function mostrarSugerenciasCodigoUsuario(usuarios) {
 function seleccionarUsuarioCodigoBarras(id, nombreCompleto, usuario, codigo, estaVencido) {
     usuarioSeleccionado = { id, nombreCompleto, usuario };
     
-    document.getElementById('input-codigo-usuario').value = codigo;
+    document.getElementById('input-codigo-usuario').value = '';
     document.getElementById('sugerencias-codigo-usuario').classList.add('hidden');
     
     // Mostrar/ocultar alerta de carnet vencido
@@ -575,7 +583,7 @@ function seleccionarUsuarioCodigoBarras(id, nombreCompleto, usuario, codigo, est
         alertaDiv.classList.add('hidden');
     }
     
-    // Actualizar también el info de usuario seleccionado (por si cambian de método)
+    // Mostrar el cuadro de confirmación con el usuario seleccionado
     const infoDiv = document.getElementById('usuario-seleccionado-info');
     infoDiv.querySelector('span').textContent = `✓ ${nombreCompleto} (${usuario})`;
     infoDiv.classList.remove('hidden');
@@ -623,14 +631,15 @@ function mostrarSugerenciasLibro(libros, tipo) {
 function seleccionarLibro(id, nombre, isbn, autor, stockDisponible) {
     libroSeleccionado = { id, nombre, isbn, autor, stockDisponible };
     
-    // Llenar ambos campos de búsqueda
-    document.getElementById('input-buscar-libro-nombre').value = nombre;
-    document.getElementById('input-buscar-libro-isbn').value = isbn;
+    // Limpiar ambos campos de búsqueda
+    document.getElementById('input-buscar-libro-nombre').value = '';
+    document.getElementById('input-buscar-libro-isbn').value = '';
     
     // Ocultar sugerencias
     document.getElementById('sugerencias-libro-nombre').classList.add('hidden');
     document.getElementById('sugerencias-libro-isbn').classList.add('hidden');
     
+    // Mostrar el cuadro de confirmación con el libro seleccionado
     const infoDiv = document.getElementById('libro-seleccionado-info');
     infoDiv.querySelector('span').textContent = `✓ ${nombre} (ISBN: ${isbn}) - Stock: ${stockDisponible}`;
     infoDiv.classList.remove('hidden');
