@@ -93,7 +93,20 @@ function escapeHtml(text) {
 
 function formatearFecha(fechaStr) {
     if (!fechaStr) return '';
-    const fecha = new Date(fechaStr);
+    // Parsear la fecha correctamente sin conversión de zona horaria
+    // Si viene en formato YYYY-MM-DD, parsear manualmente
+    if (fechaStr.includes('-') && !fechaStr.includes('T')) {
+        const [anio, mes, dia] = fechaStr.split(' ')[0].split('-');
+        return `${dia}/${mes}/${anio}`;
+    }
+    // Si viene como timestamp (YYYY-MM-DD HH:MM:SS), extraer solo la fecha
+    if (fechaStr.includes(' ')) {
+        const [fechaParte] = fechaStr.split(' ');
+        const [anio, mes, dia] = fechaParte.split('-');
+        return `${dia}/${mes}/${anio}`;
+    }
+    // Fallback para otros formatos
+    const fecha = new Date(fechaStr + 'T00:00:00');
     const dia = String(fecha.getDate()).padStart(2, '0');
     const mes = String(fecha.getMonth() + 1).padStart(2, '0');
     const anio = fecha.getFullYear();
@@ -107,16 +120,36 @@ function formatearMoneda(cantidad) {
 
 function diasDesde(fechaStr) {
     if (!fechaStr) return 0;
-    const fecha = new Date(fechaStr);
+    // Parsear la fecha correctamente para evitar problemas de timezone
+    let fecha;
+    if (fechaStr.includes('-') && !fechaStr.includes('T')) {
+        const [fechaParte] = fechaStr.split(' ');
+        const [anio, mes, dia] = fechaParte.split('-');
+        fecha = new Date(anio, mes - 1, dia);
+    } else {
+        fecha = new Date(fechaStr);
+    }
     const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    fecha.setHours(0, 0, 0, 0);
     const diff = Math.floor((hoy - fecha) / (1000 * 60 * 60 * 24));
     return diff;
 }
 
 function diasHasta(fechaStr) {
     if (!fechaStr) return 0;
-    const fecha = new Date(fechaStr);
+    // Parsear la fecha correctamente para evitar problemas de timezone
+    let fecha;
+    if (fechaStr.includes('-') && !fechaStr.includes('T')) {
+        const [fechaParte] = fechaStr.split(' ');
+        const [anio, mes, dia] = fechaParte.split('-');
+        fecha = new Date(anio, mes - 1, dia);
+    } else {
+        fecha = new Date(fechaStr);
+    }
     const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    fecha.setHours(0, 0, 0, 0);
     const diff = Math.floor((fecha - hoy) / (1000 * 60 * 60 * 24));
     return diff;
 }

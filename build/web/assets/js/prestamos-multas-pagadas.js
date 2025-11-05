@@ -85,21 +85,19 @@ function renderizarMultasPagadas(prestamos) {
     const totalMultas = prestamos.reduce((sum, p) => sum + parseFloat(p.multa), 0);
     
     tbody.innerHTML = prestamos.map(prestamo => {
-        const fechaPrestamo = new Date(prestamo.fechaPrestamo).toLocaleDateString('es-PE');
+        const fechaPrestamo = formatearFecha(prestamo.fechaPrestamo);
         const fechaDevolucionReal = prestamo.fechaDevolucionReal 
-            ? new Date(prestamo.fechaDevolucionReal).toLocaleDateString('es-PE') 
+            ? formatearFecha(prestamo.fechaDevolucionReal)
             : 'No devuelto';
         const fechaDevolucionProgramada = prestamo.fechaDevolucionEsperada 
-            ? new Date(prestamo.fechaDevolucionEsperada).toLocaleDateString('es-PE') 
+            ? formatearFecha(prestamo.fechaDevolucionEsperada)
             : 'N/A';
         
         // Calcular días de retraso
         let diasRetraso = 0;
         let estadoBadge = '';
         if (prestamo.fechaDevolucionReal && prestamo.fechaDevolucionEsperada) {
-            const real = new Date(prestamo.fechaDevolucionReal);
-            const esperada = new Date(prestamo.fechaDevolucionEsperada);
-            diasRetraso = Math.ceil((real - esperada) / (1000 * 60 * 60 * 24));
+            diasRetraso = diasDesde(prestamo.fechaDevolucionEsperada);
             if (diasRetraso > 0) {
                 estadoBadge = `<span class="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">${diasRetraso} día(s) tarde</span>`;
             }
@@ -252,18 +250,18 @@ function verDetalleMulta(id) {
         .then(data => {
             if (data.success) {
                 const prestamo = data.prestamo;
-                const fechaPrestamo = new Date(prestamo.fechaPrestamo).toLocaleString('es-PE');
-                const fechaDevolucionProgramada = new Date(prestamo.fechaDevolucionEsperada).toLocaleDateString('es-PE');
+                const fechaPrestamo = formatearFecha(prestamo.fechaPrestamo) + 
+                    (prestamo.fechaPrestamo.includes(' ') ? ' ' + prestamo.fechaPrestamo.split(' ')[1] : '');
+                const fechaDevolucionProgramada = formatearFecha(prestamo.fechaDevolucionEsperada);
                 const fechaDevolucionReal = prestamo.fechaDevolucionReal 
-                    ? new Date(prestamo.fechaDevolucionReal).toLocaleString('es-PE') 
+                    ? formatearFecha(prestamo.fechaDevolucionReal) + 
+                      (prestamo.fechaDevolucionReal.includes(' ') ? ' ' + prestamo.fechaDevolucionReal.split(' ')[1] : '')
                     : 'No devuelto';
                 
                 // Calcular días de retraso
                 let diasRetraso = 0;
                 if (prestamo.fechaDevolucionReal && prestamo.fechaDevolucionEsperada) {
-                    const real = new Date(prestamo.fechaDevolucionReal);
-                    const esperada = new Date(prestamo.fechaDevolucionEsperada);
-                    diasRetraso = Math.ceil((real - esperada) / (1000 * 60 * 60 * 24));
+                    diasRetraso = diasDesde(prestamo.fechaDevolucionEsperada);
                 }
                 
                 Swal.fire({

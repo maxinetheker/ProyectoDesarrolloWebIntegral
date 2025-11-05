@@ -82,23 +82,21 @@ function renderizarLibrosDevueltos(prestamos) {
     }
     
     tbody.innerHTML = prestamos.map(prestamo => {
-        const fechaPrestamo = new Date(prestamo.fechaPrestamo).toLocaleDateString('es-PE');
+        const fechaPrestamo = formatearFecha(prestamo.fechaPrestamo);
         const fechaDevolucionReal = prestamo.fechaDevolucionReal 
-            ? new Date(prestamo.fechaDevolucionReal).toLocaleDateString('es-PE') 
+            ? formatearFecha(prestamo.fechaDevolucionReal)
             : 'N/A';
         const fechaDevolucionProgramada = prestamo.fechaDevolucionEsperada 
-            ? new Date(prestamo.fechaDevolucionEsperada).toLocaleDateString('es-PE') 
+            ? formatearFecha(prestamo.fechaDevolucionEsperada)
             : 'N/A';
         
         // Verificar si se devolvió a tiempo
         let tiempoDevolucion = '';
         if (prestamo.fechaDevolucionReal && prestamo.fechaDevolucionEsperada) {
-            const real = new Date(prestamo.fechaDevolucionReal);
-            const esperada = new Date(prestamo.fechaDevolucionEsperada);
-            if (real <= esperada) {
+            const diasRetraso = diasDesde(prestamo.fechaDevolucionEsperada);
+            if (diasRetraso <= 0) {
                 tiempoDevolucion = '<span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">A tiempo</span>';
             } else {
-                const diasRetraso = Math.ceil((real - esperada) / (1000 * 60 * 60 * 24));
                 tiempoDevolucion = `<span class="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">${diasRetraso} día(s) tarde</span>`;
             }
         }
@@ -236,10 +234,12 @@ function verDetalleDevolucion(id) {
         .then(data => {
             if (data.success) {
                 const prestamo = data.prestamo;
-                const fechaPrestamo = new Date(prestamo.fechaPrestamo).toLocaleString('es-PE');
-                const fechaDevolucionProgramada = new Date(prestamo.fechaDevolucionEsperada).toLocaleDateString('es-PE');
+                const fechaPrestamo = formatearFecha(prestamo.fechaPrestamo) + 
+                    (prestamo.fechaPrestamo.includes(' ') ? ' ' + prestamo.fechaPrestamo.split(' ')[1] : '');
+                const fechaDevolucionProgramada = formatearFecha(prestamo.fechaDevolucionEsperada);
                 const fechaDevolucionReal = prestamo.fechaDevolucionReal 
-                    ? new Date(prestamo.fechaDevolucionReal).toLocaleString('es-PE') 
+                    ? formatearFecha(prestamo.fechaDevolucionReal) + 
+                      (prestamo.fechaDevolucionReal.includes(' ') ? ' ' + prestamo.fechaDevolucionReal.split(' ')[1] : '')
                     : 'No devuelto';
                 
                 Swal.fire({

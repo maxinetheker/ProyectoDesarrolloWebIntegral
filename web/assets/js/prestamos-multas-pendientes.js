@@ -82,28 +82,24 @@ function renderizarMultasPendientes(prestamos) {
     }
     
     tbody.innerHTML = prestamos.map(prestamo => {
-        const fechaPrestamo = new Date(prestamo.fechaPrestamo).toLocaleDateString('es-PE');
+        const fechaPrestamo = formatearFecha(prestamo.fechaPrestamo);
         const fechaDevolucionReal = prestamo.fechaDevolucionReal 
-            ? new Date(prestamo.fechaDevolucionReal).toLocaleDateString('es-PE') 
+            ? formatearFecha(prestamo.fechaDevolucionReal)
             : 'No devuelto';
         const fechaDevolucionProgramada = prestamo.fechaDevolucionEsperada 
-            ? new Date(prestamo.fechaDevolucionEsperada).toLocaleDateString('es-PE') 
+            ? formatearFecha(prestamo.fechaDevolucionEsperada)
             : 'N/A';
         
         // Calcular días de retraso
         let diasRetraso = 0;
         let estadoBadge = '';
         if (prestamo.fechaDevolucionReal && prestamo.fechaDevolucionEsperada) {
-            const real = new Date(prestamo.fechaDevolucionReal);
-            const esperada = new Date(prestamo.fechaDevolucionEsperada);
-            diasRetraso = Math.ceil((real - esperada) / (1000 * 60 * 60 * 24));
+            diasRetraso = diasDesde(prestamo.fechaDevolucionEsperada);
             if (diasRetraso > 0) {
                 estadoBadge = `<span class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">${diasRetraso} día(s) tarde</span>`;
             }
         } else if (prestamo.estado === 'prestado' || prestamo.estado === 'vencido') {
-            const hoy = new Date();
-            const esperada = new Date(prestamo.fechaDevolucionEsperada);
-            diasRetraso = Math.ceil((hoy - esperada) / (1000 * 60 * 60 * 24));
+            diasRetraso = diasDesde(prestamo.fechaDevolucionEsperada);
             if (diasRetraso > 0) {
                 estadoBadge = `<span class="px-2 py-1 text-xs font-semibold rounded-full bg-orange-100 text-orange-800">${diasRetraso} día(s) vencido</span>`;
             }

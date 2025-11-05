@@ -122,10 +122,16 @@ function renderizarDevoluciones(prestamos) {
                     <div class="mt-1">${estadoBadge}</div>
                 </td>
                 <td class="px-3 sm:px-6 py-4">
-                    <button onclick="abrirModalDevolucion(${prestamo.id})" 
-                        class="px-3 py-1.5 text-xs sm:text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded transition">
-                        <i class="fas fa-undo mr-1"></i>Registrar Devolución
-                    </button>
+                    <div class="flex flex-col gap-2">
+                        <button onclick="abrirModalDevolucion(${prestamo.id})" 
+                            class="px-3 py-1.5 text-xs sm:text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded transition">
+                            <i class="fas fa-undo mr-1"></i>Registrar Devolución
+                        </button>
+                        <button onclick="abrirModalExtenderPlazo(${prestamo.id}, '${escapeHtml(prestamo.libroNombre)}', '${escapeHtml(prestamo.usuarioNombre)}', '${formatearFecha(prestamo.fechaDevolucionEsperada)}')" 
+                            class="px-3 py-1.5 text-xs sm:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded transition">
+                            <i class="fas fa-calendar-plus mr-1"></i>Extender Plazo
+                        </button>
+                    </div>
                 </td>
             </tr>
         `;
@@ -210,7 +216,7 @@ function abrirModalNuevoPrestamo() {
                     <div id="metodo-usuario-buscar" class="metodo-usuario">
                         <div class="relative">
                             <input type="text" id="input-buscar-usuario" class="w-full px-3 py-2 border rounded" 
-                                   placeholder="Escribe nombre, apellido o usuario...">
+                                   placeholder="Escribe nombre, apellido o usuario..." autocomplete="off">
                             <div id="sugerencias-usuario" class="absolute z-10 w-full bg-white border rounded-b shadow-lg max-h-48 overflow-y-auto hidden"></div>
                         </div>
                         <div id="usuario-seleccionado-info" class="mt-2 p-2 bg-green-50 border border-green-200 rounded hidden">
@@ -226,7 +232,7 @@ function abrirModalNuevoPrestamo() {
                     <!-- Código de barras -->
                     <div id="metodo-usuario-codigo" class="metodo-usuario hidden">
                         <input type="text" id="input-codigo-usuario" class="w-full px-3 py-2 border rounded" 
-                               placeholder="Escanea el código de barras del usuario...">
+                               placeholder="Escanea el código de barras del usuario..." autocomplete="off">
                     </div>
                 </div>
                 
@@ -247,7 +253,7 @@ function abrirModalNuevoPrestamo() {
                     <div id="metodo-libro-nombre" class="metodo-libro">
                         <div class="relative">
                             <input type="text" id="input-buscar-libro-nombre" class="w-full px-3 py-2 border rounded" 
-                                   placeholder="Escribe el nombre del libro...">
+                                   placeholder="Escribe el nombre del libro..." autocomplete="off">
                             <div id="sugerencias-libro-nombre" class="absolute z-10 w-full bg-white border rounded-b shadow-lg max-h-48 overflow-y-auto hidden"></div>
                         </div>
                         <div id="libro-seleccionado-info" class="mt-2 p-2 bg-green-50 border border-green-200 rounded hidden">
@@ -264,7 +270,7 @@ function abrirModalNuevoPrestamo() {
                     <div id="metodo-libro-isbn" class="metodo-libro hidden">
                         <div class="relative">
                             <input type="text" id="input-buscar-libro-isbn" class="w-full px-3 py-2 border rounded" 
-                                   placeholder="Escribe o escanea el ISBN del libro...">
+                                   placeholder="Escribe o escanea el ISBN del libro..." autocomplete="off">
                             <div id="sugerencias-libro-isbn" class="absolute z-10 w-full bg-white border rounded-b shadow-lg max-h-48 overflow-y-auto hidden"></div>
                         </div>
                     </div>
@@ -643,6 +649,92 @@ function registrarDevolucion(id, estado, multa, observaciones) {
             cargarDevolucionesPendientes();
         } else {
             mostrarError(data.message || 'Error al registrar devolución');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        mostrarError('Error de conexión');
+    });
+}
+
+function abrirModalExtenderPlazo(prestamoId, libroNombre, usuarioNombre, fechaActual) {
+    Swal.fire({
+        title: 'Extender Plazo de Devolución',
+        width: '600px',
+        html: `
+            <div class="text-left space-y-4">
+                <div class="bg-gray-50 p-3 rounded border">
+                    <p class="text-sm font-semibold text-gray-700">Libro:</p>
+                    <p class="text-sm text-gray-900">${libroNombre}</p>
+                </div>
+                <div class="bg-gray-50 p-3 rounded border">
+                    <p class="text-sm font-semibold text-gray-700">Usuario:</p>
+                    <p class="text-sm text-gray-900">${usuarioNombre}</p>
+                </div>
+                <div class="bg-blue-50 p-3 rounded border border-blue-200">
+                    <p class="text-sm font-semibold text-blue-700">Fecha de devolución actual:</p>
+                    <p class="text-sm text-blue-900">${fechaActual}</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Días adicionales (1-30)</label>
+                    <input type="number" id="dias-adicionales" class="swal2-input" min="1" max="30" value="7" 
+                           style="width: 100%; margin: 0;">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Observaciones</label>
+                    <textarea id="observaciones-extension" class="swal2-textarea" rows="3" 
+                              placeholder="Motivo de la extensión..." style="width: 100%; margin: 0;"></textarea>
+                </div>
+            </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: '<i class="fas fa-check mr-1"></i>Extender Plazo',
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#3b82f6',
+        preConfirm: () => {
+            const diasAdicionales = parseInt(document.getElementById('dias-adicionales').value);
+            const observaciones = document.getElementById('observaciones-extension').value;
+            
+            if (!diasAdicionales || diasAdicionales < 1 || diasAdicionales > 30) {
+                Swal.showValidationMessage('Los días adicionales deben estar entre 1 y 30');
+                return false;
+            }
+            
+            if (!observaciones.trim()) {
+                Swal.showValidationMessage('Las observaciones son requeridas');
+                return false;
+            }
+            
+            return { diasAdicionales, observaciones };
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            extenderPlazo(prestamoId, result.value.diasAdicionales, result.value.observaciones);
+        }
+    });
+}
+
+function extenderPlazo(id, diasAdicionales, observaciones) {
+    const params = new URLSearchParams();
+    params.append('accion', 'extenderPlazo');
+    params.append('id', id);
+    params.append('diasAdicionales', diasAdicionales);
+    params.append('observaciones', observaciones);
+    
+    fetch(`${window.CONTEXT_PATH}/prestamos`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+        },
+        body: params.toString()
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            mostrarExito(data.message || 'Plazo extendido exitosamente');
+            cargarDevolucionesPendientes();
+        } else {
+            mostrarError(data.message || 'Error al extender el plazo');
         }
     })
     .catch(error => {
