@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 busquedaActual = this.value.trim();
                 paginaActual = 1;
                 cargarLibros();
-            }, 300); // Búsqueda más rápida: 300ms
+            }, 300); 
         });
     }
     

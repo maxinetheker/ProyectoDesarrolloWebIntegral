@@ -179,42 +179,61 @@ function mostrarPaginacion(paginaActual, totalPaginas, totalUsuarios) {
         inicio + ' - ' + fin + ' de ' + totalUsuarios + ' usuarios';
 
     const contenedor = document.getElementById('botones-paginacion');
-    let botones = '';
+    let html = '';
 
     // Botón anterior
-    if (paginaActual > 1) {
-        botones += '<button onclick="cargarUsuarios(' + (paginaActual - 1) + ', \'' + escapeHtml(terminoBusqueda) + '\')" ' +
-                'class="px-2 sm:px-3 py-1 border border-gray-300 rounded-md text-xs sm:text-sm font-medium text-gray-700 hover:bg-gray-50 transition duration-150">' +
-                '<i class="fas fa-chevron-left"></i>' +
-            '</button>';
-    }
+    html += '<button onclick="cargarUsuarios(' + (paginaActual - 1) + ', \'' + escapeHtml(terminoBusqueda) + '\')" ' +
+            (paginaActual === 1 ? 'disabled ' : '') +
+            'class="px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm font-medium rounded-md ' + 
+            (paginaActual === 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white text-gray-700 hover:bg-gray-100') + 
+            ' border border-gray-300 transition duration-200">' +
+            '<i class="fas fa-chevron-left"></i>' +
+        '</button>';
 
-    // Botones de páginas
-    for (let i = 1; i <= totalPaginas; i++) {
-        if (i === 1 || i === totalPaginas || (i >= paginaActual - 1 && i <= paginaActual + 1)) {
-            const esActual = i === paginaActual;
-            const claseBoton = esActual 
-                ? 'bg-slate-700 text-white border-slate-700' 
-                : 'border-gray-300 text-gray-700 hover:bg-gray-50';
-            
-            botones += '<button onclick="cargarUsuarios(' + i + ', \'' + escapeHtml(terminoBusqueda) + '\')" ' +
-                    'class="px-2 sm:px-3 py-1 border rounded-md text-xs sm:text-sm font-medium transition duration-150 ' + claseBoton + '">' +
-                    i +
-                '</button>';
-        } else if (i === paginaActual - 2 || i === paginaActual + 2) {
-            botones += '<span class="px-1 sm:px-2 text-xs sm:text-sm text-gray-500">...</span>';
+    // Páginas
+    const maxBotones = 5;
+    let inicio_pag = Math.max(1, paginaActual - Math.floor(maxBotones / 2));
+    let fin_pag = Math.min(totalPaginas, inicio_pag + maxBotones - 1);
+    
+    if (fin_pag - inicio_pag < maxBotones - 1) {
+        inicio_pag = Math.max(1, fin_pag - maxBotones + 1);
+    }
+    
+    if (inicio_pag > 1) {
+        html += '<button onclick="cargarUsuarios(1, \'' + escapeHtml(terminoBusqueda) + '\')" ' +
+                'class="px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm font-medium rounded-md bg-white text-gray-700 hover:bg-gray-100 border border-gray-300">1</button>';
+        if (inicio_pag > 2) {
+            html += '<span class="px-1 sm:px-2 py-1 text-xs sm:text-sm text-gray-500">...</span>';
         }
+    }
+    
+    for (let i = inicio_pag; i <= fin_pag; i++) {
+        const esActual = i === paginaActual;
+        html += '<button onclick="cargarUsuarios(' + i + ', \'' + escapeHtml(terminoBusqueda) + '\')" ' +
+                'class="px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm font-medium rounded-md border ' +
+                (esActual ? 'bg-slate-700 text-white border-slate-700' : 'bg-white text-gray-700 hover:bg-gray-100 border-gray-300') + 
+                '">' + i + '</button>';
+    }
+    
+    if (fin_pag < totalPaginas) {
+        if (fin_pag < totalPaginas - 1) {
+            html += '<span class="px-1 sm:px-2 py-1 text-xs sm:text-sm text-gray-500">...</span>';
+        }
+        html += '<button onclick="cargarUsuarios(' + totalPaginas + ', \'' + escapeHtml(terminoBusqueda) + '\')" ' +
+                'class="px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm font-medium rounded-md bg-white text-gray-700 hover:bg-gray-100 border border-gray-300">' +
+                totalPaginas + '</button>';
     }
 
     // Botón siguiente
-    if (paginaActual < totalPaginas) {
-        botones += '<button onclick="cargarUsuarios(' + (paginaActual + 1) + ', \'' + escapeHtml(terminoBusqueda) + '\')" ' +
-                'class="px-2 sm:px-3 py-1 border border-gray-300 rounded-md text-xs sm:text-sm font-medium text-gray-700 hover:bg-gray-50 transition duration-150">' +
-                '<i class="fas fa-chevron-right"></i>' +
-            '</button>';
-    }
+    html += '<button onclick="cargarUsuarios(' + (paginaActual + 1) + ', \'' + escapeHtml(terminoBusqueda) + '\')" ' +
+            (paginaActual === totalPaginas ? 'disabled ' : '') +
+            'class="px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm font-medium rounded-md ' +
+            (paginaActual === totalPaginas ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white text-gray-700 hover:bg-gray-100') + 
+            ' border border-gray-300">' +
+            '<i class="fas fa-chevron-right"></i>' +
+        '</button>';
 
-    contenedor.innerHTML = botones;
+    contenedor.innerHTML = html;
 }
 
 // Abrir modal para crear
