@@ -86,6 +86,14 @@
                    class="px-4 sm:px-6 py-3 font-medium text-xs sm:text-sm transition-all duration-200 border-b-2 border-slate-700 text-slate-700">
                     <i class="fas fa-users mr-2"></i>Usuarios
                 </a>
+                <a href="libros.jsp"
+                   class="px-4 sm:px-6 py-3 font-medium text-xs sm:text-sm transition-all duration-200 border-b-2 border-transparent text-gray-600 hover:text-slate-700 hover:border-slate-300">
+                    <i class="fas fa-book mr-2"></i>Libros
+                </a>
+                <a href="prestamos.jsp"
+                   class="px-4 sm:px-6 py-3 font-medium text-xs sm:text-sm transition-all duration-200 border-b-2 border-transparent text-gray-600 hover:text-slate-700 hover:border-slate-300">
+                    <i class="fas fa-exchange-alt mr-2"></i>Préstamos
+                </a>
             </nav>
             
             <!-- Mobile menu -->
@@ -97,6 +105,14 @@
                 <a href="usuarios.jsp"
                    class="block px-4 py-3 font-medium text-sm border-l-4 border-slate-700 bg-slate-50 text-slate-700">
                     <i class="fas fa-users mr-2"></i>Usuarios
+                </a>
+                <a href="libros.jsp"
+                   class="block px-4 py-3 font-medium text-sm border-l-4 border-transparent text-gray-600 hover:bg-gray-50 hover:border-slate-300">
+                    <i class="fas fa-book mr-2"></i>Libros
+                </a>
+                <a href="prestamos.jsp"
+                   class="block px-4 py-3 font-medium text-sm border-l-4 border-transparent text-gray-600 hover:bg-gray-50 hover:border-slate-300">
+                    <i class="fas fa-exchange-alt mr-2"></i>Préstamos
                 </a>
             </nav>
         </div>
