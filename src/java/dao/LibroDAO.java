@@ -458,4 +458,74 @@ public class LibroDAO {
         libro.setActivo(rs.getBoolean("activo"));
         return libro;
     }
+    
+    public int contarTotal() {
+        String sql = "SELECT COUNT(*) FROM libro WHERE activo = 1";
+        
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = DatabaseConnection.getInstance().getConnection();
+            ps = conn.prepareStatement(sql);
+            rs = ps.executeQuery();
+            
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (ps != null) ps.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (conn != null) {
+                DatabaseConnection.getInstance().releaseConnection(conn);
+            }
+        }
+        return 0;
+    }
+    
+    public List<Libro> obtenerLibrosMasPrestados(int limite) {
+        List<Libro> libros = new ArrayList<>();
+        String sql = "SELECT l.*, COALESCE(COUNT(e.id), 0) as total_prestamos " +
+                    "FROM libro l " +
+                    "LEFT JOIN entregas e ON l.id = e.id_libro " +
+                    "WHERE l.activo = 1 " +
+                    "GROUP BY l.id " +
+                    "ORDER BY total_prestamos DESC, RAND() " +
+                    "LIMIT ?";
+        
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = DatabaseConnection.getInstance().getConnection();
+            ps = conn.prepareStatement(sql);
+            ps.setInt(1, limite);
+            
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                libros.add(mapearLibro(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (ps != null) ps.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (conn != null) {
+                DatabaseConnection.getInstance().releaseConnection(conn);
+            }
+        }
+        return libros;
+    }
 }

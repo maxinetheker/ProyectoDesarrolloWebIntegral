@@ -1,3 +1,4 @@
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <!--
 aca va el codigo de la biblioteca del colegio
@@ -12,6 +13,12 @@ aca va el codigo de la biblioteca del colegio
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
     </head>
     <body class="bg-gray-50">
+        <%
+            // Verificar si el usuario tiene sesión activa
+            boolean usuarioLogueado = session.getAttribute("usuario") != null;
+            String nombreUsuario = usuarioLogueado ? (String) session.getAttribute("nombreUsuario") : "";
+        %>
+        
         <!-- cabecera -->
         <header class="bg-white/95 backdrop-blur-sm shadow-lg fixed w-full top-0 z-50">
             <nav class="container mx-auto px-4 py-4">
@@ -46,17 +53,32 @@ aca va el codigo de la biblioteca del colegio
                             Nuestros Libros
                             <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-cyan-500 transition-all duration-300 group-hover:w-full"></span>
                         </a>
-                        <!-- boton de inicio de sesion modernizado -->
-                        <a href="pages/login.jsp" class="group relative inline-flex items-center justify-center px-6 py-2.5 overflow-hidden font-medium text-white transition duration-300 ease-out bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900 rounded-sm shadow-lg hover:shadow-xl">
-                            <span class="absolute inset-0 w-full h-full bg-gradient-to-br from-slate-600 via-slate-700 to-slate-800 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-                            <span class="absolute top-0 left-0 w-full bg-gradient-to-b from-white/20 to-transparent opacity-50 h-1/3"></span>
-                            <span class="relative flex items-center">
-                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M10 2L3 7v11a2 2 0 002 2h10a2 2 0 002-2V7l-7-5zM8 18v-6h4v6H8z"/>
-                                </svg>
-                                Iniciar Sesión
-                            </span>
-                        </a>
+                        
+                        <% if (usuarioLogueado) { %>
+                            <!-- Botón Dashboard para usuario logueado -->
+                            <a href="pages/dashboard.jsp" class="group relative inline-flex items-center justify-center px-6 py-2.5 overflow-hidden font-medium text-white transition duration-300 ease-out bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 rounded-sm shadow-lg hover:shadow-xl">
+                                <span class="absolute inset-0 w-full h-full bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                                <span class="absolute top-0 left-0 w-full bg-gradient-to-b from-white/20 to-transparent opacity-50 h-1/3"></span>
+                                <span class="relative flex items-center">
+                                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+                                    </svg>
+                                    Dashboard
+                                </span>
+                            </a>
+                        <% } else { %>
+                            <!-- Botón de inicio de sesión -->
+                            <a href="pages/login.jsp" class="group relative inline-flex items-center justify-center px-6 py-2.5 overflow-hidden font-medium text-white transition duration-300 ease-out bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900 rounded-sm shadow-lg hover:shadow-xl">
+                                <span class="absolute inset-0 w-full h-full bg-gradient-to-br from-slate-600 via-slate-700 to-slate-800 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                                <span class="absolute top-0 left-0 w-full bg-gradient-to-b from-white/20 to-transparent opacity-50 h-1/3"></span>
+                                <span class="relative flex items-center">
+                                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M3 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1zm7.707 3.293a1 1 0 010 1.414L9.414 9H17a1 1 0 110 2H9.414l1.293 1.293a1 1 0 01-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                    </svg>
+                                    Iniciar Sesión
+                                </span>
+                            </a>
+                        <% } %>
                     </div>
 
                     <!-- boton hamburguesa para celulares -->
@@ -75,9 +97,16 @@ aca va el codigo de la biblioteca del colegio
                         <a href="#inicio" class="text-gray-700 hover:text-red-600 transition-colors duration-300 font-medium">Inicio</a>
                         <a href="#nosotros" class="text-gray-700 hover:text-red-600 transition-colors duration-300 font-medium">Nosotros</a>
                         <a href="#libros" class="text-gray-700 hover:text-red-600 transition-colors duration-300 font-medium">Nuestros Libros</a>
-                        <a href="pages/login.jsp" class="group relative inline-flex items-center justify-center px-6 py-2.5 overflow-hidden font-medium text-white transition duration-300 ease-out bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900 rounded-lg shadow-lg w-fit">
-                            <span class="relative">Iniciar Sesión</span>
-                        </a>
+                        
+                        <% if (usuarioLogueado) { %>
+                            <a href="pages/dashboard.jsp" class="group relative inline-flex items-center justify-center px-6 py-2.5 overflow-hidden font-medium text-white transition duration-300 ease-out bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 rounded-lg shadow-lg w-fit">
+                                <span class="relative">Dashboard</span>
+                            </a>
+                        <% } else { %>
+                            <a href="pages/login.jsp" class="group relative inline-flex items-center justify-center px-6 py-2.5 overflow-hidden font-medium text-white transition duration-300 ease-out bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900 rounded-lg shadow-lg w-fit">
+                                <span class="relative">Iniciar Sesión</span>
+                            </a>
+                        <% } %>
                     </div>
                 </div>
             </nav>
@@ -200,7 +229,7 @@ aca va el codigo de la biblioteca del colegio
 
                 <!-- estadisticas -->
                 <div class="mt-16 grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
-                    <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-sm p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                    <div class="bg-gradient-to-br from-slate-50 to-slate-100  rounded-sm p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-slate-600 font-semibold text-sm uppercase tracking-wide mb-2">Total de Libros</p>
@@ -213,7 +242,7 @@ aca va el codigo de la biblioteca del colegio
                             </div>
                         </div>
                     </div>
-                    <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-sm p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                    <div class="bg-gradient-to-br from-blue-50 to-blue-100  rounded-sm p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-blue-700 font-semibold text-sm uppercase tracking-wide mb-2">Usuarios Activos</p>

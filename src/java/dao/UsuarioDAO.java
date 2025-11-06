@@ -699,4 +699,35 @@ public class UsuarioDAO {
         usuario.setActivo(rs.getInt("activo") == 1);
         return usuario;
     }
+    
+    public int contarUsuariosActivos() {
+        String sql = "SELECT COUNT(*) FROM usuario WHERE activo = 1";
+        
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = DatabaseConnection.getInstance().getConnection();
+            ps = conn.prepareStatement(sql);
+            rs = ps.executeQuery();
+            
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (ps != null) ps.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (conn != null) {
+                DatabaseConnection.getInstance().releaseConnection(conn);
+            }
+        }
+        return 0;
+    }
 }
