@@ -441,8 +441,8 @@
             });
         }
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <script src="${pageContext.request.contextPath}/assets/js/sweetalert2@11.js"></script>
+    <script src="${pageContext.request.contextPath}/assets/js/JsBarcode.all.min.js"></script>
     <script src="${pageContext.request.contextPath}/assets/js/usuarios.js"></script>
     <script src="${pageContext.request.contextPath}/assets/js/carnet.js"></script>
 </body>

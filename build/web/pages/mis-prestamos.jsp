@@ -366,7 +366,7 @@
             });
         }
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="${pageContext.request.contextPath}/assets/js/sweetalert2@11.js"></script>
     <script src="${pageContext.request.contextPath}/assets/js/mis-prestamos.js"></script>
 </body>
 </html>
