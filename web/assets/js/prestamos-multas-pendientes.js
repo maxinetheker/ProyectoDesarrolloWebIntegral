@@ -380,13 +380,13 @@ function verDetalleMultaPendiente(id) {
                     : 'No devuelto';
                 
                 Swal.fire({
-                    title: '<i class="fas fa-exclamation-triangle text-amber-600"></i> Detalle de Multa Pendiente',
+                    title: '<i class="fas fa-exclamation-triangle text-slate-600"></i> Detalle de Multa Pendiente',
                     html: `
                         <div class="text-left space-y-3">
-                            <div class="bg-amber-50 p-3 rounded border border-amber-200">
-                                <p class="text-sm font-semibold text-amber-700">Multa Pendiente de Pago</p>
-                                <p class="text-2xl font-bold text-amber-600">S/. ${parseFloat(p.multa).toFixed(2)}</p>
-                                <p class="text-xs text-amber-600 mt-1">
+                            <div class="bg-slate-50 p-3 rounded border border-slate-200">
+                                <p class="text-sm font-semibold text-gray-700">Multa Pendiente de Pago</p>
+                                <p class="text-2xl font-bold text-gray-900">S/. ${parseFloat(p.multa).toFixed(2)}</p>
+                                <p class="text-xs text-gray-600 mt-1">
                                     <i class="fas fa-exclamation-circle"></i> Estado: NO PAGADO
                                 </p>
                             </div>

@@ -280,9 +280,9 @@
                     </div>
 
                     <!-- Información del Préstamo -->
-                    <div class="bg-blue-50 p-4 rounded-lg mb-4">
+                    <div class="bg-slate-50 p-4 rounded-lg mb-4 border border-slate-200">
                         <h4 class="font-semibold text-gray-700 mb-3 flex items-center">
-                            <i class="fas fa-calendar-alt text-blue-600 mr-2"></i>Fechas del Préstamo
+                            <i class="fas fa-calendar-alt text-slate-600 mr-2"></i>Fechas del Préstamo
                         </h4>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                             <div>
@@ -301,14 +301,14 @@
                     </div>
 
                     <!-- Información de la Multa -->
-                    <div class="bg-red-50 p-4 rounded-lg mb-4">
+                    <div class="bg-slate-50 p-4 rounded-lg mb-4 border border-slate-200">
                         <h4 class="font-semibold text-gray-700 mb-3 flex items-center">
-                            <i class="fas fa-exclamation-circle text-red-600 mr-2"></i>Información de la Multa
+                            <i class="fas fa-exclamation-circle text-slate-600 mr-2"></i>Información de la Multa
                         </h4>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <span class="text-gray-500 font-medium text-sm">Monto de la Multa:</span>
-                                <p id="detalle-multa" class="text-2xl font-bold text-red-600"></p>
+                                <p id="detalle-multa" class="text-2xl font-bold text-gray-900"></p>
                             </div>
                             <div>
                                 <span class="text-gray-500 font-medium text-sm">Estado de Pago:</span>

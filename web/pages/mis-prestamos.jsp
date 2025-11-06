@@ -281,9 +281,9 @@
                     </div>
 
                     <!-- Información del Préstamo -->
-                    <div class="bg-blue-50 p-4 rounded-lg mb-4">
+                    <div class="bg-slate-50 p-4 rounded-lg mb-4 border border-slate-200">
                         <h4 class="font-semibold text-gray-700 mb-3 flex items-center">
-                            <i class="fas fa-calendar-alt text-blue-600 mr-2"></i>Fechas del Préstamo
+                            <i class="fas fa-calendar-alt text-slate-600 mr-2"></i>Fechas del Préstamo
                         </h4>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                             <div>
@@ -303,24 +303,24 @@
 
                     <!-- Estado y Multa -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                        <div class="bg-white border border-gray-200 p-4 rounded-lg">
+                        <div class="bg-slate-50 border border-slate-200 p-4 rounded-lg">
                             <h4 class="font-semibold text-gray-700 mb-2 flex items-center">
-                                <i class="fas fa-info-circle text-green-600 mr-2"></i>Estado
+                                <i class="fas fa-info-circle text-slate-600 mr-2"></i>Estado
                             </h4>
                             <span id="detalle-estado" class="inline-flex px-3 py-1 text-sm font-semibold rounded-full"></span>
                         </div>
-                        <div class="bg-white border border-gray-200 p-4 rounded-lg">
+                        <div class="bg-slate-50 border border-slate-200 p-4 rounded-lg">
                             <h4 class="font-semibold text-gray-700 mb-2 flex items-center">
-                                <i class="fas fa-money-bill-wave text-red-600 mr-2"></i>Multa
+                                <i class="fas fa-money-bill-wave text-slate-600 mr-2"></i>Multa
                             </h4>
                             <p id="detalle-multa" class="text-2xl font-bold text-gray-900"></p>
                         </div>
                     </div>
 
                     <!-- Días de Préstamo (solo para préstamos activos/vencidos) -->
-                    <div id="detalle-dias-container" class="bg-yellow-50 p-4 rounded-lg mb-4">
+                    <div id="detalle-dias-container" class="bg-slate-50 p-4 rounded-lg mb-4 border border-slate-200">
                         <h4 class="font-semibold text-gray-700 mb-2 flex items-center">
-                            <i class="fas fa-clock text-yellow-600 mr-2"></i>Tiempo de Préstamo
+                            <i class="fas fa-clock text-slate-600 mr-2"></i>Tiempo de Préstamo
                         </h4>
                         <div class="text-sm">
                             <p id="detalle-dias-info" class="text-gray-900"></p>

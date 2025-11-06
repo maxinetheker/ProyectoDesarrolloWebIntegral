@@ -251,7 +251,7 @@ function verDetalleMultaPagada(id) {
                 }
                 
                 Swal.fire({
-                    title: '<i class="fas fa-receipt text-green-600"></i> Detalle de Multa Pagada',
+                    title: '<i class="fas fa-receipt text-slate-600"></i> Detalle de Multa Pagada',
                     html: `
                         <div class="text-left space-y-3">
                             <div class="border-b pb-2">
@@ -277,12 +277,12 @@ function verDetalleMultaPagada(id) {
                             <div class="border-b pb-2">
                                 <p class="text-sm font-semibold text-gray-700">Fecha Devolución Real</p>
                                 <p class="text-sm text-gray-900">${fechaDevolucionReal}</p>
-                                ${diasRetraso > 0 ? `<p class="text-xs text-orange-600 mt-1">Retrasado ${diasRetraso} día(s)</p>` : ''}
+                                ${diasRetraso > 0 ? `<p class="text-xs text-gray-600 mt-1">Retrasado ${diasRetraso} día(s)</p>` : ''}
                             </div>
-                            <div class="bg-green-50 p-3 rounded border border-green-200">
-                                <p class="text-sm font-semibold text-green-700">Multa Pagada</p>
-                                <p class="text-2xl font-bold text-green-600">S/. ${parseFloat(prestamo.multa).toFixed(2)}</p>
-                                <p class="text-xs text-green-600 mt-1">
+                            <div class="bg-slate-50 p-3 rounded border border-slate-200">
+                                <p class="text-sm font-semibold text-gray-700">Multa Pagada</p>
+                                <p class="text-2xl font-bold text-gray-900">S/. ${parseFloat(prestamo.multa).toFixed(2)}</p>
+                                <p class="text-xs text-gray-600 mt-1">
                                     <i class="fas fa-check-circle"></i> Estado: Pagado
                                 </p>
                             </div>

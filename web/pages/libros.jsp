@@ -478,7 +478,7 @@
                     <!-- Préstamos Pendientes -->
                     <div class="mt-6 border-t pt-4">
                         <h5 class="text-lg font-semibold text-gray-900 mb-3">
-                            <i class="fas fa-clock text-orange-500 mr-2"></i>Préstamos Pendientes
+                            <i class="fas fa-clock text-slate-600 mr-2"></i>Préstamos Pendientes
                         </h5>
                         <div id="tabla-prestamos-pendientes" class="overflow-x-auto">
                             <!-- Se llenará dinámicamente -->

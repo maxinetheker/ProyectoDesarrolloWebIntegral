@@ -863,7 +863,7 @@ function cargarPrestamosPendientes(libroId) {
                 if (pendientes.length === 0) {
                     container.innerHTML = `
                         <div class="text-center py-6 text-gray-500">
-                            <i class="fas fa-check-circle text-3xl mb-2 text-green-500"></i>
+                            <i class="fas fa-check-circle text-3xl mb-2 text-slate-600"></i>
                             <p class="text-sm">No hay préstamos pendientes</p>
                         </div>
                     `;
@@ -886,7 +886,7 @@ function cargarPrestamosPendientes(libroId) {
                                 const fechaDevolucion = new Date(prestamo.fechaDevolucionEsperada).toLocaleDateString('es-ES');
                                 const estadoBadge = prestamo.estado === 'vencido' 
                                     ? '<span class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">Vencido</span>'
-                                    : '<span class="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">Prestado</span>';
+                                    : '<span class="px-2 py-1 text-xs font-semibold rounded-full bg-slate-100 text-slate-800">Prestado</span>';
                                 
                                 return `
                                     <tr class="hover:bg-gray-50">
