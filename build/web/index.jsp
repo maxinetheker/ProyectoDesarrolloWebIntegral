@@ -1,4 +1,5 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page import="model.Usuario"%>
 <!DOCTYPE html>
 <!--
 aca va el codigo de la biblioteca del colegio
@@ -19,7 +20,11 @@ aca va el codigo de la biblioteca del colegio
             
             // Verificar si el usuario tiene sesión activa
             boolean usuarioLogueado = session.getAttribute("usuario") != null;
-            String nombreUsuario = usuarioLogueado ? (String) session.getAttribute("nombreUsuario") : "";
+            String nombreUsuario = "";
+            if (usuarioLogueado) {
+                Usuario usuario = (Usuario) session.getAttribute("usuario");
+                nombreUsuario = usuario.getNombre();
+            }
         %>
         
         <!-- cabecera -->
@@ -308,10 +313,87 @@ aca va el codigo de la biblioteca del colegio
             </div>
         </footer>
 
+        <!-- Chatbot flotante -->
+        <div id="chatbot-container">
+            <!-- Botón flotante circular -->
+            <button id="chatbot-toggle" class="fixed bottom-6 right-6 z-50 w-16 h-16 rounded-full shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-110 focus:outline-none focus:ring-4 focus:ring-blue-300 overflow-hidden group">
+                <div class="absolute inset-0 bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 opacity-90 group-hover:opacity-100 transition-opacity"></div>
+                <img src="<%= contextPath %>/assets/images/bot.jpg" alt="Chatbot" class="w-full h-full object-cover relative z-10">
+                <div class="absolute inset-0 bg-blue-600/20 group-hover:bg-blue-600/0 transition-all z-20"></div>
+            </button>
+            
+            <!-- Ventana del chat -->
+            <div id="chatbot-window" class="fixed bottom-24 right-6 z-50 w-96 max-w-[calc(100vw-3rem)] bg-white rounded-lg shadow-2xl transform translate-y-8 opacity-0 pointer-events-none transition-all duration-300">
+                <!-- Header del chat -->
+                <div class="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 rounded-t-lg flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-full overflow-hidden ring-2 ring-white/50">
+                            <img src="<%= contextPath %>/assets/images/bot.jpg" alt="BiblioBot" class="w-full h-full object-cover">
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg">BiblioBot</h3>
+                            <p class="text-xs text-blue-100">Asistente virtual 🤖</p>
+                        </div>
+                    </div>
+                    <button id="chatbot-close" class="text-white hover:bg-white/20 rounded-full p-2 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- Mensajes del chat -->
+                <div id="chatbot-messages" class="h-96 overflow-y-auto p-4 bg-gray-50 space-y-3">
+                    <!-- Mensaje de bienvenida -->
+                    <div class="flex items-start space-x-2">
+                        <div class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 ring-2 ring-blue-200">
+                            <img src="<%= contextPath %>/assets/images/bot.jpg" alt="Bot" class="w-full h-full object-cover">
+                        </div>
+                        <div class="bg-white rounded-lg rounded-tl-none shadow-md p-3 max-w-[80%]">
+                            <p class="text-sm text-gray-800">
+                                <% if (usuarioLogueado) { %>
+                                    ¡Hola <%= nombreUsuario %>! 👋 Soy BiblioBot, tu asistente virtual. ¿En qué puedo ayudarte hoy?
+                                <% } else { %>
+                                    ¡Hola! 👋 Soy BiblioBot, tu asistente virtual. ¿En qué puedo ayudarte? Puedes preguntarme sobre nuestros libros disponibles.
+                                <% } %>
+                            </p>
+                            <p class="text-xs text-gray-400 mt-1">Ahora</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Input para escribir -->
+                <div class="p-4 bg-white border-t border-gray-200 rounded-b-lg">
+                    <form id="chatbot-form" class="flex items-center space-x-2">
+                        <input 
+                            type="text" 
+                            id="chatbot-input" 
+                            placeholder="Escribe tu mensaje..."
+                            class="flex-1 border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                            autocomplete="off"
+                        >
+                        <button 
+                            type="submit" 
+                            id="chatbot-send"
+                            class="bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-full p-2 hover:from-blue-700 hover:to-blue-800 transition-all transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                            </svg>
+                        </button>
+                    </form>
+                    <p class="text-xs text-gray-400 mt-2 text-center">Powered by Gemini AI</p>
+                </div>
+            </div>
+        </div>
+
         <!-- Swiper JS -->
         <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
         
         <!-- Script principal -->
         <script src="<%= contextPath %>/assets/js/index.js"></script>
+        
+        <!-- Script del chatbot -->
+        <script src="<%= contextPath %>/assets/js/chatbot.js"></script>
     </body>
 </html>
