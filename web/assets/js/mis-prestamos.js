@@ -1,4 +1,3 @@
-// Configuración global
 let prestamosData = [];
 let filtroActual = 'todos';
 let terminoBusqueda = '';
@@ -6,14 +5,12 @@ let paginaActual = 1;
 let totalPaginas = 1;
 const elementosPorPagina = 10;
 
-// Inicializar la página
 document.addEventListener('DOMContentLoaded', function() {
     configurarEventos();
     cargarPrestamos();
 });
 
 function configurarEventos() {
-    // Evento de búsqueda
     const campoBusqueda = document.getElementById('buscar-prestamos');
     if (campoBusqueda) {
         let timeoutBusqueda;
@@ -21,18 +18,17 @@ function configurarEventos() {
             clearTimeout(timeoutBusqueda);
             timeoutBusqueda = setTimeout(() => {
                 terminoBusqueda = this.value;
-                paginaActual = 1; // Reiniciar a la primera página
+                paginaActual = 1;
                 cargarPrestamos();
             }, 300);
         });
     }
 
-    // Evento de filtro
     const filtroEstado = document.getElementById('filtro-estado');
     if (filtroEstado) {
         filtroEstado.addEventListener('change', function() {
             filtroActual = this.value;
-            paginaActual = 1; // Reiniciar a la primera página
+            paginaActual = 1;
             cargarPrestamos();
         });
     }
@@ -58,7 +54,6 @@ async function cargarPrestamos() {
     try {
         mostrarCarga();
         
-        // Construir URL con parámetros
         const params = new URLSearchParams({
             accion: 'obtener',
             estado: filtroActual,
@@ -108,7 +103,6 @@ function actualizarTabla(prestamos) {
         return;
     }
     
-    // Limpiar contenido existente
     tbody.innerHTML = '';
     containerMobile.innerHTML = '';
     
@@ -119,11 +113,9 @@ function actualizarTabla(prestamos) {
     }
 
     prestamos.forEach(prestamo => {
-        // Crear fila para tabla desktop
         const fila = crearFilaPrestamo(prestamo);
         tbody.appendChild(fila);
         
-        // Crear card para mobile
         const card = crearCardPrestamo(prestamo);
         containerMobile.appendChild(card);
     });
@@ -173,6 +165,13 @@ function crearFilaPrestamo(prestamo) {
                 <span class="text-sm ${diasInfo.clase}">${diasInfo.texto}</span>
                 <span class="text-xs text-gray-500">${diasInfo.descripcion}</span>
             </div>
+        </td>
+        <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-center">
+            <button onclick="verDetallePrestamo(${prestamo.id})" 
+                    class="bg-slate-700 hover:bg-slate-800 text-white p-1.5 sm:p-2 rounded transition" 
+                    title="Ver detalles">
+                <i class="fas fa-info-circle text-sm sm:text-base"></i>
+            </button>
         </td>
     `;
 
@@ -236,6 +235,14 @@ function crearCardPrestamo(prestamo) {
                 <span class="text-red-600 font-bold text-sm">${montoMulta}</span>
             </div>
             ` : ''}
+            
+            <!-- Botón ver detalles -->
+            <div class="pt-2 border-t border-gray-100">
+                <button onclick="verDetallePrestamo(${prestamo.id})" 
+                        class="w-full bg-blue-50 hover:bg-blue-100 text-blue-700 py-2 px-3 rounded-md text-xs font-medium transition-colors duration-200 flex items-center justify-center">
+                    <i class="fas fa-info-circle mr-2"></i>Ver Detalles
+                </button>
+            </div>
         </div>
     `;
 
@@ -494,7 +501,75 @@ function actualizarDatos() {
     cargarPrestamos();
 }
 
+// Función para ver detalles del préstamo
+function verDetallePrestamo(id) {
+    const prestamo = prestamosData.find(p => p.id === id);
+    if (!prestamo) {
+        mostrarError('No se encontró el préstamo');
+        return;
+    }
+    
+    // Llenar información del libro
+    document.getElementById('detalle-libro-titulo').textContent = prestamo.libroTitulo || prestamo.libroNombre || 'N/A';
+    document.getElementById('detalle-libro-autor').textContent = prestamo.libroAutor || 'N/A';
+    document.getElementById('detalle-libro-isbn').textContent = prestamo.libroIsbn || 'N/A';
+    
+    // Llenar fechas
+    document.getElementById('detalle-fecha-prestamo').textContent = formatearFecha(prestamo.fechaEntrega || prestamo.fechaPrestamo);
+    document.getElementById('detalle-fecha-devolucion-esperada').textContent = formatearFecha(prestamo.fechaDevolucionProgramada || prestamo.fechaDevolucionEsperada || prestamo.fechaLimite);
+    
+    // Fecha de devolución real (solo si existe)
+    const fechaDevReal = prestamo.fechaDevolucionReal || prestamo.fechaDevolucion;
+    const containerDevReal = document.getElementById('detalle-fecha-devolucion-real-container');
+    if (fechaDevReal) {
+        document.getElementById('detalle-fecha-devolucion-real').textContent = formatearFecha(fechaDevReal);
+        containerDevReal.classList.remove('hidden');
+    } else {
+        containerDevReal.classList.add('hidden');
+    }
+    
+    // Estado
+    const estadoInfo = obtenerEstadoInfo(prestamo);
+    const estadoElement = document.getElementById('detalle-estado');
+    estadoElement.textContent = estadoInfo.texto;
+    estadoElement.className = `inline-flex px-3 py-1 text-sm font-semibold rounded-full ${estadoInfo.clase}`;
+    
+    // Multa
+    document.getElementById('detalle-multa').textContent = formatearMoneda(prestamo.multa);
+    
+    // Días (solo mostrar para préstamos activos o vencidos)
+    const containerDias = document.getElementById('detalle-dias-container');
+    if (prestamo.estado === 'prestado' || prestamo.estado === 'vencido') {
+        const diasInfo = calcularDiasInfo(prestamo);
+        document.getElementById('detalle-dias-info').textContent = diasInfo.texto;
+        document.getElementById('detalle-dias-info').className = `text-gray-900 font-semibold ${diasInfo.clase}`;
+        document.getElementById('detalle-dias-descripcion').textContent = diasInfo.descripcion;
+        containerDias.classList.remove('hidden');
+    } else {
+        containerDias.classList.add('hidden');
+    }
+    
+    // Observaciones (si existen)
+    const observaciones = prestamo.observacionesEntrega || prestamo.observacionesDevolucion;
+    const containerObservaciones = document.getElementById('detalle-observaciones-container');
+    if (observaciones) {
+        document.getElementById('detalle-observaciones').textContent = observaciones;
+        containerObservaciones.classList.remove('hidden');
+    } else {
+        containerObservaciones.classList.add('hidden');
+    }
+    
+    // Mostrar modal
+    document.getElementById('modalDetallePrestamo').classList.remove('hidden');
+}
+
+function cerrarModalDetalle() {
+    document.getElementById('modalDetallePrestamo').classList.add('hidden');
+}
+
 // Exportar funciones para uso global si es necesario
 window.cargarPrestamos = cargarPrestamos;
 window.actualizarDatos = actualizarDatos;
 window.cambiarPagina = cambiarPagina;
+window.verDetallePrestamo = verDetallePrestamo;
+window.cerrarModalDetalle = cerrarModalDetalle;

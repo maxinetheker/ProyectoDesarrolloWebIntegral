@@ -175,6 +175,13 @@ function crearFilaMulta(multa) {
                 ${estadoPago}
             </span>
         </td>
+        <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-center">
+            <button onclick="verDetalleMulta(${multa.id})" 
+                    class="bg-slate-700 hover:bg-slate-800 text-white p-1.5 sm:p-2 rounded transition" 
+                    title="Ver detalles">
+                <i class="fas fa-info-circle text-sm sm:text-base"></i>
+            </button>
+        </td>
     `;
 
     return fila;
@@ -221,6 +228,14 @@ function crearCardMulta(multa) {
                 <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${claseEstado}">
                     ${estadoPago}
                 </span>
+            </div>
+            
+            <!-- Botón ver detalles -->
+            <div class="pt-2 border-t border-gray-100">
+                <button onclick="verDetalleMulta(${multa.id})" 
+                        class="w-full bg-blue-50 hover:bg-blue-100 text-blue-700 py-2 px-3 rounded-md text-xs font-medium transition-colors duration-200 flex items-center justify-center">
+                    <i class="fas fa-info-circle mr-2"></i>Ver Detalles
+                </button>
             </div>
         </div>
     `;
@@ -401,8 +416,70 @@ function actualizarDatos() {
     cargarMultas();
 }
 
+// Función para ver detalles de la multa
+function verDetalleMulta(id) {
+    const multa = multasData.find(m => m.id === id);
+    if (!multa) {
+        mostrarError('No se encontró la multa');
+        return;
+    }
+    
+    // Llenar información del libro
+    document.getElementById('detalle-libro-titulo').textContent = multa.libroTitulo || multa.libroNombre || 'N/A';
+    document.getElementById('detalle-libro-autor').textContent = multa.libroAutor || 'N/A';
+    document.getElementById('detalle-libro-isbn').textContent = multa.libroIsbn || 'N/A';
+    
+    // Llenar fechas
+    document.getElementById('detalle-fecha-prestamo').textContent = formatearFecha(multa.fechaEntrega || multa.fechaPrestamo);
+    document.getElementById('detalle-fecha-devolucion-esperada').textContent = formatearFecha(multa.fechaDevolucionProgramada || multa.fechaDevolucionEsperada);
+    
+    // Fecha de devolución real
+    const fechaDevReal = multa.fechaDevolucionReal || multa.fechaDevolucion;
+    if (fechaDevReal) {
+        document.getElementById('detalle-fecha-devolucion-real').textContent = formatearFecha(fechaDevReal);
+    } else {
+        document.getElementById('detalle-fecha-devolucion-real').textContent = 'Pendiente';
+    }
+    
+    // Multa
+    document.getElementById('detalle-multa').textContent = formatearMoneda(multa.multa);
+    
+    // Estado de pago
+    const estadoPago = multa.pagado ? 'Pagada' : 'Pendiente';
+    const claseEstado = multa.pagado ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
+    const estadoElement = document.getElementById('detalle-estado-pago');
+    estadoElement.textContent = estadoPago;
+    estadoElement.className = `inline-flex px-3 py-1 text-sm font-semibold rounded-full ${claseEstado}`;
+    
+    // Calcular días de retraso
+    const fechaPrestamo = new Date(multa.fechaEntrega || multa.fechaPrestamo);
+    const fechaDevEsperada = new Date(multa.fechaDevolucionProgramada || multa.fechaDevolucionEsperada);
+    const fechaDevRealDate = fechaDevReal ? new Date(fechaDevReal) : new Date();
+    const diasRetraso = Math.max(0, Math.floor((fechaDevRealDate - fechaDevEsperada) / (1000 * 60 * 60 * 24)));
+    document.getElementById('detalle-dias-retraso').textContent = `${diasRetraso} día${diasRetraso !== 1 ? 's' : ''}`;
+    
+    // Observaciones (si existen)
+    const observaciones = multa.observacionesEntrega || multa.observacionesDevolucion;
+    const containerObservaciones = document.getElementById('detalle-observaciones-container');
+    if (observaciones) {
+        document.getElementById('detalle-observaciones').textContent = observaciones;
+        containerObservaciones.classList.remove('hidden');
+    } else {
+        containerObservaciones.classList.add('hidden');
+    }
+    
+    // Mostrar modal
+    document.getElementById('modalDetalleMulta').classList.remove('hidden');
+}
+
+function cerrarModalDetalle() {
+    document.getElementById('modalDetalleMulta').classList.add('hidden');
+}
+
 // Exportar funciones para uso global si es necesario
 window.cargarMultas = cargarMultas;
 window.actualizarDatos = actualizarDatos;
 window.cambiarPagina = cambiarPagina;
 window.cambiarPagina = cambiarPagina;
+window.verDetalleMulta = verDetalleMulta;
+window.cerrarModalDetalle = cerrarModalDetalle;

@@ -188,12 +188,13 @@
                             <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha Devolución</th>
                             <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Multa</th>
                             <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                            <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
                         </tr>
                     </thead>
                     <tbody id="tabla-multas" class="bg-white divide-y divide-gray-200">
                         <!-- Fila de carga -->
                         <tr id="carga-multas">
-                            <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+                            <td colspan="6" class="px-6 py-4 text-center text-gray-500">
                                 <i class="fas fa-spinner fa-spin mr-2"></i>Cargando multas...
                             </td>
                         </tr>
@@ -238,6 +239,101 @@
             <div class="px-3 sm:px-6 py-3 sm:py-4 border-t border-gray-200 bg-gray-50">
                 <div class="text-xs sm:text-sm text-gray-700">
                     Total de multas: <span id="total-multas" class="font-semibold">0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Detalles de la Multa -->
+    <div id="modalDetalleMulta" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 p-2 sm:p-0">
+        <div class="relative top-4 sm:top-10 mx-auto p-3 sm:p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white mb-4">
+            <div class="mt-2 sm:mt-3">
+                <div class="flex justify-between items-center pb-2 sm:pb-3 border-b border-gray-200">
+                    <h3 class="text-lg sm:text-xl font-bold text-gray-900">
+                        <i class="fas fa-money-bill-wave text-red-600 mr-2"></i>Detalles de la Multa
+                    </h3>
+                    <button onclick="cerrarModalDetalle()" class="text-gray-400 hover:text-gray-600 transition duration-150">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+
+                <div class="mt-4">
+                    <!-- Información del Libro -->
+                    <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                        <h4 class="font-semibold text-gray-700 mb-3 flex items-center">
+                            <i class="fas fa-book text-slate-600 mr-2"></i>Información del Libro
+                        </h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                            <div>
+                                <span class="text-gray-500 font-medium">Título:</span>
+                                <p id="detalle-libro-titulo" class="text-gray-900 font-semibold"></p>
+                            </div>
+                            <div>
+                                <span class="text-gray-500 font-medium">Autor:</span>
+                                <p id="detalle-libro-autor" class="text-gray-900"></p>
+                            </div>
+                            <div class="sm:col-span-2">
+                                <span class="text-gray-500 font-medium">ISBN:</span>
+                                <p id="detalle-libro-isbn" class="text-gray-900"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Información del Préstamo -->
+                    <div class="bg-blue-50 p-4 rounded-lg mb-4">
+                        <h4 class="font-semibold text-gray-700 mb-3 flex items-center">
+                            <i class="fas fa-calendar-alt text-blue-600 mr-2"></i>Fechas del Préstamo
+                        </h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                            <div>
+                                <span class="text-gray-500 font-medium">Fecha de Préstamo:</span>
+                                <p id="detalle-fecha-prestamo" class="text-gray-900"></p>
+                            </div>
+                            <div>
+                                <span class="text-gray-500 font-medium">Fecha de Devolución Esperada:</span>
+                                <p id="detalle-fecha-devolucion-esperada" class="text-gray-900"></p>
+                            </div>
+                            <div id="detalle-fecha-devolucion-real-container" class="sm:col-span-2">
+                                <span class="text-gray-500 font-medium">Fecha de Devolución Real:</span>
+                                <p id="detalle-fecha-devolucion-real" class="text-gray-900 font-semibold"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Información de la Multa -->
+                    <div class="bg-red-50 p-4 rounded-lg mb-4">
+                        <h4 class="font-semibold text-gray-700 mb-3 flex items-center">
+                            <i class="fas fa-exclamation-circle text-red-600 mr-2"></i>Información de la Multa
+                        </h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <span class="text-gray-500 font-medium text-sm">Monto de la Multa:</span>
+                                <p id="detalle-multa" class="text-2xl font-bold text-red-600"></p>
+                            </div>
+                            <div>
+                                <span class="text-gray-500 font-medium text-sm">Estado de Pago:</span>
+                                <span id="detalle-estado-pago" class="inline-flex px-3 py-1 text-sm font-semibold rounded-full mt-1"></span>
+                            </div>
+                            <div class="sm:col-span-2">
+                                <span class="text-gray-500 font-medium text-sm">Días de Retraso:</span>
+                                <p id="detalle-dias-retraso" class="text-lg font-semibold text-gray-900 mt-1"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Observaciones (si existen) -->
+                    <div id="detalle-observaciones-container" class="hidden bg-gray-50 p-4 rounded-lg">
+                        <h4 class="font-semibold text-gray-700 mb-2 flex items-center">
+                            <i class="fas fa-comment-alt text-gray-600 mr-2"></i>Observaciones
+                        </h4>
+                        <p id="detalle-observaciones" class="text-sm text-gray-700"></p>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200">
+                    <button onclick="cerrarModalDetalle()" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition duration-200 font-medium text-sm">
+                        <i class="fas fa-times mr-2"></i>Cerrar
+                    </button>
                 </div>
             </div>
         </div>
