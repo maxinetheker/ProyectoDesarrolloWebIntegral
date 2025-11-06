@@ -10,16 +10,19 @@ let chartsInstances = {
     deudasChart: null
 };
 
-// Configuración de colores
+// Configuración de colores - tonos celestes sobrios y profesionales
 const colors = {
-    primary: '#1e293b',
-    secondary: '#475569',
-    success: '#22c55e',
-    danger: '#ef4444',
-    warning: '#f59e0b',
-    info: '#3b82f6',
-    purple: '#a855f7',
-    pink: '#ec4899'
+    primary: '#475569',        // Gris azulado oscuro
+    secondary: '#64748b',      // Gris azulado medio
+    celeste1: '#67a3d9',       // Celeste principal
+    celeste2: '#7fb3e0',       // Celeste suave
+    celeste3: '#96c3e7',       // Celeste claro
+    celeste4: '#548bb8',       // Celeste oscuro
+    celeste5: '#4a7ba7',       // Celeste profundo
+    success: '#10b981',        // Verde éxito
+    danger: '#dc2626',         // Rojo
+    warning: '#f59e0b',        // Naranja
+    gris: '#94a3b8'           // Gris neutro
 };
 
 // Función para destruir un gráfico si existe
@@ -33,7 +36,8 @@ function destroyChart(chartName) {
 // Función para cargar estadísticas de biblioteca (para admin y bibliotecario)
 async function cargarEstadisticasBiblioteca() {
     try {
-        const response = await fetch('dashboard?action=biblioteca');
+        const contextPath = window.location.pathname.substring(0, window.location.pathname.indexOf("/", 2));
+        const response = await fetch(`${contextPath}/dashboard?action=biblioteca`);
         if (!response.ok) {
             if (response.status === 403) {
                 console.log('Acceso denegado a estadísticas de biblioteca');
@@ -59,7 +63,8 @@ async function cargarEstadisticasBiblioteca() {
 // Función para cargar estadísticas personales (para todos los usuarios)
 async function cargarEstadisticasPersonales() {
     try {
-        const response = await fetch('dashboard?action=personal');
+        const contextPath = window.location.pathname.substring(0, window.location.pathname.indexOf("/", 2));
+        const response = await fetch(`${contextPath}/dashboard?action=personal`);
         if (!response.ok) {
             throw new Error('Error al cargar estadísticas personales');
         }
@@ -353,7 +358,7 @@ function renderCarnetsGenerados(data) {
 }
 
 
-// Gráfico de Libros Leídos (gráfico creciente)
+// Gráfico de Libros Prestados y Devueltos (acumulativo)
 function renderLibrosLeidos(data) {
     const canvas = document.getElementById('chartLibrosLeidos');
     if (!canvas) return;
@@ -365,23 +370,45 @@ function renderLibrosLeidos(data) {
         type: 'line',
         data: {
             labels: data.labels.map(formatearMes),
-            datasets: [{
-                label: 'Libros Leídos',
-                data: data.data,
-                borderColor: colors.primary,
-                backgroundColor: colors.primary + '20',
-                fill: true,
-                tension: 0.4,
-                pointRadius: 4,
-                pointHoverRadius: 6
-            }]
+            datasets: [
+                {
+                    label: 'Prestados',
+                    data: data.prestadosData,
+                    borderColor: '#67a3d9',
+                    backgroundColor: 'rgba(103, 163, 217, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    borderWidth: 2
+                },
+                {
+                    label: 'Devueltos',
+                    data: data.devueltosData,
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    borderWidth: 2
+                }
+            ]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
                 legend: {
-                    display: false
+                    display: true,
+                    position: 'bottom',
+                    labels: {
+                        padding: 10,
+                        font: {
+                            size: 11
+                        },
+                        usePointStyle: true
+                    }
                 },
                 tooltip: {
                     backgroundColor: 'rgba(0, 0, 0, 0.8)',
@@ -403,7 +430,7 @@ function renderLibrosLeidos(data) {
     // Actualizar total
     const totalEl = document.getElementById('totalLibrosLeidos');
     if (totalEl) {
-        totalEl.textContent = data.total.toLocaleString();
+        totalEl.textContent = data.totalPrestados.toLocaleString();
     }
 }
 

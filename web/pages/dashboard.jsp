@@ -272,12 +272,12 @@
                 <div class="bg-white rounded-lg shadow-md p-6 border border-gray-200">
                     <div class="flex justify-between items-start mb-4">
                         <div>
-                            <h4 class="text-lg font-semibold text-gray-700">Libros Leídos</h4>
-                            <p class="text-sm text-gray-500">Últimos 6 meses</p>
+                            <h4 class="text-lg font-semibold text-gray-700">Mis Libros</h4>
+                            <p class="text-sm text-gray-500">Prestados y devueltos</p>
                         </div>
                         <div class="text-right">
                             <p class="text-2xl font-bold text-slate-700" id="totalLibrosLeidos">-</p>
-                            <p class="text-xs text-gray-500">Total</p>
+                            <p class="text-xs text-gray-500">Prestados</p>
                         </div>
                     </div>
                     <div class="h-48">

@@ -287,46 +287,66 @@ public class DashboardServlet extends HttpServlet {
         return result;
     }
     
-    // Libros que el usuario ya devolvio (leyo)
+    // Libros prestados y devueltos por el usuario (acumulativo)
     private Map<String, Object> obtenerLibrosLeidosPorUsuario(Connection conn, int idUsuario) throws SQLException {
         Map<String, Object> result = new HashMap<>();
-        String sql = "SELECT DATE_FORMAT(fecha_devolucion_real, '%Y-%m') as mes, COUNT(*) as total " +
+        
+        // Query para obtener prestamos y devoluciones por mes
+        String sql = "SELECT " +
+                    "DATE_FORMAT(fecha_entrega, '%Y-%m') as mes, " +
+                    "COUNT(*) as prestados, " +
+                    "SUM(CASE WHEN fecha_devolucion_real IS NOT NULL AND estado = 'devuelto' THEN 1 ELSE 0 END) as devueltos " +
                     "FROM entregas " +
                     "WHERE id_usuario = ? " +
-                    "AND fecha_devolucion_real >= DATE_SUB(NOW(), INTERVAL 6 MONTH) " +
-                    "AND estado = 'devuelto' " +
+                    "AND fecha_entrega >= DATE_SUB(NOW(), INTERVAL 6 MONTH) " +
                     "GROUP BY mes " +
                     "ORDER BY mes ASC";
         
         List<String> labels = new ArrayList<>();
-        List<Integer> data = new ArrayList<>();
+        List<Integer> prestadosData = new ArrayList<>();
+        List<Integer> devueltosData = new ArrayList<>();
         
-        // Contar todos los libros devueltos del usuario
-        String sqlTotal = "SELECT COUNT(*) as total FROM entregas WHERE id_usuario = ? AND estado = 'devuelto'";
-        int totalLeidos = 0;
+        // Totales generales
+        String sqlTotal = "SELECT " +
+                         "COUNT(*) as total_prestados, " +
+                         "SUM(CASE WHEN estado = 'devuelto' THEN 1 ELSE 0 END) as total_devueltos " +
+                         "FROM entregas WHERE id_usuario = ?";
+        int totalPrestados = 0;
+        int totalDevueltos = 0;
         
         try (PreparedStatement ps = conn.prepareStatement(sqlTotal)) {
             ps.setInt(1, idUsuario);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    totalLeidos = rs.getInt("total");
+                    totalPrestados = rs.getInt("total_prestados");
+                    totalDevueltos = rs.getInt("total_devueltos");
                 }
             }
         }
+        
+        // Datos acumulativos por mes
+        int acumPrestados = 0;
+        int acumDevueltos = 0;
         
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, idUsuario);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     labels.add(rs.getString("mes"));
-                    data.add(rs.getInt("total"));
+                    acumPrestados += rs.getInt("prestados");
+                    acumDevueltos += rs.getInt("devueltos");
+                    prestadosData.add(acumPrestados);
+                    devueltosData.add(acumDevueltos);
                 }
             }
         }
         
         result.put("labels", labels);
-        result.put("data", data);
-        result.put("total", totalLeidos);
+        result.put("prestadosData", prestadosData);
+        result.put("devueltosData", devueltosData);
+        result.put("totalPrestados", totalPrestados);
+        result.put("totalDevueltos", totalDevueltos);
+        result.put("total", totalPrestados);
         
         return result;
     }
