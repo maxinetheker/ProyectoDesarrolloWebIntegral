@@ -215,7 +215,7 @@
                     <input type="text" 
                            id="buscar-catalogo" 
                            placeholder="Buscar por nombre, autor, ISBN, categoría..." 
-                           class="search-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent">
+                           class="search-input w-full px-4 pl-10 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent">
                 </div>
             </div>
         </div>
