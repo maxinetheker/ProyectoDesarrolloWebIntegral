@@ -14,6 +14,9 @@ aca va el codigo de la biblioteca del colegio
     </head>
     <body class="bg-gray-50">
         <%
+            // Obtener el context path
+            String contextPath = request.getContextPath();
+            
             // Verificar si el usuario tiene sesión activa
             boolean usuarioLogueado = session.getAttribute("usuario") != null;
             String nombreUsuario = usuarioLogueado ? (String) session.getAttribute("nombreUsuario") : "";
@@ -26,7 +29,7 @@ aca va el codigo de la biblioteca del colegio
                     <!-- logo del colegio mejorado -->
                     <div class="flex items-center space-x-4">
                         <div class="relative">
-                            <img src="assets/images/logo.png" alt="I.E. Sagrado Corazón de María" class="h-14 w-14 ">
+                            <img src="<%= contextPath %>/assets/images/logo.png" alt="I.E. Sagrado Corazón de María" class="h-14 w-14 ">
                             
                         </div>
                         <div class="font-bold">
@@ -56,8 +59,8 @@ aca va el codigo de la biblioteca del colegio
                         
                         <% if (usuarioLogueado) { %>
                             <!-- Botón Dashboard para usuario logueado -->
-                            <a href="pages/dashboard.jsp" class="group relative inline-flex items-center justify-center px-6 py-2.5 overflow-hidden font-medium text-white transition duration-300 ease-out bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 rounded-sm shadow-lg hover:shadow-xl">
-                                <span class="absolute inset-0 w-full h-full bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                            <a href="<%= contextPath %>/pages/dashboard.jsp" class="group relative inline-flex items-center justify-center px-6 py-2.5 overflow-hidden font-medium text-white transition duration-300 ease-out bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900 rounded-sm shadow-lg hover:shadow-xl">
+                                <span class="absolute inset-0 w-full h-full bg-gradient-to-br from-slate-600 via-slate-700 to-slate-800 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                                 <span class="absolute top-0 left-0 w-full bg-gradient-to-b from-white/20 to-transparent opacity-50 h-1/3"></span>
                                 <span class="relative flex items-center">
                                     <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
@@ -68,7 +71,7 @@ aca va el codigo de la biblioteca del colegio
                             </a>
                         <% } else { %>
                             <!-- Botón de inicio de sesión -->
-                            <a href="pages/login.jsp" class="group relative inline-flex items-center justify-center px-6 py-2.5 overflow-hidden font-medium text-white transition duration-300 ease-out bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900 rounded-sm shadow-lg hover:shadow-xl">
+                            <a href="<%= contextPath %>/pages/login.jsp" class="group relative inline-flex items-center justify-center px-6 py-2.5 overflow-hidden font-medium text-white transition duration-300 ease-out bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900 rounded-sm shadow-lg hover:shadow-xl">
                                 <span class="absolute inset-0 w-full h-full bg-gradient-to-br from-slate-600 via-slate-700 to-slate-800 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                                 <span class="absolute top-0 left-0 w-full bg-gradient-to-b from-white/20 to-transparent opacity-50 h-1/3"></span>
                                 <span class="relative flex items-center">
@@ -99,11 +102,11 @@ aca va el codigo de la biblioteca del colegio
                         <a href="#libros" class="text-gray-700 hover:text-red-600 transition-colors duration-300 font-medium">Nuestros Libros</a>
                         
                         <% if (usuarioLogueado) { %>
-                            <a href="pages/dashboard.jsp" class="group relative inline-flex items-center justify-center px-6 py-2.5 overflow-hidden font-medium text-white transition duration-300 ease-out bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 rounded-lg shadow-lg w-fit">
+                            <a href="<%= contextPath %>/pages/dashboard.jsp" class="group relative inline-flex items-center justify-center px-6 py-2.5 overflow-hidden font-medium text-white transition duration-300 ease-out bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900 rounded-lg shadow-lg w-fit">
                                 <span class="relative">Dashboard</span>
                             </a>
                         <% } else { %>
-                            <a href="pages/login.jsp" class="group relative inline-flex items-center justify-center px-6 py-2.5 overflow-hidden font-medium text-white transition duration-300 ease-out bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900 rounded-lg shadow-lg w-fit">
+                            <a href="<%= contextPath %>/pages/login.jsp" class="group relative inline-flex items-center justify-center px-6 py-2.5 overflow-hidden font-medium text-white transition duration-300 ease-out bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900 rounded-lg shadow-lg w-fit">
                                 <span class="relative">Iniciar Sesión</span>
                             </a>
                         <% } %>
@@ -116,7 +119,7 @@ aca va el codigo de la biblioteca del colegio
         <section id="inicio" class="min-h-screen flex items-center justify-center relative overflow-hidden pt-20">
             <!-- imagen de fondo -->
             <div class="absolute inset-0 z-0">
-                <img src="assets/images/fondo.jpg" alt="Biblioteca" class="w-full h-full object-cover">
+                <img src="<%= contextPath %>/assets/images/fondo.jpg" alt="Biblioteca" class="w-full h-full object-cover">
                 <div class="absolute inset-0 bg-gradient-to-r from-blue-900/80 via-teal-800/70 to-red-900/60"></div>
             </div>
 
@@ -265,7 +268,7 @@ aca va el codigo de la biblioteca del colegio
                 <div class="grid md:grid-cols-3 gap-8">
                     <div>
                         <div class="flex items-center space-x-3 mb-4">
-                            <img src="assets/images/logo.png" alt="Logo" class="h-10 w-10">
+                            <img src="<%= contextPath %>/assets/images/logo.png" alt="Logo" class="h-10 w-10">
                             <div>
                                 <h3 class="font-bold text-lg">I.E. 5128</h3>
                                 <p class="text-teal-300 text-sm">Sagrado Corazón de María</p>
@@ -309,6 +312,6 @@ aca va el codigo de la biblioteca del colegio
         <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
         
         <!-- Script principal -->
-        <script src="assets/js/index.js"></script>
+        <script src="<%= contextPath %>/assets/js/index.js"></script>
     </body>
 </html>
