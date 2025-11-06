@@ -49,11 +49,11 @@ function cargarLibrosMasPrestados() {
                     
                     return `
                         <div class="swiper-slide">
-                            <div class="group bg-white shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden h-[480px] flex flex-col border border-gray-200">
-                                <div class="flex-1 overflow-hidden bg-gray-50 flex items-center justify-center p-4">
+                            <div class="group bg-white shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden flex flex-col border border-gray-200">
+                                <div class="relative w-full overflow-hidden bg-gray-50" style="padding-bottom: 140%;">
                                     <img src="${portada}" 
                                          alt="${libro.nombre}" 
-                                         class="max-h-full w-auto object-contain group-hover:scale-105 transition-transform duration-500"
+                                         class="absolute top-0 left-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                          onerror="this.src='assets/images/portadas/portada.jpg'">
                                 </div>
                                 <div class="p-4 bg-white border-t border-gray-200">
