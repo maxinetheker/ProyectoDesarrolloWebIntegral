@@ -91,6 +91,9 @@
                         <i class="fas fa-exchange-alt mr-2"></i>Préstamos
                     </a>
                 </c:if>
+                <a href="catalogo.jsp" class="px-4 sm:px-6 py-3 font-medium text-xs sm:text-sm transition-all duration-200 border-b-2 border-transparent text-gray-600 hover:text-slate-700 hover:border-slate-300">
+                    <i class="fas fa-th mr-2"></i>Catálogo
+                </a>
                 <a href="mis-prestamos.jsp"
                    class="px-4 sm:px-6 py-3 font-medium text-xs sm:text-sm transition-all duration-200 border-b-2 border-transparent text-gray-600 hover:text-slate-700 hover:border-slate-300">
                     <i class="fas fa-book-reader mr-2"></i>Mis Préstamos
@@ -118,6 +121,9 @@
                         <i class="fas fa-exchange-alt mr-2"></i>Préstamos
                     </a>
                 </c:if>
+                <a href="catalogo.jsp" class="block px-4 py-3 font-medium text-sm border-l-4 border-transparent text-gray-600 hover:bg-gray-50 hover:border-slate-300">
+                    <i class="fas fa-th mr-2"></i>Catálogo
+                </a>
                 <a href="mis-prestamos.jsp"
                    class="block px-4 py-3 font-medium text-sm border-l-4 border-transparent text-gray-600 hover:bg-gray-50 hover:border-slate-300">
                     <i class="fas fa-book-reader mr-2"></i>Mis Préstamos

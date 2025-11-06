@@ -528,4 +528,173 @@ public class LibroDAO {
         }
         return libros;
     }
+    
+    /**
+     * Lista libros activos con paginación para el catálogo público
+     */
+    public List<Libro> listarActivosConPaginacion(int pagina, int registrosPorPagina) {
+        List<Libro> libros = new ArrayList<>();
+        String sql = "SELECT * FROM libro WHERE activo = 1 ORDER BY nombre LIMIT ? OFFSET ?";
+        
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = DatabaseConnection.getInstance().getConnection();
+            ps = conn.prepareStatement(sql);
+            
+            int offset = (pagina - 1) * registrosPorPagina;
+            ps.setInt(1, registrosPorPagina);
+            ps.setInt(2, offset);
+            
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                libros.add(mapearLibro(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (ps != null) ps.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (conn != null) {
+                DatabaseConnection.getInstance().releaseConnection(conn);
+            }
+        }
+        return libros;
+    }
+    
+    /**
+     * Busca libros activos con paginación para el catálogo público
+     */
+    public List<Libro> buscarActivosConPaginacion(String busqueda, int pagina, int registrosPorPagina) {
+        List<Libro> libros = new ArrayList<>();
+        String sql = "SELECT * FROM libro WHERE activo = 1 AND (" +
+                    "LOWER(nombre) LIKE ? OR " +
+                    "LOWER(autor) LIKE ? OR " +
+                    "LOWER(isbn) LIKE ? OR " +
+                    "LOWER(editorial) LIKE ? OR " +
+                    "LOWER(genero) LIKE ?) " +
+                    "ORDER BY nombre LIMIT ? OFFSET ?";
+        
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = DatabaseConnection.getInstance().getConnection();
+            ps = conn.prepareStatement(sql);
+            
+            String termino = "%" + busqueda.toLowerCase() + "%";
+            ps.setString(1, termino);
+            ps.setString(2, termino);
+            ps.setString(3, termino);
+            ps.setString(4, termino);
+            ps.setString(5, termino);
+            
+            int offset = (pagina - 1) * registrosPorPagina;
+            ps.setInt(6, registrosPorPagina);
+            ps.setInt(7, offset);
+            
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                libros.add(mapearLibro(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (ps != null) ps.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (conn != null) {
+                DatabaseConnection.getInstance().releaseConnection(conn);
+            }
+        }
+        return libros;
+    }
+    
+    /**
+     * Cuenta el total de libros activos
+     */
+    public int contarLibrosActivos() {
+        String sql = "SELECT COUNT(*) FROM libro WHERE activo = 1";
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = DatabaseConnection.getInstance().getConnection();
+            ps = conn.prepareStatement(sql);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (ps != null) ps.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (conn != null) {
+                DatabaseConnection.getInstance().releaseConnection(conn);
+            }
+        }
+        return 0;
+    }
+    
+    /**
+     * Cuenta libros activos por búsqueda
+     */
+    public int contarLibrosActivosPorBusqueda(String busqueda) {
+        String sql = "SELECT COUNT(*) FROM libro WHERE activo = 1 AND (" +
+                    "LOWER(nombre) LIKE ? OR " +
+                    "LOWER(autor) LIKE ? OR " +
+                    "LOWER(isbn) LIKE ? OR " +
+                    "LOWER(editorial) LIKE ? OR " +
+                    "LOWER(genero) LIKE ?)";
+        
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = DatabaseConnection.getInstance().getConnection();
+            ps = conn.prepareStatement(sql);
+            
+            String termino = "%" + busqueda.toLowerCase() + "%";
+            ps.setString(1, termino);
+            ps.setString(2, termino);
+            ps.setString(3, termino);
+            ps.setString(4, termino);
+            ps.setString(5, termino);
+            
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (ps != null) ps.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (conn != null) {
+                DatabaseConnection.getInstance().releaseConnection(conn);
+            }
+        }
+        return 0;
+    }
 }
