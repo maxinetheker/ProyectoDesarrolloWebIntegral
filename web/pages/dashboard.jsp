@@ -163,6 +163,164 @@
             </p>
         </div>
         
+        <!-- Estadísticas de Biblioteca (visible solo para Administrador y Bibliotecario) -->
+        <c:if test="${puedeGestionar}">
+        <div id="seccionEstadisticasBiblioteca" class="mb-8">
+            <h3 class="text-2xl font-bold text-gray-800 mb-6">
+                <i class="fas fa-chart-line text-slate-600 mr-2"></i>
+                Estadísticas de Biblioteca
+            </h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Libros Nuevos -->
+                <div class="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-700">Libros Nuevos</h4>
+                            <p class="text-sm text-gray-500">Últimos 6 meses</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-2xl font-bold text-slate-700" id="totalLibrosNuevos">-</p>
+                            <p class="text-xs text-gray-500">Total</p>
+                        </div>
+                    </div>
+                    <div class="h-48">
+                        <canvas id="chartLibrosNuevos"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Cantidad de Usuarios -->
+                <div class="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-700">Usuarios</h4>
+                            <p class="text-sm text-gray-500">Últimos 6 meses</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-2xl font-bold text-blue-600" id="totalCantidadUsuarios">-</p>
+                            <p class="text-xs text-gray-500">Total</p>
+                        </div>
+                    </div>
+                    <div class="h-48">
+                        <canvas id="chartCantidadUsuarios"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Libros Prestados -->
+                <div class="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-700">Préstamos</h4>
+                            <p class="text-sm text-gray-500">Últimos 6 meses</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-2xl font-bold text-green-600" id="totalLibrosPrestados">-</p>
+                            <p class="text-xs text-gray-500">Activos</p>
+                        </div>
+                    </div>
+                    <div class="h-48">
+                        <canvas id="chartLibrosPrestados"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Multas -->
+                <div class="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-700">Multas</h4>
+                            <p class="text-sm text-gray-500">Por pagar y pagadas</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-2xl font-bold text-purple-600" id="totalMultas">-</p>
+                            <p class="text-xs text-gray-500">Total</p>
+                        </div>
+                    </div>
+                    <div class="h-48">
+                        <canvas id="chartMultas"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Carnets Generados -->
+                <div class="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-700">Carnets</h4>
+                            <p class="text-sm text-gray-500">Últimos 6 meses</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-2xl font-bold text-purple-600" id="totalCarnetsGenerados">-</p>
+                            <p class="text-xs text-gray-500">Total</p>
+                        </div>
+                    </div>
+                    <div class="h-48">
+                        <canvas id="chartCarnetsGenerados"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </c:if>
+        
+        <!-- Estadísticas Personales (visible para todos) -->
+        <div id="seccionEstadisticasPersonales" class="mb-8">
+            <h3 class="text-2xl font-bold text-gray-800 mb-6">
+                <i class="fas fa-user-chart text-slate-600 mr-2"></i>
+                Mis Estadísticas
+            </h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Libros Leídos -->
+                <div class="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-700">Libros Leídos</h4>
+                            <p class="text-sm text-gray-500">Últimos 6 meses</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-2xl font-bold text-slate-700" id="totalLibrosLeidos">-</p>
+                            <p class="text-xs text-gray-500">Total</p>
+                        </div>
+                    </div>
+                    <div class="h-48">
+                        <canvas id="chartLibrosLeidos"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Préstamos vs Devoluciones -->
+                <div class="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-700">Préstamos</h4>
+                            <p class="text-sm text-gray-500">Prestados vs Devueltos</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-2xl font-bold text-orange-600" id="totalPrestamosDevueltos">-</p>
+                            <p class="text-xs text-gray-500">Total</p>
+                        </div>
+                    </div>
+                    <div class="h-48">
+                        <canvas id="chartPrestamosDevueltos"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Deudas -->
+                <div class="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-700">Deudas</h4>
+                            <p class="text-sm text-gray-500">Pagadas vs Pendientes</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-2xl font-bold text-red-600" id="totalDeudas">-</p>
+                            <p class="text-xs text-gray-500">Total</p>
+                        </div>
+                    </div>
+                    <div class="h-48">
+                        <canvas id="chartDeudas"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
     </div>
     
     <script>
@@ -176,5 +334,8 @@
             });
         }
     </script>
+    
+    <script src="${pageContext.request.contextPath}/assets/js/chart.umd.min.js"></script>
+    <script src="${pageContext.request.contextPath}/assets/js/dashboard.js"></script>
 </body>
 </html>
