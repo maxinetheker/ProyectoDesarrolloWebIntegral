@@ -18,6 +18,7 @@ public class Prestamo {
     
     // Campos joined para mostrar información completa
     private String libroNombre;
+    private String libroAutor;
     private String libroIsbn;
     private String usuarioNombre;
     private String usuarioDni;
@@ -125,6 +126,14 @@ public class Prestamo {
         this.libroNombre = libroNombre;
     }
     
+    public String getLibroAutor() {
+        return libroAutor;
+    }
+    
+    public void setLibroAutor(String libroAutor) {
+        this.libroAutor = libroAutor;
+    }
+    
     public String getLibroIsbn() {
         return libroIsbn;
     }
@@ -147,5 +156,46 @@ public class Prestamo {
     
     public void setUsuarioDni(String usuarioDni) {
         this.usuarioDni = usuarioDni;
+    }
+    
+    // Métodos de conveniencia para compatibilidad con servlets
+    public String getLibroTitulo() {
+        return this.libroNombre;
+    }
+    
+    public void setLibroTitulo(String titulo) {
+        this.libroNombre = titulo;
+    }
+    
+    public int getIdLibro() {
+        return this.libroId;
+    }
+    
+    public void setIdLibro(int idLibro) {
+        this.libroId = idLibro;
+    }
+    
+    public int getIdUsuario() {
+        return this.usuarioId;
+    }
+    
+    public void setIdUsuario(int idUsuario) {
+        this.usuarioId = idUsuario;
+    }
+    
+    public Date getFechaEntrega() {
+        return this.fechaPrestamo;
+    }
+    
+    public void setFechaEntrega(Date fechaEntrega) {
+        this.fechaPrestamo = fechaEntrega;
+    }
+    
+    public Date getFechaDevolucionProgramada() {
+        return this.fechaDevolucionEsperada;
+    }
+    
+    public void setFechaDevolucionProgramada(Date fechaDevolucion) {
+        this.fechaDevolucionEsperada = fechaDevolucion;
     }
 }

@@ -854,4 +854,245 @@ public class PrestamoDAO {
             }
         }
     }
+    
+    // Métodos para consultas de usuario específico
+    public List<Prestamo> obtenerTodasMultasPorUsuario(int idUsuario) {
+        List<Prestamo> multas = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        
+        try {
+            String sql = "SELECT e.id, e.id_libro, e.id_usuario, e.fecha_entrega, e.fecha_devolucion_programada, " +
+                        "e.fecha_devolucion_real, e.estado, e.multa, e.pagado, e.observaciones_entrega, e.observaciones_devolucion, " +
+                        "l.nombre as libro_nombre, l.autor as libro_autor, l.isbn as libro_isbn, " +
+                        "CONCAT(u.nombre, ' ', u.apellido) as usuario_nombre, u.usuario as usuario_dni " +
+                        "FROM entregas e " +
+                        "INNER JOIN libro l ON e.id_libro = l.id " +
+                        "INNER JOIN usuario u ON e.id_usuario = u.id " +
+                        "WHERE e.id_usuario = ? AND e.multa > 0 " +
+                        "ORDER BY e.fecha_devolucion_programada DESC";
+            
+            conn = DatabaseConnection.getInstance().getConnection();
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, idUsuario);
+            rs = stmt.executeQuery();
+            
+            while (rs.next()) {
+                Prestamo prestamo = new Prestamo();
+                prestamo.setId(rs.getInt("id"));
+                prestamo.setIdLibro(rs.getInt("id_libro"));
+                prestamo.setIdUsuario(rs.getInt("id_usuario"));
+                prestamo.setFechaEntrega(rs.getTimestamp("fecha_entrega"));
+                prestamo.setFechaDevolucionProgramada(rs.getTimestamp("fecha_devolucion_programada"));
+                prestamo.setFechaDevolucionReal(rs.getTimestamp("fecha_devolucion_real"));
+                prestamo.setEstado(rs.getString("estado"));
+                prestamo.setMulta(rs.getBigDecimal("multa"));
+                prestamo.setPagado(rs.getBoolean("pagado"));
+                prestamo.setObservacionesEntrega(rs.getString("observaciones_entrega"));
+                prestamo.setObservacionesDevolucion(rs.getString("observaciones_devolucion"));
+                prestamo.setLibroTitulo(rs.getString("libro_nombre"));
+                prestamo.setLibroAutor(rs.getString("libro_autor"));
+                prestamo.setLibroIsbn(rs.getString("libro_isbn"));
+                prestamo.setUsuarioNombre(rs.getString("usuario_nombre"));
+                prestamo.setUsuarioDni(rs.getString("usuario_dni"));
+                
+                multas.add(prestamo);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (conn != null) {
+                DatabaseConnection.getInstance().releaseConnection(conn);
+            }
+        }
+        
+        return multas;
+    }
+    
+    public List<Prestamo> obtenerMultasPagadasPorUsuario(int idUsuario) {
+        List<Prestamo> multas = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        
+        try {
+            String sql = "SELECT e.id, e.id_libro, e.id_usuario, e.fecha_entrega, e.fecha_devolucion_programada, " +
+                        "e.fecha_devolucion_real, e.estado, e.multa, e.pagado, e.observaciones_entrega, e.observaciones_devolucion, " +
+                        "l.nombre as libro_nombre, l.autor as libro_autor, l.isbn as libro_isbn, " +
+                        "CONCAT(u.nombre, ' ', u.apellido) as usuario_nombre, u.usuario as usuario_dni " +
+                        "FROM entregas e " +
+                        "INNER JOIN libro l ON e.id_libro = l.id " +
+                        "INNER JOIN usuario u ON e.id_usuario = u.id " +
+                        "WHERE e.id_usuario = ? AND e.multa > 0 AND e.pagado = true " +
+                        "ORDER BY e.fecha_devolucion_programada DESC";
+            
+            conn = DatabaseConnection.getInstance().getConnection();
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, idUsuario);
+            rs = stmt.executeQuery();
+            
+            while (rs.next()) {
+                Prestamo prestamo = new Prestamo();
+                prestamo.setId(rs.getInt("id"));
+                prestamo.setIdLibro(rs.getInt("id_libro"));
+                prestamo.setIdUsuario(rs.getInt("id_usuario"));
+                prestamo.setFechaEntrega(rs.getTimestamp("fecha_entrega"));
+                prestamo.setFechaDevolucionProgramada(rs.getTimestamp("fecha_devolucion_programada"));
+                prestamo.setFechaDevolucionReal(rs.getTimestamp("fecha_devolucion_real"));
+                prestamo.setEstado(rs.getString("estado"));
+                prestamo.setMulta(rs.getBigDecimal("multa"));
+                prestamo.setPagado(rs.getBoolean("pagado"));
+                prestamo.setObservacionesEntrega(rs.getString("observaciones_entrega"));
+                prestamo.setObservacionesDevolucion(rs.getString("observaciones_devolucion"));
+                prestamo.setLibroTitulo(rs.getString("libro_nombre"));
+                prestamo.setLibroAutor(rs.getString("libro_autor"));
+                prestamo.setLibroIsbn(rs.getString("libro_isbn"));
+                prestamo.setUsuarioNombre(rs.getString("usuario_nombre"));
+                prestamo.setUsuarioDni(rs.getString("usuario_dni"));
+                
+                multas.add(prestamo);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (conn != null) {
+                DatabaseConnection.getInstance().releaseConnection(conn);
+            }
+        }
+        
+        return multas;
+    }
+    
+    public List<Prestamo> obtenerMultasPendientesPorUsuario(int idUsuario) {
+        List<Prestamo> multas = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        
+        try {
+            String sql = "SELECT e.id, e.id_libro, e.id_usuario, e.fecha_entrega, e.fecha_devolucion_programada, " +
+                        "e.fecha_devolucion_real, e.estado, e.multa, e.pagado, e.observaciones_entrega, e.observaciones_devolucion, " +
+                        "l.nombre as libro_nombre, l.autor as libro_autor, l.isbn as libro_isbn, " +
+                        "CONCAT(u.nombre, ' ', u.apellido) as usuario_nombre, u.usuario as usuario_dni " +
+                        "FROM entregas e " +
+                        "INNER JOIN libro l ON e.id_libro = l.id " +
+                        "INNER JOIN usuario u ON e.id_usuario = u.id " +
+                        "WHERE e.id_usuario = ? AND e.multa > 0 AND e.pagado = false " +
+                        "ORDER BY e.fecha_devolucion_programada DESC";
+            
+            conn = DatabaseConnection.getInstance().getConnection();
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, idUsuario);
+            rs = stmt.executeQuery();
+            
+            while (rs.next()) {
+                Prestamo prestamo = new Prestamo();
+                prestamo.setId(rs.getInt("id"));
+                prestamo.setIdLibro(rs.getInt("id_libro"));
+                prestamo.setIdUsuario(rs.getInt("id_usuario"));
+                prestamo.setFechaEntrega(rs.getTimestamp("fecha_entrega"));
+                prestamo.setFechaDevolucionProgramada(rs.getTimestamp("fecha_devolucion_programada"));
+                prestamo.setFechaDevolucionReal(rs.getTimestamp("fecha_devolucion_real"));
+                prestamo.setEstado(rs.getString("estado"));
+                prestamo.setMulta(rs.getBigDecimal("multa"));
+                prestamo.setPagado(rs.getBoolean("pagado"));
+                prestamo.setObservacionesEntrega(rs.getString("observaciones_entrega"));
+                prestamo.setObservacionesDevolucion(rs.getString("observaciones_devolucion"));
+                prestamo.setLibroTitulo(rs.getString("libro_nombre"));
+                prestamo.setLibroAutor(rs.getString("libro_autor"));
+                prestamo.setLibroIsbn(rs.getString("libro_isbn"));
+                prestamo.setUsuarioNombre(rs.getString("usuario_nombre"));
+                prestamo.setUsuarioDni(rs.getString("usuario_dni"));
+                
+                multas.add(prestamo);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (conn != null) {
+                DatabaseConnection.getInstance().releaseConnection(conn);
+            }
+        }
+        
+        return multas;
+    }
+    
+    public List<Prestamo> obtenerPrestamosPorUsuario(int idUsuario) {
+        List<Prestamo> prestamos = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        
+        try {
+            String sql = "SELECT e.id, e.id_libro, e.id_usuario, e.fecha_entrega, e.fecha_devolucion_programada, " +
+                        "e.fecha_devolucion_real, e.estado, e.multa, e.pagado, e.observaciones_entrega, e.observaciones_devolucion, " +
+                        "l.nombre as libro_nombre, l.autor as libro_autor, l.isbn as libro_isbn, " +
+                        "CONCAT(u.nombre, ' ', u.apellido) as usuario_nombre, u.usuario as usuario_dni " +
+                        "FROM entregas e " +
+                        "INNER JOIN libro l ON e.id_libro = l.id " +
+                        "INNER JOIN usuario u ON e.id_usuario = u.id " +
+                        "WHERE e.id_usuario = ? " +
+                        "ORDER BY e.fecha_entrega DESC";
+            
+            conn = DatabaseConnection.getInstance().getConnection();
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, idUsuario);
+            rs = stmt.executeQuery();
+            
+            while (rs.next()) {
+                Prestamo prestamo = new Prestamo();
+                prestamo.setId(rs.getInt("id"));
+                prestamo.setIdLibro(rs.getInt("id_libro"));
+                prestamo.setIdUsuario(rs.getInt("id_usuario"));
+                prestamo.setFechaEntrega(rs.getTimestamp("fecha_entrega"));
+                prestamo.setFechaDevolucionProgramada(rs.getTimestamp("fecha_devolucion_programada"));
+                prestamo.setFechaDevolucionReal(rs.getTimestamp("fecha_devolucion_real"));
+                prestamo.setEstado(rs.getString("estado"));
+                prestamo.setMulta(rs.getBigDecimal("multa"));
+                prestamo.setPagado(rs.getBoolean("pagado"));
+                prestamo.setObservacionesEntrega(rs.getString("observaciones_entrega"));
+                prestamo.setObservacionesDevolucion(rs.getString("observaciones_devolucion"));
+                prestamo.setLibroTitulo(rs.getString("libro_nombre"));
+                prestamo.setLibroAutor(rs.getString("libro_autor"));
+                prestamo.setLibroIsbn(rs.getString("libro_isbn"));
+                prestamo.setUsuarioNombre(rs.getString("usuario_nombre"));
+                prestamo.setUsuarioDni(rs.getString("usuario_dni"));
+                
+                prestamos.add(prestamo);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (conn != null) {
+                DatabaseConnection.getInstance().releaseConnection(conn);
+            }
+        }
+        
+        return prestamos;
+    }
 }

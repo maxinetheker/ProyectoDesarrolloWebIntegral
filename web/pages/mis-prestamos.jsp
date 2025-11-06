@@ -6,7 +6,6 @@
     // Verificar si hay sesión activa
     Usuario usuario = (Usuario) session.getAttribute("usuario");
     if (usuario == null) {
-        // No hay sesión, redirigir al login con mensaje
         response.sendRedirect("login.jsp?sessionExpired=true");
         return;
     }
@@ -17,18 +16,18 @@
     boolean esBibliotecario = "Bibliotecario".equals(rol);
     boolean puedeGestionar = esAdmin || esBibliotecario;
     
-    // Poner el usuario en el contexto para JSTL
     pageContext.setAttribute("usuario", usuario);
     pageContext.setAttribute("esAdmin", esAdmin);
     pageContext.setAttribute("esBibliotecario", esBibliotecario);
     pageContext.setAttribute("puedeGestionar", puedeGestionar);
+    pageContext.setAttribute("paginaActual", "mis-prestamos");
 %>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Sistema de Biblioteca</title>
+    <title>Mis Préstamos - Sistema de Biblioteca</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
@@ -70,7 +69,7 @@
                     <i class="fas fa-bars text-xl"></i>
                 </button>
                 <span class="text-sm font-medium text-slate-700">
-                    <i class="fas fa-home mr-1"></i>Dashboard
+                    <i class="fas fa-book-reader mr-1"></i>Mis Préstamos
                 </span>
                 <div class="w-10"></div>
             </div>
@@ -78,7 +77,7 @@
             <!-- Desktop menu -->
             <nav class="hidden sm:flex space-x-1" role="navigation">
                 <a href="dashboard.jsp" 
-                   class="px-4 sm:px-6 py-3 font-medium text-xs sm:text-sm transition-all duration-200 border-b-2 border-slate-700 text-slate-700">
+                   class="px-4 sm:px-6 py-3 font-medium text-xs sm:text-sm transition-all duration-200 border-b-2 border-transparent text-gray-600 hover:text-slate-700 hover:border-slate-300">
                     <i class="fas fa-home mr-2"></i>Dashboard
                 </a>
                 <c:if test="${esAdmin}">
@@ -98,7 +97,7 @@
                     </a>
                 </c:if>
                 <a href="mis-prestamos.jsp"
-                   class="px-4 sm:px-6 py-3 font-medium text-xs sm:text-sm transition-all duration-200 border-b-2 border-transparent text-gray-600 hover:text-slate-700 hover:border-slate-300">
+                   class="px-4 sm:px-6 py-3 font-medium text-xs sm:text-sm transition-all duration-200 border-b-2 border-slate-700 text-slate-700">
                     <i class="fas fa-book-reader mr-2"></i>Mis Préstamos
                 </a>
                 <a href="mis-multas.jsp"
@@ -110,7 +109,7 @@
             <!-- Mobile menu -->
             <nav id="mobile-menu" class="hidden sm:hidden absolute top-full left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50" role="navigation">
                 <a href="dashboard.jsp" 
-                   class="block px-4 py-3 font-medium text-sm border-l-4 border-slate-700 bg-slate-50 text-slate-700">
+                   class="block px-4 py-3 font-medium text-sm border-l-4 border-transparent text-gray-600 hover:bg-gray-50 hover:border-slate-300">
                     <i class="fas fa-home mr-2"></i>Dashboard
                 </a>
                 <c:if test="${esAdmin}">
@@ -130,7 +129,7 @@
                     </a>
                 </c:if>
                 <a href="mis-prestamos.jsp"
-                   class="block px-4 py-3 font-medium text-sm border-l-4 border-transparent text-gray-600 hover:bg-gray-50 hover:border-slate-300">
+                   class="block px-4 py-3 font-medium text-sm border-l-4 border-slate-700 bg-slate-50 text-slate-700">
                     <i class="fas fa-book-reader mr-2"></i>Mis Préstamos
                 </a>
                 <a href="mis-multas.jsp"
@@ -140,24 +139,80 @@
             </nav>
         </div>
     </div>
-    
+
     <!-- Container Principal -->
     <div class="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
-        <!-- Mensaje de Bienvenida -->
-        <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-4 sm:mb-8 border border-gray-200">
-            <h2 class="text-xl sm:text-3xl font-bold text-gray-800 mb-2">
-                <i class="fas fa-hand-sparkles text-slate-600 mr-2"></i>
-                ¡Bienvenido, <c:out value="${usuario.nombre}" />!
-            </h2>
-            <p class="text-sm sm:text-base text-gray-600">
-                <jsp:useBean id="now" class="java.util.Date"/>
-                <fmt:formatDate value="${now}" pattern="dd/MM/yyyy HH:mm" />
-            </p>
+        <!-- Sección Mis Préstamos -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+            <!-- Encabezado -->
+            <div class="p-3 sm:p-6 border-b border-gray-200">
+                <div class="mb-4">
+                    <h2 class="text-xl sm:text-2xl font-bold text-gray-800">
+                        <i class="fas fa-book-reader text-gray-600 mr-2"></i>
+                        Mis Préstamos
+                    </h2>
+                    <p class="text-gray-600 text-xs sm:text-sm mt-1">Consulta el historial y estado de tus préstamos de libros</p>
+                </div>
+                <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
+                    <!-- Campo de búsqueda con ícono -->
+                    <div class="relative flex-1 max-w-full sm:max-w-md">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-search text-gray-400 text-sm"></i>
+                        </div>
+                        <input type="text" 
+                               id="buscar-prestamos" 
+                               class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-slate-500 focus:border-slate-500 text-sm"
+                               placeholder="Buscar por libro, autor o ISBN...">
+                    </div>
+                    <!-- Filtro de estado -->
+                    <div class="flex gap-2">
+                        <select id="filtro-estado" class="px-3 py-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-slate-500 focus:border-slate-500 text-sm bg-white">
+                            <option value="todos">Todos los préstamos</option>
+                            <option value="prestado">Préstamos activos</option>
+                            <option value="vencido">Préstamos vencidos</option>
+                            <option value="devuelto">Libros devueltos</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabla de Préstamos -->
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Libro</th>
+                            <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha Préstamo</th>
+                            <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha Devolución</th>
+                            <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                            <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Multa</th>
+                            <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Días</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-prestamos" class="bg-white divide-y divide-gray-200">
+                        <!-- Fila de carga -->
+                        <tr id="carga-prestamos">
+                            <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+                                <i class="fas fa-spinner fa-spin mr-2"></i>Cargando préstamos...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Información de resultados -->
+            <div class="px-3 sm:px-6 py-3 sm:py-4 border-t border-gray-200 bg-gray-50">
+                <div class="text-xs sm:text-sm text-gray-700">
+                    Total de préstamos: <span id="total-prestamos" class="font-semibold">0</span>
+                </div>
+            </div>
         </div>
-        
     </div>
-    
+
     <script>
+        // Configurar contexto de la aplicación
+        window.CONTEXT_PATH = '${pageContext.request.contextPath}';
+        
         // Toggle mobile menu
         const menuButton = document.getElementById('menu-button');
         const mobileMenu = document.getElementById('mobile-menu');
@@ -168,5 +223,7 @@
             });
         }
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="${pageContext.request.contextPath}/assets/js/mis-prestamos.js"></script>
 </body>
 </html>

@@ -12,6 +12,7 @@
     String rol = usuario.getNombreRol();
     boolean esAdmin = "Administrador".equals(rol);
     boolean esBibliotecario = "Bibliotecario".equals(rol);
+    boolean puedeGestionar = esAdmin || esBibliotecario;
     
     if (!esAdmin && !esBibliotecario) {
         response.sendRedirect("dashboard.jsp?error=noauth");
@@ -21,6 +22,7 @@
     pageContext.setAttribute("usuario", usuario);
     pageContext.setAttribute("esAdmin", esAdmin);
     pageContext.setAttribute("esBibliotecario", esBibliotecario);
+    pageContext.setAttribute("puedeGestionar", puedeGestionar);
 %>
 <!DOCTYPE html>
 <html lang="es">
@@ -79,11 +81,21 @@
                         <i class="fas fa-users mr-2"></i>Usuarios
                     </a>
                 </c:if>
-                <a href="libros.jsp" class="px-4 sm:px-6 py-3 font-medium text-xs sm:text-sm transition-all duration-200 border-b-2 border-slate-700 text-slate-700">
-                    <i class="fas fa-book mr-2"></i>Libros
+                <c:if test="${puedeGestionar}">
+                    <a href="libros.jsp" class="px-4 sm:px-6 py-3 font-medium text-xs sm:text-sm transition-all duration-200 border-b-2 border-slate-700 text-slate-700">
+                        <i class="fas fa-book mr-2"></i>Libros
+                    </a>
+                    <a href="prestamos.jsp" class="px-4 sm:px-6 py-3 font-medium text-xs sm:text-sm transition-all duration-200 border-b-2 border-transparent text-gray-600 hover:text-slate-700 hover:border-slate-300">
+                        <i class="fas fa-exchange-alt mr-2"></i>Préstamos
+                    </a>
+                </c:if>
+                <a href="mis-prestamos.jsp"
+                   class="px-4 sm:px-6 py-3 font-medium text-xs sm:text-sm transition-all duration-200 border-b-2 border-transparent text-gray-600 hover:text-slate-700 hover:border-slate-300">
+                    <i class="fas fa-book-reader mr-2"></i>Mis Préstamos
                 </a>
-                <a href="prestamos.jsp" class="px-4 sm:px-6 py-3 font-medium text-xs sm:text-sm transition-all duration-200 border-b-2 border-transparent text-gray-600 hover:text-slate-700 hover:border-slate-300">
-                    <i class="fas fa-exchange-alt mr-2"></i>Préstamos
+                <a href="mis-multas.jsp"
+                   class="px-4 sm:px-6 py-3 font-medium text-xs sm:text-sm transition-all duration-200 border-b-2 border-transparent text-gray-600 hover:text-slate-700 hover:border-slate-300">
+                    <i class="fas fa-money-bill-wave mr-2"></i>Mis Multas
                 </a>
             </nav>
             
@@ -96,11 +108,21 @@
                         <i class="fas fa-users mr-2"></i>Usuarios
                     </a>
                 </c:if>
-                <a href="libros.jsp" class="block px-4 py-3 font-medium text-sm border-l-4 border-slate-700 bg-slate-50 text-slate-700">
-                    <i class="fas fa-book mr-2"></i>Libros
+                <c:if test="${puedeGestionar}">
+                    <a href="libros.jsp" class="block px-4 py-3 font-medium text-sm border-l-4 border-slate-700 bg-slate-50 text-slate-700">
+                        <i class="fas fa-book mr-2"></i>Libros
+                    </a>
+                    <a href="prestamos.jsp" class="block px-4 py-3 font-medium text-sm border-l-4 border-transparent text-gray-600 hover:bg-gray-50 hover:border-slate-300">
+                        <i class="fas fa-exchange-alt mr-2"></i>Préstamos
+                    </a>
+                </c:if>
+                <a href="mis-prestamos.jsp"
+                   class="block px-4 py-3 font-medium text-sm border-l-4 border-transparent text-gray-600 hover:bg-gray-50 hover:border-slate-300">
+                    <i class="fas fa-book-reader mr-2"></i>Mis Préstamos
                 </a>
-                <a href="prestamos.jsp" class="block px-4 py-3 font-medium text-sm border-l-4 border-transparent text-gray-600 hover:bg-gray-50 hover:border-slate-300">
-                    <i class="fas fa-exchange-alt mr-2"></i>Préstamos
+                <a href="mis-multas.jsp"
+                   class="block px-4 py-3 font-medium text-sm border-l-4 border-transparent text-gray-600 hover:bg-gray-50 hover:border-slate-300">
+                    <i class="fas fa-money-bill-wave mr-2"></i>Mis Multas
                 </a>
             </nav>
         </div>
