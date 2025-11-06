@@ -77,9 +77,14 @@ public class ChatbotServlet extends HttpServlet {
         String ipOrigen = obtenerIpCliente(request);
         
         try {
+            List<Chatbot> historial = new ArrayList<>();
+            if (idUsuario != null) {
+                historial = chatbotDAO.obtenerHistorialUsuario(idUsuario, 3);
+            }
+            
             String contextoLibros = obtenerContextoLibros();
             
-            String prompt = construirPrompt(mensajeUsuario, nombreUsuario, contextoLibros, usuario != null);
+            String prompt = construirPrompt(mensajeUsuario, nombreUsuario, contextoLibros, usuario != null, historial);
             
             String respuestaIA = llamarGeminiAPI(prompt);
             
@@ -126,36 +131,50 @@ public class ChatbotServlet extends HttpServlet {
     
     // Construir el prompt para Gemini
     private String construirPrompt(String mensajeUsuario, String nombreUsuario, 
-                                   String contextoLibros, boolean usuarioAutenticado) {
+                                   String contextoLibros, boolean usuarioAutenticado, 
+                                   List<Chatbot> historial) {
         
         StringBuilder prompt = new StringBuilder();
         
         prompt.append("Eres un asistente virtual amigable de una biblioteca llamado BiblioBot. ");
-        prompt.append("Tu función es ayudar a los usuarios a encontrar libros y responder preguntas sobre la biblioteca.\n\n");
+        prompt.append("Tu función es ayudar a los usuarios a encontrar libros y responder preguntas sobre la biblioteca del colegio sagrado corazón de maria.\n\n");
         
         if (usuarioAutenticado) {
             prompt.append("El usuario está registrado y su nombre es: ").append(nombreUsuario).append(".\n");
-            prompt.append("Dirígete a él por su nombre de manera natural y amigable.\n\n");
+            prompt.append("NO lo saludes en cada mensaje, solo responde a su pregunta directamente.\n\n");
         } else {
             prompt.append("El usuario no está registrado actualmente.\n");
             prompt.append("Puedes sugerirle que se registre para tener acceso a más funciones.\n\n");
         }
         
+        // Agregar historial de conversación si existe
+        if (historial != null && !historial.isEmpty()) {
+            prompt.append("HISTORIAL DE CONVERSACIÓN RECIENTE (del más reciente al más antiguo):\n");
+            // Invertir el orden para mostrar del más antiguo al más reciente
+            for (int i = historial.size() - 1; i >= 0; i--) {
+                Chatbot msg = historial.get(i);
+                prompt.append("Usuario: ").append(msg.getMensajeRecibido()).append("\n");
+                prompt.append("BiblioBot: ").append(msg.getMensajeRespuesta()).append("\n\n");
+            }
+        }
+        
         prompt.append("INSTRUCCIONES:\n");
         prompt.append("1. Sé conversacional, amable y útil\n");
-        prompt.append("2. Si preguntan por libros, recomienda basándote en la lista proporcionada\n");
-        prompt.append("3. Si un libro no tiene stock disponible, menciona que está agotado temporalmente\n");
-        prompt.append("4. Puedes recomendar libros por género, autor o título\n");
-        prompt.append("5. Si preguntan sobre cómo usar la biblioteca, explica que pueden registrarse, buscar libros y solicitar préstamos\n");
-        prompt.append("6. Mantén respuestas concisas (máximo 150 palabras)\n");
-        prompt.append("7. Usa emojis ocasionalmente para ser más amigable 📚\n\n");
+        prompt.append("2. NO saludes en cada mensaje, mantén la conversación natural\n");
+        prompt.append("3. Si preguntan por libros, recomienda basándote en la lista proporcionada\n");
+        prompt.append("4. Si un libro no tiene stock disponible, menciona que está agotado temporalmente\n");
+        prompt.append("5. Puedes recomendar libros por género, autor o título\n");
+        prompt.append("6. Si preguntan sobre cómo usar la biblioteca, explica que pueden registrarse, buscar libros y solicitar préstamos\n");
+        prompt.append("7. Mantén respuestas concisas (máximo 150 palabras)\n");
+        prompt.append("8. Usa emojis ocasionalmente para ser más amigable 📚\n");
+        prompt.append("9. Ten en cuenta el historial de conversación para dar respuestas coherentes y contextuales\n\n");
         
         prompt.append(contextoLibros);
         
-        prompt.append("\n\nPREGUNTA DEL USUARIO:\n");
+        prompt.append("\n\nNUEVA PREGUNTA DEL USUARIO:\n");
         prompt.append(mensajeUsuario);
         
-        prompt.append("\n\nRespuesta (directo, sin prefijos):");
+        prompt.append("\n\nRespuesta (directo, sin saludar nuevamente):");
         
         return prompt.toString();
     }
