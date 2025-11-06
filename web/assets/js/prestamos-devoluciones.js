@@ -133,7 +133,7 @@ function renderizarDevoluciones(prestamos) {
                         </button>
                         <button onclick="verDetallePrestamo(${prestamo.id})" 
                             class="p-1.5 sm:p-2 text-white bg-slate-700 hover:bg-slate-800 rounded transition" title="Ver Detalles">
-                            <i class="fas fa-eye text-sm sm:text-base"></i>
+                            <i class="fas fa-info-circle text-sm sm:text-base"></i>
                         </button>
                         <button onclick="eliminarPrestamo(${prestamo.id}, '${escapeHtml(prestamo.libroNombre)}')" 
                             class="p-1.5 sm:p-2 text-white bg-slate-700 hover:bg-slate-800 rounded transition" title="Eliminar Préstamo">
