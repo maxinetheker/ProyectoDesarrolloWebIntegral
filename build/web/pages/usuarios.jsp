@@ -43,12 +43,14 @@
         <div class="container mx-auto px-2 sm:px-4">
             <div class="flex justify-between items-center py-3 sm:py-4">
                 <div class="flex items-center space-x-2 sm:space-x-4">
-                    <div class=""><img src="../assets/images/logo.png" alt="I.E. Sagrado Corazón de María" class="h-10 w-10 sm:h-14 sm:w-14"></div>
-                    
-                    <div>
-                        <h1 class="text-white text-base sm:text-2xl font-bold">Sistema de Biblioteca</h1>
-                        <p class="text-slate-300 text-xs sm:text-sm hidden sm:block">Gestión Integral</p>
-                    </div>
+                    <a href="${pageContext.request.contextPath}/index.jsp" class="flex items-center space-x-2 sm:space-x-4 hover:opacity-80 transition-opacity">
+                        <div class=""><img src="../assets/images/logo.png" alt="I.E. Sagrado Corazón de María" class="h-10 w-10 sm:h-14 sm:w-14"></div>
+                        
+                        <div>
+                            <h1 class="text-white text-base sm:text-2xl font-bold">Sistema de Biblioteca</h1>
+                            <p class="text-slate-300 text-xs sm:text-sm hidden sm:block">Gestión Integral</p>
+                        </div>
+                    </a>
                 </div>
                 <div class="flex items-center space-x-2 sm:space-x-4">
                     <div class="text-right hidden md:block">

@@ -58,32 +58,30 @@ public class MisPrestamosServlet extends HttpServlet {
         
         String estado = request.getParameter("estado"); // "todos", "prestado", "devuelto", "vencido"
         String termino = request.getParameter("termino");
+        String paginaStr = request.getParameter("pagina");
+        String elementosPorPaginaStr = request.getParameter("elementosPorPagina");
+        
+        // Valores por defecto para paginación
+        int pagina = 1;
+        int elementosPorPagina = 10;
         
         try {
-            List<Prestamo> prestamos = prestamoDAO.obtenerPrestamosPorUsuario(usuario.getId());
-            
-            // Filtrar por estado si se proporciona
-            if (estado != null && !estado.trim().isEmpty() && !"todos".equals(estado)) {
-                prestamos = prestamos.stream()
-                    .filter(prestamo -> estado.equals(prestamo.getEstado()))
-                    .toList();
+            if (paginaStr != null && !paginaStr.isEmpty()) {
+                pagina = Integer.parseInt(paginaStr);
             }
-            
-            // Filtrar por término de búsqueda si se proporciona
-            if (termino != null && !termino.trim().isEmpty()) {
-                String terminoLower = termino.toLowerCase().trim();
-                prestamos = prestamos.stream()
-                    .filter(prestamo -> 
-                        prestamo.getLibroTitulo().toLowerCase().contains(terminoLower) ||
-                        prestamo.getLibroAutor().toLowerCase().contains(terminoLower) ||
-                        prestamo.getLibroIsbn().toLowerCase().contains(terminoLower)
-                    )
-                    .toList();
+            if (elementosPorPaginaStr != null && !elementosPorPaginaStr.isEmpty()) {
+                elementosPorPagina = Integer.parseInt(elementosPorPaginaStr);
             }
+        } catch (NumberFormatException e) {
+            // Usar valores por defecto
+        }
+        
+        try {
+            List<Prestamo> todosPrestamos = prestamoDAO.obtenerPrestamosPorUsuario(usuario.getId());
             
-            // Agregar información de vencimiento
+            // Agregar información de vencimiento antes de filtrar
             Date fechaActual = new Date();
-            for (Prestamo prestamo : prestamos) {
+            for (Prestamo prestamo : todosPrestamos) {
                 // Verificar si está vencido (solo para préstamos activos)
                 if ("prestado".equals(prestamo.getEstado()) && 
                     prestamo.getFechaDevolucionEsperada() != null && 
@@ -92,9 +90,41 @@ public class MisPrestamosServlet extends HttpServlet {
                 }
             }
             
+            // Filtrar por estado si se proporciona
+            if (estado != null && !estado.trim().isEmpty() && !"todos".equals(estado)) {
+                todosPrestamos = todosPrestamos.stream()
+                    .filter(prestamo -> estado.equals(prestamo.getEstado()))
+                    .toList();
+            }
+            
+            // Filtrar por término de búsqueda si se proporciona
+            if (termino != null && !termino.trim().isEmpty()) {
+                String terminoLower = termino.toLowerCase().trim();
+                todosPrestamos = todosPrestamos.stream()
+                    .filter(prestamo -> 
+                        prestamo.getLibroTitulo().toLowerCase().contains(terminoLower) ||
+                        prestamo.getLibroAutor().toLowerCase().contains(terminoLower) ||
+                        prestamo.getLibroIsbn().toLowerCase().contains(terminoLower)
+                    )
+                    .toList();
+            }
+            
+            // Calcular información de paginación
+            int totalElementos = todosPrestamos.size();
+            int totalPaginas = (int) Math.ceil((double) totalElementos / elementosPorPagina);
+            
+            // Aplicar paginación
+            int inicio = (pagina - 1) * elementosPorPagina;
+            int fin = Math.min(inicio + elementosPorPagina, totalElementos);
+            
+            List<Prestamo> prestamosParaPagina = todosPrestamos.subList(inicio, fin);
+            
             Map<String, Object> resultado = new HashMap<>();
-            resultado.put("prestamos", prestamos);
-            resultado.put("total", prestamos.size());
+            resultado.put("prestamos", prestamosParaPagina);
+            resultado.put("total", totalElementos);
+            resultado.put("totalPaginas", totalPaginas);
+            resultado.put("paginaActual", pagina);
+            resultado.put("elementosPorPagina", elementosPorPagina);
             
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");

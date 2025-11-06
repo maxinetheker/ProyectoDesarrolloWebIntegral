@@ -55,25 +55,42 @@ public class MisMultasServlet extends HttpServlet {
     private void obtenerMultasUsuario(HttpServletRequest request, HttpServletResponse response, Usuario usuario) 
             throws IOException {
         
-        String filtro = request.getParameter("filtro"); // "todas", "pagadas", "pendientes"
+        String estado = request.getParameter("estado"); // "todas", "pagadas", "pendientes"
         String termino = request.getParameter("termino");
+        String paginaStr = request.getParameter("pagina");
+        String elementosPorPaginaStr = request.getParameter("elementosPorPagina");
+        
+        // Valores por defecto para paginación
+        int pagina = 1;
+        int elementosPorPagina = 10;
         
         try {
-            List<Prestamo> multas;
+            if (paginaStr != null && !paginaStr.isEmpty()) {
+                pagina = Integer.parseInt(paginaStr);
+            }
+            if (elementosPorPaginaStr != null && !elementosPorPaginaStr.isEmpty()) {
+                elementosPorPagina = Integer.parseInt(elementosPorPaginaStr);
+            }
+        } catch (NumberFormatException e) {
+            // Usar valores por defecto
+        }
+        
+        try {
+            List<Prestamo> todasMultas;
             
-            if ("pagadas".equals(filtro)) {
-                multas = prestamoDAO.obtenerMultasPagadasPorUsuario(usuario.getId());
-            } else if ("pendientes".equals(filtro)) {
-                multas = prestamoDAO.obtenerMultasPendientesPorUsuario(usuario.getId());
+            if ("pagadas".equals(estado)) {
+                todasMultas = prestamoDAO.obtenerMultasPagadasPorUsuario(usuario.getId());
+            } else if ("pendientes".equals(estado)) {
+                todasMultas = prestamoDAO.obtenerMultasPendientesPorUsuario(usuario.getId());
             } else {
                 // Todas las multas
-                multas = prestamoDAO.obtenerTodasMultasPorUsuario(usuario.getId());
+                todasMultas = prestamoDAO.obtenerTodasMultasPorUsuario(usuario.getId());
             }
             
             // Filtrar por término de búsqueda si se proporciona
             if (termino != null && !termino.trim().isEmpty()) {
                 String terminoLower = termino.toLowerCase().trim();
-                multas = multas.stream()
+                todasMultas = todasMultas.stream()
                     .filter(multa -> 
                         multa.getLibroTitulo().toLowerCase().contains(terminoLower) ||
                         multa.getLibroAutor().toLowerCase().contains(terminoLower) ||
@@ -82,9 +99,22 @@ public class MisMultasServlet extends HttpServlet {
                     .toList();
             }
             
+            // Calcular información de paginación
+            int totalElementos = todasMultas.size();
+            int totalPaginas = (int) Math.ceil((double) totalElementos / elementosPorPagina);
+            
+            // Aplicar paginación
+            int inicio = (pagina - 1) * elementosPorPagina;
+            int fin = Math.min(inicio + elementosPorPagina, totalElementos);
+            
+            List<Prestamo> multasParaPagina = todasMultas.subList(inicio, fin);
+            
             Map<String, Object> resultado = new HashMap<>();
-            resultado.put("multas", multas);
-            resultado.put("total", multas.size());
+            resultado.put("multas", multasParaPagina);
+            resultado.put("total", totalElementos);
+            resultado.put("totalPaginas", totalPaginas);
+            resultado.put("paginaActual", pagina);
+            resultado.put("elementosPorPagina", elementosPorPagina);
             
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");

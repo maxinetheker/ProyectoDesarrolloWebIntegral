@@ -2,6 +2,9 @@
 let prestamosData = [];
 let filtroActual = 'todos';
 let terminoBusqueda = '';
+let paginaActual = 1;
+let totalPaginas = 1;
+const elementosPorPagina = 10;
 
 // Inicializar la página
 document.addEventListener('DOMContentLoaded', function() {
@@ -18,6 +21,7 @@ function configurarEventos() {
             clearTimeout(timeoutBusqueda);
             timeoutBusqueda = setTimeout(() => {
                 terminoBusqueda = this.value;
+                paginaActual = 1; // Reiniciar a la primera página
                 cargarPrestamos();
             }, 300);
         });
@@ -28,21 +32,39 @@ function configurarEventos() {
     if (filtroEstado) {
         filtroEstado.addEventListener('change', function() {
             filtroActual = this.value;
+            paginaActual = 1; // Reiniciar a la primera página
             cargarPrestamos();
         });
     }
 }
 
+function mostrarCarga() {
+    const cargaPrestamos = document.getElementById('carga-prestamos');
+    const cargaPrestamosMobile = document.getElementById('carga-prestamos-mobile');
+    
+    if (cargaPrestamos) cargaPrestamos.style.display = 'table-row';
+    if (cargaPrestamosMobile) cargaPrestamosMobile.style.display = 'block';
+}
+
+function ocultarCarga() {
+    const cargaPrestamos = document.getElementById('carga-prestamos');
+    const cargaPrestamosMobile = document.getElementById('carga-prestamos-mobile');
+    
+    if (cargaPrestamos) cargaPrestamos.style.display = 'none';
+    if (cargaPrestamosMobile) cargaPrestamosMobile.style.display = 'none';
+}
+
 async function cargarPrestamos() {
     try {
-        // Mostrar indicador de carga
-        mostrarCarga(true);
+        mostrarCarga();
         
         // Construir URL con parámetros
         const params = new URLSearchParams({
             accion: 'obtener',
             estado: filtroActual,
-            termino: terminoBusqueda
+            termino: terminoBusqueda,
+            pagina: paginaActual,
+            elementosPorPagina: elementosPorPagina
         });
 
         const response = await fetch(`${window.CONTEXT_PATH}/mis-prestamos?${params.toString()}`);
@@ -58,41 +80,52 @@ async function cargarPrestamos() {
         }
 
         prestamosData = data.prestamos || [];
-        actualizarTabla();
+        totalPaginas = data.totalPaginas || 1;
+        
+        actualizarTabla(prestamosData);
         actualizarContadores(data.total || 0);
+        actualizarPaginacion();
         
     } catch (error) {
         console.error('Error al cargar préstamos:', error);
         mostrarError('Error al cargar los préstamos: ' + error.message);
     } finally {
-        mostrarCarga(false);
+        ocultarCarga();
     }
 }
 
-function mostrarCarga(mostrar) {
-    const filaCarga = document.getElementById('carga-prestamos');
-    if (filaCarga) {
-        filaCarga.style.display = mostrar ? '' : 'none';
-    }
-}
-
-function actualizarTabla() {
+function actualizarTabla(prestamos) {
     const tbody = document.getElementById('tabla-prestamos');
-    if (!tbody) return;
-
-    // Limpiar tabla excepto fila de carga
-    const filas = tbody.querySelectorAll('tr:not(#carga-prestamos)');
-    filas.forEach(fila => fila.remove());
-
-    if (prestamosData.length === 0) {
+    const containerMobile = document.getElementById('prestamos-mobile');
+    
+    if (!tbody) {
+        console.error('No se encontró el elemento tabla-prestamos');
+        return;
+    }
+    
+    if (!containerMobile) {
+        console.error('No se encontró el elemento prestamos-mobile');
+        return;
+    }
+    
+    // Limpiar contenido existente
+    tbody.innerHTML = '';
+    containerMobile.innerHTML = '';
+    
+    if (prestamos.length === 0) {
         mostrarFilaVacia();
+        mostrarCardsVacios();
         return;
     }
 
-    // Crear filas de datos
-    prestamosData.forEach(prestamo => {
+    prestamos.forEach(prestamo => {
+        // Crear fila para tabla desktop
         const fila = crearFilaPrestamo(prestamo);
         tbody.appendChild(fila);
+        
+        // Crear card para mobile
+        const card = crearCardPrestamo(prestamo);
+        containerMobile.appendChild(card);
     });
 }
 
@@ -101,8 +134,8 @@ function crearFilaPrestamo(prestamo) {
     fila.className = 'hover:bg-gray-50';
 
     const fechaPrestamo = formatearFecha(prestamo.fechaEntrega || prestamo.fechaPrestamo);
-    const fechaDevolucion = formatearFecha(prestamo.fechaDevolucionProgramada || prestamo.fechaDevolucionEsperada);
-    const fechaDevolucionReal = formatearFecha(prestamo.fechaDevolucionReal);
+    const fechaDevolucion = formatearFecha(prestamo.fechaDevolucionProgramada || prestamo.fechaDevolucionEsperada || prestamo.fechaLimite);
+    const fechaDevolucionReal = formatearFecha(prestamo.fechaDevolucionReal || prestamo.fechaDevolucion);
     const montoMulta = formatearMoneda(prestamo.multa);
     const diasInfo = calcularDiasInfo(prestamo);
     const estadoInfo = obtenerEstadoInfo(prestamo);
@@ -146,6 +179,93 @@ function crearFilaPrestamo(prestamo) {
     return fila;
 }
 
+function crearCardPrestamo(prestamo) {
+    const card = document.createElement('div');
+    card.className = 'prestamo-card bg-white border border-gray-200 rounded-lg p-4 shadow-sm mb-4';
+
+    const fechaPrestamo = formatearFecha(prestamo.fechaEntrega || prestamo.fechaPrestamo);
+    const fechaDevolucion = formatearFecha(prestamo.fechaDevolucionProgramada || prestamo.fechaDevolucionEsperada || prestamo.fechaLimite);
+    const fechaDevolucionReal = formatearFecha(prestamo.fechaDevolucionReal || prestamo.fechaDevolucion);
+    const montoMulta = formatearMoneda(prestamo.multa);
+    const diasInfo = calcularDiasInfo(prestamo);
+    const estadoInfo = obtenerEstadoInfo(prestamo);
+
+    card.innerHTML = `
+        <div class="space-y-3">
+            <!-- Título del libro -->
+            <div class="border-b border-gray-100 pb-2">
+                <h3 class="font-medium text-gray-900 text-sm">${escapeHtml(prestamo.libroTitulo || prestamo.libroNombre || 'N/A')}</h3>
+                <p class="text-xs text-gray-500 mt-1">
+                    Por: ${escapeHtml(prestamo.libroAutor || 'N/A')} • ISBN: ${escapeHtml(prestamo.libroIsbn || 'N/A')}
+                </p>
+            </div>
+            
+            <!-- Estado y días -->
+            <div class="flex justify-between items-center">
+                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${estadoInfo.clase}">
+                    ${estadoInfo.texto}
+                </span>
+                <div class="text-right">
+                    <div class="text-xs ${diasInfo.clase} font-medium">${diasInfo.texto}</div>
+                    <div class="text-xs text-gray-500">${diasInfo.descripcion}</div>
+                </div>
+            </div>
+            
+            <!-- Información de fechas -->
+            <div class="grid grid-cols-1 gap-2 text-xs">
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Préstamo:</span>
+                    <span class="text-gray-900 font-medium">${fechaPrestamo}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Devolución esperada:</span>
+                    <span class="text-gray-900 font-medium">${fechaDevolucion}</span>
+                </div>
+                ${fechaDevolucionReal !== 'N/A' ? `
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Devolución real:</span>
+                    <span class="text-gray-900 font-medium">${fechaDevolucionReal}</span>
+                </div>
+                ` : ''}
+            </div>
+            
+            <!-- Multa -->
+            ${prestamo.multa && parseFloat(prestamo.multa) > 0 ? `
+            <div class="flex justify-between items-center pt-2 border-t border-gray-100">
+                <span class="text-gray-500 text-xs">Multa:</span>
+                <span class="text-red-600 font-bold text-sm">${montoMulta}</span>
+            </div>
+            ` : ''}
+        </div>
+    `;
+
+    return card;
+}
+
+function mostrarFilaVacia() {
+    const tbody = document.getElementById('tabla-prestamos');
+    if (!tbody) return;
+    
+    const fila = document.createElement('tr');
+    fila.innerHTML = `
+        <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+            No se encontraron préstamos
+        </td>
+    `;
+    tbody.appendChild(fila);
+}
+
+function mostrarCardsVacios() {
+    const containerMobile = document.getElementById('prestamos-mobile');
+    const emptyState = document.createElement('div');
+    emptyState.className = 'text-center py-8 text-gray-500';
+    emptyState.innerHTML = `
+        <i class="fas fa-search mb-2 text-3xl text-gray-400"></i>
+        <p>No se encontraron préstamos</p>
+    `;
+    containerMobile.appendChild(emptyState);
+}
+
 function obtenerEstadoInfo(prestamo) {
     const estado = prestamo.estado;
     
@@ -179,9 +299,9 @@ function obtenerEstadoInfo(prestamo) {
 }
 
 function calcularDiasInfo(prestamo) {
-    const fechaDevolucion = new Date(prestamo.fechaDevolucionProgramada || prestamo.fechaDevolucionEsperada);
+    const fechaDevolucion = new Date(prestamo.fechaDevolucionProgramada || prestamo.fechaDevolucionEsperada || prestamo.fechaLimite);
     const fechaActual = new Date();
-    const fechaDevReal = prestamo.fechaDevolucionReal ? new Date(prestamo.fechaDevolucionReal) : null;
+    const fechaDevReal = prestamo.fechaDevolucionReal || prestamo.fechaDevolucion ? new Date(prestamo.fechaDevolucionReal || prestamo.fechaDevolucion) : null;
     
     if (isNaN(fechaDevolucion.getTime())) {
         return {
@@ -234,27 +354,75 @@ function calcularDiasInfo(prestamo) {
     }
 }
 
-function mostrarFilaVacia() {
-    const tbody = document.getElementById('tabla-prestamos');
-    if (!tbody) return;
-
-    const filaVacia = document.createElement('tr');
-    filaVacia.innerHTML = `
-        <td colspan="6" class="px-6 py-8 text-center text-gray-500">
-            <div class="flex flex-col items-center">
-                <i class="fas fa-book-reader text-4xl text-gray-300 mb-3"></i>
-                <p class="text-lg font-medium">No se encontraron préstamos</p>
-                <p class="text-sm">No tienes préstamos ${filtroActual === 'todos' ? '' : filtroActual + 's'} en este momento.</p>
-            </div>
-        </td>
-    `;
-    tbody.appendChild(filaVacia);
-}
-
 function actualizarContadores(total) {
     const elementoTotal = document.getElementById('total-prestamos');
     if (elementoTotal) {
         elementoTotal.textContent = total;
+    }
+    
+    const elementoPaginaActual = document.getElementById('pagina-actual');
+    if (elementoPaginaActual) {
+        elementoPaginaActual.textContent = paginaActual;
+    }
+    
+    const elementoTotalPaginas = document.getElementById('total-paginas');
+    if (elementoTotalPaginas) {
+        elementoTotalPaginas.textContent = totalPaginas;
+    }
+}
+
+function actualizarPaginacion() {
+    const contenedorPaginacion = document.getElementById('paginacion-prestamos');
+    if (!contenedorPaginacion) return;
+
+    let html = '';
+    
+    // Botón anterior
+    if (paginaActual > 1) {
+        html += `<button onclick="cambiarPagina(${paginaActual - 1})" class="px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700">
+            <i class="fas fa-chevron-left"></i>
+        </button>`;
+    } else {
+        html += `<button disabled class="px-3 py-2 ml-0 leading-tight text-gray-300 bg-gray-100 border border-gray-300 rounded-l-lg cursor-not-allowed">
+            <i class="fas fa-chevron-left"></i>
+        </button>`;
+    }
+
+    // Números de página
+    const maxPaginasVisibles = 5;
+    let inicio = Math.max(1, paginaActual - Math.floor(maxPaginasVisibles / 2));
+    let fin = Math.min(totalPaginas, inicio + maxPaginasVisibles - 1);
+    
+    if (fin - inicio + 1 < maxPaginasVisibles) {
+        inicio = Math.max(1, fin - maxPaginasVisibles + 1);
+    }
+
+    for (let i = inicio; i <= fin; i++) {
+        if (i === paginaActual) {
+            html += `<button onclick="cambiarPagina(${i})" class="px-3 py-2 leading-tight text-blue-600 bg-blue-50 border border-gray-300 hover:bg-blue-100 hover:text-blue-700">${i}</button>`;
+        } else {
+            html += `<button onclick="cambiarPagina(${i})" class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700">${i}</button>`;
+        }
+    }
+
+    // Botón siguiente
+    if (paginaActual < totalPaginas) {
+        html += `<button onclick="cambiarPagina(${paginaActual + 1})" class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700">
+            <i class="fas fa-chevron-right"></i>
+        </button>`;
+    } else {
+        html += `<button disabled class="px-3 py-2 leading-tight text-gray-300 bg-gray-100 border border-gray-300 rounded-r-lg cursor-not-allowed">
+            <i class="fas fa-chevron-right"></i>
+        </button>`;
+    }
+
+    contenedorPaginacion.innerHTML = html;
+}
+
+function cambiarPagina(nuevaPagina) {
+    if (nuevaPagina >= 1 && nuevaPagina <= totalPaginas && nuevaPagina !== paginaActual) {
+        paginaActual = nuevaPagina;
+        cargarPrestamos();
     }
 }
 
@@ -329,3 +497,4 @@ function actualizarDatos() {
 // Exportar funciones para uso global si es necesario
 window.cargarPrestamos = cargarPrestamos;
 window.actualizarDatos = actualizarDatos;
+window.cambiarPagina = cambiarPagina;

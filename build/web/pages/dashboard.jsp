@@ -38,12 +38,14 @@
         <div class="container mx-auto px-2 sm:px-4">
             <div class="flex justify-between items-center py-3 sm:py-4">
                 <div class="flex items-center space-x-2 sm:space-x-4">
-                    <div class=""><img src="../assets/images/logo.png" alt="I.E. Sagrado Corazón de María" class="h-10 w-10 sm:h-14 sm:w-14"></div>
-                    
-                    <div>
-                        <h1 class="text-white text-base sm:text-2xl font-bold">Sistema de Biblioteca</h1>
-                        <p class="text-slate-300 text-xs sm:text-sm hidden sm:block">Gestión Integral</p>
-                    </div>
+                    <a href="${pageContext.request.contextPath}/index.jsp" class="flex items-center space-x-2 sm:space-x-4 hover:opacity-80 transition-opacity">
+                        <div class=""><img src="../assets/images/logo.png" alt="I.E. Sagrado Corazón de María" class="h-10 w-10 sm:h-14 sm:w-14"></div>
+                        
+                        <div>
+                            <h1 class="text-white text-base sm:text-2xl font-bold">Sistema de Biblioteca</h1>
+                            <p class="text-slate-300 text-xs sm:text-sm hidden sm:block">Gestión Integral</p>
+                        </div>
+                    </a>
                 </div>
                 <div class="flex items-center space-x-2 sm:space-x-4">
                     <div class="text-right hidden md:block">
@@ -129,6 +131,14 @@
                         <i class="fas fa-exchange-alt mr-2"></i>Préstamos
                     </a>
                 </c:if>
+                <a href="mis-prestamos.jsp"
+                   class="block px-4 py-3 font-medium text-sm border-l-4 border-transparent text-gray-600 hover:bg-gray-50 hover:border-slate-300">
+                    <i class="fas fa-book-reader mr-2"></i>Mis Préstamos
+                </a>
+                <a href="mis-multas.jsp"
+                   class="block px-4 py-3 font-medium text-sm border-l-4 border-transparent text-gray-600 hover:bg-gray-50 hover:border-slate-300">
+                    <i class="fas fa-money-bill-wave mr-2"></i>Mis Multas
+                </a>
                 <a href="mis-prestamos.jsp"
                    class="block px-4 py-3 font-medium text-sm border-l-4 border-transparent text-gray-600 hover:bg-gray-50 hover:border-slate-300">
                     <i class="fas fa-book-reader mr-2"></i>Mis Préstamos

@@ -37,12 +37,14 @@
         <div class="container mx-auto px-2 sm:px-4">
             <div class="flex justify-between items-center py-3 sm:py-4">
                 <div class="flex items-center space-x-2 sm:space-x-4">
-                    <div class=""><img src="../assets/images/logo.png" alt="I.E. Sagrado Corazón de María" class="h-10 w-10 sm:h-14 sm:w-14"></div>
-                    
-                    <div>
-                        <h1 class="text-white text-base sm:text-2xl font-bold">Sistema de Biblioteca</h1>
-                        <p class="text-slate-300 text-xs sm:text-sm hidden sm:block">Gestión Integral</p>
-                    </div>
+                    <a href="${pageContext.request.contextPath}/index.jsp" class="flex items-center space-x-2 sm:space-x-4 hover:opacity-80 transition-opacity">
+                        <div class=""><img src="../assets/images/logo.png" alt="I.E. Sagrado Corazón de María" class="h-10 w-10 sm:h-14 sm:w-14"></div>
+                        
+                        <div>
+                            <h1 class="text-white text-base sm:text-2xl font-bold">Sistema de Biblioteca</h1>
+                            <p class="text-slate-300 text-xs sm:text-sm hidden sm:block">Gestión Integral</p>
+                        </div>
+                    </a>
                 </div>
                 <div class="flex items-center space-x-2 sm:space-x-4">
                     <div class="text-right hidden md:block">
@@ -177,7 +179,8 @@
 
             <!-- Tabla de Multas -->
             <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
+                <!-- Vista Desktop -->
+                <table class="min-w-full divide-y divide-gray-200 hidden sm:table">
                     <thead class="bg-gray-50">
                         <tr>
                             <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Libro</th>
@@ -196,6 +199,39 @@
                         </tr>
                     </tbody>
                 </table>
+
+                <!-- Vista Mobile - Cards -->
+                <div id="multas-mobile" class="block sm:hidden space-y-3">
+                    <!-- Indicador de carga móvil -->
+                    <div id="carga-multas-mobile" class="text-center py-8 text-gray-500">
+                        <i class="fas fa-spinner fa-spin mr-2"></i>Cargando multas...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Paginación -->
+            <div class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
+                <div class="flex flex-1 justify-between sm:hidden">
+                    <button onclick="cambiarPagina(paginaActual - 1)" class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+                        Anterior
+                    </button>
+                    <button onclick="cambiarPagina(paginaActual + 1)" class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+                        Siguiente
+                    </button>
+                </div>
+                <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+                    <div>
+                        <p class="text-sm text-gray-700">
+                            Mostrando multas página <span class="font-medium" id="pagina-actual-multas">1</span> de 
+                            <span class="font-medium" id="total-paginas-multas">1</span>
+                        </p>
+                    </div>
+                    <div>
+                        <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" id="paginacion-multas">
+                            <!-- Botones de paginación se generarán aquí -->
+                        </nav>
+                    </div>
+                </div>
             </div>
 
             <!-- Información de resultados -->
