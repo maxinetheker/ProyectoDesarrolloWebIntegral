@@ -52,18 +52,7 @@
                         </div>
                     </a>
                 </div>
-                <div class="flex items-center space-x-2 sm:space-x-4">
-                    <div class="text-right hidden md:block">
-                        <p class="text-white font-semibold text-sm"><c:out value="${usuario.nombreCompleto}" /></p>
-                        <p class="text-slate-300 text-xs">
-                            <i class="fas fa-user-shield"></i> <c:out value="${usuario.nombreRol}" />
-                        </p>
-                    </div>
-                    <a href="${pageContext.request.contextPath}/logout" class="bg-white text-slate-700 px-2 py-1.5 sm:px-4 sm:py-2 rounded-md text-xs sm:text-sm font-semibold hover:bg-gray-100 transition duration-200 shadow-sm flex items-center">
-                        <i class="fas fa-sign-out-alt sm:mr-2"></i>
-                        <span class="hidden sm:inline">Cerrar Sesión</span>
-                    </a>
-                </div>
+                <%@ include file="components/header-buttons.jsp" %>
             </div>
         </div>
     </nav>
@@ -443,6 +432,7 @@
     </script>
     <script src="${pageContext.request.contextPath}/assets/js/sweetalert2@11.js"></script>
     <script src="${pageContext.request.contextPath}/assets/js/JsBarcode.all.min.js"></script>
+    <script src="${pageContext.request.contextPath}/assets/js/perfil-carnet.js"></script>
     <script src="${pageContext.request.contextPath}/assets/js/usuarios.js"></script>
     <script src="${pageContext.request.contextPath}/assets/js/carnet.js"></script>
 </body>

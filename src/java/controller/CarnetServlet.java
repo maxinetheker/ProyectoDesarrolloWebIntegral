@@ -35,6 +35,37 @@ public class CarnetServlet extends HttpServlet {
     }
     
     @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        
+        try {
+            // Verificar sesión
+            HttpSession session = request.getSession(false);
+            if (session == null || session.getAttribute("usuario") == null) {
+                enviarRespuestaError(response, "Sesión no válida", 401);
+                return;
+            }
+            
+            String accion = request.getParameter("accion");
+            
+            if (accion == null) {
+                accion = "obtener"; // Por defecto obtener
+            }
+            
+            // Para GET, solo permitir obtener el propio carnet
+            if ("obtener".equals(accion) || "obtenerCodigo".equals(accion)) {
+                obtenerCarnet(request, response);
+            } else {
+                enviarRespuestaError(response, "Acción no válida para GET", 400);
+            }
+        } catch (Exception e) {
+            System.err.println("Error en CarnetServlet GET: " + e.getMessage());
+            e.printStackTrace();
+            enviarRespuestaError(response, "Error interno del servidor", 500);
+        }
+    }
+    
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
