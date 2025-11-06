@@ -333,11 +333,6 @@ public class PrestamoServlet extends HttpServlet {
             boolean actualizado = prestamoDAO.registrarDevolucion(id, estado, multa, observaciones);
             
             if (actualizado) {
-                if ("devuelto".equals(estado)) {
-                    libroDAO.ajustarStockDisponible(prestamo.getLibroId(), 1);
-                } else if ("perdido".equals(estado)) {
-                }
-                
                 Map<String, Object> resultado = new HashMap<>();
                 resultado.put("success", true);
                 resultado.put("message", "Devolución registrada exitosamente");

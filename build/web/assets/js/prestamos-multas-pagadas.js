@@ -81,9 +81,6 @@ function renderizarMultasPagadas(prestamos) {
         return;
     }
     
-    // Calcular total de multas pagadas
-    const totalMultas = prestamos.reduce((sum, p) => sum + parseFloat(p.multa), 0);
-    
     tbody.innerHTML = prestamos.map(prestamo => {
         const fechaPrestamo = formatearFecha(prestamo.fechaPrestamo);
         const fechaDevolucionReal = prestamo.fechaDevolucionReal 
@@ -151,19 +148,6 @@ function renderizarMultasPagadas(prestamos) {
             </tr>
         `;
     }).join('');
-    
-    // Agregar fila de total al final
-    const totalRow = `
-        <tr class="bg-gray-100 font-semibold">
-            <td colspan="4" class="px-3 sm:px-6 py-3 text-right text-sm text-gray-700">
-                TOTAL MULTAS PAGADAS (Página actual):
-            </td>
-            <td colspan="2" class="px-3 sm:px-6 py-3 text-sm text-green-700">
-                S/. ${totalMultas.toFixed(2)}
-            </td>
-        </tr>
-    `;
-    tbody.innerHTML += totalRow;
 }
 
 function actualizarPaginacionMultasPagadas(total, inicio, fin) {
