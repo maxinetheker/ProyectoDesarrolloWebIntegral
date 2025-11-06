@@ -221,7 +221,23 @@ function mostrarModal(libro) {
     const modal = document.getElementById('modalDetalle');
     const portada = libro.urlPortada || '../assets/images/portadas/portada.jpg';
     
-    document.getElementById('modal-image').src = `${window.CONTEXT_PATH}/${portada}`;
+    const imageSrc = `${window.CONTEXT_PATH}/${portada}`;
+    const modalImage = document.getElementById('modal-image');
+    
+    // Set default image first, then try to load the actual image
+    modalImage.src = `${window.CONTEXT_PATH}/assets/images/portadas/portada.jpg`;
+    
+    // Try to load the book's cover
+    const img = new Image();
+    img.onload = function() {
+        modalImage.src = imageSrc;
+    };
+    img.onerror = function() {
+        // Keep the default image if loading fails
+        console.log('Failed to load image, using default');
+    };
+    img.src = imageSrc;
+    
     document.getElementById('modal-titulo').textContent = libro.nombre;
     document.getElementById('modal-autor').textContent = libro.autor;
     document.getElementById('modal-isbn').textContent = libro.isbn;

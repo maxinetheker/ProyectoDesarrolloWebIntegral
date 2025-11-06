@@ -107,7 +107,7 @@
         }
         
         .search-input {
-            padding-left: 2.5rem;
+            padding-left: 2.75rem;
         }
     </style>
 </head>
@@ -260,7 +260,7 @@
                     <!-- Image Section -->
                     <div class="bg-gray-100 p-8 flex items-center justify-center">
                         <div id="modal-image-wrapper" class="modal-image-container w-full max-w-sm">
-                            <img id="modal-image" src="" alt="Portada" class="w-full h-auto rounded-lg shadow-xl">
+                            <img id="modal-image" src="" alt="Portada" class="w-full h-auto rounded-lg shadow-xl object-contain">
                         </div>
                     </div>
 
