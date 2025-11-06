@@ -124,20 +124,20 @@ function renderizarDevoluciones(prestamos) {
                 <td class="px-3 sm:px-6 py-4">
                     <div class="flex flex-wrap gap-2">
                         <button onclick="abrirModalDevolucion(${prestamo.id})" 
-                            class="p-2 text-white bg-green-600 hover:bg-green-700 rounded transition" title="Registrar Devolución">
-                            <i class="fas fa-undo"></i>
+                            class="p-1.5 sm:p-2 text-white bg-slate-700 hover:bg-slate-800 rounded transition" title="Registrar Devolución">
+                            <i class="fas fa-undo text-sm sm:text-base"></i>
                         </button>
                         <button onclick="abrirModalExtenderPlazo(${prestamo.id}, '${escapeHtml(prestamo.libroNombre)}', '${escapeHtml(prestamo.usuarioNombre)}', '${formatearFecha(prestamo.fechaDevolucionEsperada)}')" 
-                            class="p-2 text-white bg-blue-600 hover:bg-blue-700 rounded transition" title="Extender Plazo">
-                            <i class="fas fa-calendar-plus"></i>
+                            class="p-1.5 sm:p-2 text-white bg-slate-700 hover:bg-slate-800 rounded transition" title="Extender Plazo">
+                            <i class="fas fa-calendar-plus text-sm sm:text-base"></i>
                         </button>
                         <button onclick="verDetallePrestamo(${prestamo.id})" 
-                            class="p-2 text-white bg-indigo-600 hover:bg-indigo-700 rounded transition" title="Ver Detalles">
-                            <i class="fas fa-eye"></i>
+                            class="p-1.5 sm:p-2 text-white bg-slate-700 hover:bg-slate-800 rounded transition" title="Ver Detalles">
+                            <i class="fas fa-eye text-sm sm:text-base"></i>
                         </button>
                         <button onclick="eliminarPrestamo(${prestamo.id}, '${escapeHtml(prestamo.libroNombre)}')" 
-                            class="p-2 text-white bg-red-600 hover:bg-red-700 rounded transition" title="Eliminar Préstamo">
-                            <i class="fas fa-trash"></i>
+                            class="p-1.5 sm:p-2 text-white bg-slate-700 hover:bg-slate-800 rounded transition" title="Eliminar Préstamo">
+                            <i class="fas fa-trash text-sm sm:text-base"></i>
                         </button>
                     </div>
                 </td>

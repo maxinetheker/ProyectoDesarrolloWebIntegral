@@ -155,7 +155,7 @@
                 <div class="p-3 sm:p-6 border-b border-gray-200">
                     <div class="mb-4">
                         <h2 class="text-xl sm:text-2xl font-bold text-gray-800">
-                            <i class="fas fa-clock text-blue-600 mr-2"></i>
+                            <i class="fas fa-clock text-gray-600 mr-2"></i>
                             Devoluciones Pendientes
                         </h2>
                         <p class="text-gray-600 text-xs sm:text-sm mt-1">Préstamos activos que deben ser devueltos</p>
@@ -177,7 +177,7 @@
                                 </select>
                             </div>
                         </div>
-                        <button onclick="abrirModalNuevoPrestamo()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition duration-200 shadow-sm whitespace-nowrap text-sm">
+                        <button onclick="abrirModalNuevoPrestamo()" class="bg-slate-700 hover:bg-slate-800 text-white px-4 py-2 rounded-md font-medium transition duration-200 shadow-sm whitespace-nowrap text-sm">
                             <i class="fas fa-plus mr-2"></i>Nuevo Préstamo
                         </button>
                     </div>
@@ -219,7 +219,7 @@
                 <div class="p-3 sm:p-6 border-b border-gray-200">
                     <div class="mb-4">
                         <h2 class="text-xl sm:text-2xl font-bold text-gray-800">
-                            <i class="fas fa-check-circle text-green-600 mr-2"></i>
+                            <i class="fas fa-check-circle text-gray-600 mr-2"></i>
                             Libros Devueltos
                         </h2>
                         <p class="text-gray-600 text-xs sm:text-sm mt-1">Historial de devoluciones realizadas</p>
@@ -260,7 +260,7 @@
                 <div class="p-3 sm:p-6 border-b border-gray-200">
                     <div class="mb-4">
                         <h2 class="text-xl sm:text-2xl font-bold text-gray-800">
-                            <i class="fas fa-exclamation-triangle text-yellow-600 mr-2"></i>
+                            <i class="fas fa-exclamation-triangle text-gray-600 mr-2"></i>
                             Multas Pendientes
                         </h2>
                         <p class="text-gray-600 text-xs sm:text-sm mt-1">Multas por pagar</p>
@@ -301,7 +301,7 @@
                 <div class="p-3 sm:p-6 border-b border-gray-200">
                     <div class="mb-4">
                         <h2 class="text-xl sm:text-2xl font-bold text-gray-800">
-                            <i class="fas fa-dollar-sign text-purple-600 mr-2"></i>
+                            <i class="fas fa-dollar-sign text-gray-600 mr-2"></i>
                             Multas Pagadas
                         </h2>
                         <p class="text-gray-600 text-xs sm:text-sm mt-1">Historial de multas pagadas</p>

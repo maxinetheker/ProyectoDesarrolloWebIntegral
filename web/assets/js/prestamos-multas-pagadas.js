@@ -133,15 +133,15 @@ function renderizarMultasPagadas(prestamos) {
                 </td>
                 <td class="px-3 sm:px-6 py-4">
                     <button onclick="verDetalleMultaPagada(${prestamo.id})" 
-                        class="text-blue-600 hover:text-blue-800 p-2 rounded hover:bg-blue-50 transition mr-2" 
+                        class="bg-slate-700 hover:bg-slate-800 text-white p-1.5 sm:p-2 rounded transition mr-2" 
                         title="Ver Detalle">
-                        <i class="fas fa-info-circle"></i>
+                        <i class="fas fa-info-circle text-sm sm:text-base"></i>
                     </button>
                     ${window.ES_ADMIN ? `
                     <button onclick="deshacerPagoMulta(${prestamo.id})" 
-                        class="text-red-600 hover:text-red-800 p-2 rounded hover:bg-red-50 transition" 
+                        class="bg-slate-700 hover:bg-slate-800 text-white p-1.5 sm:p-2 rounded transition" 
                         title="Deshacer Pago (Solo Admin)">
-                        <i class="fas fa-undo"></i>
+                        <i class="fas fa-undo text-sm sm:text-base"></i>
                     </button>
                     ` : ''}
                 </td>

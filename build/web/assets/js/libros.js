@@ -148,24 +148,24 @@ function renderizarLibros(libros) {
                 <td class="px-3 sm:px-6 py-4">
                     <div class="flex flex-wrap gap-1 sm:gap-2">
                         <button onclick="verDetalleLibro(${libro.id})" 
-                            class="text-slate-600 hover:text-slate-800 p-1.5 sm:p-2 rounded hover:bg-slate-50 transition" 
+                            class="bg-slate-700 hover:bg-slate-800 text-white p-1.5 sm:p-2 rounded transition" 
                             title="Ver Detalles">
-                            <i class="fas fa-info-circle text-sm sm:text-xl"></i>
+                            <i class="fas fa-info-circle text-sm sm:text-base"></i>
                         </button>
                         <button onclick="abrirModalEditar(${libro.id})" 
-                            class="text-blue-600 hover:text-blue-800 p-1.5 sm:p-2 rounded hover:bg-blue-50 transition" 
+                            class="bg-slate-700 hover:bg-slate-800 text-white p-1.5 sm:p-2 rounded transition" 
                             title="Editar">
-                            <i class="fas fa-edit text-sm sm:text-xl"></i>
+                            <i class="fas fa-edit text-sm sm:text-base"></i>
                         </button>
                         <button onclick="abrirModalStock(${libro.id})" 
-                            class="text-green-600 hover:text-green-800 p-1.5 sm:p-2 rounded hover:bg-green-50 transition" 
+                            class="bg-slate-700 hover:bg-slate-800 text-white p-1.5 sm:p-2 rounded transition" 
                             title="Stock">
-                            <i class="fas fa-boxes text-sm sm:text-xl"></i>
+                            <i class="fas fa-boxes text-sm sm:text-base"></i>
                         </button>
                         <button onclick="generarCodigoBarras('${escapeHtml(libro.isbn)}')" 
-                            class="text-purple-600 hover:text-purple-800 p-1.5 sm:p-2 rounded hover:bg-purple-50 transition" 
+                            class="bg-slate-700 hover:bg-slate-800 text-white p-1.5 sm:p-2 rounded transition" 
                             title="Código de Barras">
-                            <i class="fas fa-barcode text-sm sm:text-xl"></i>
+                            <i class="fas fa-barcode text-sm sm:text-base"></i>
                         </button>
                     </div>
                 </td>

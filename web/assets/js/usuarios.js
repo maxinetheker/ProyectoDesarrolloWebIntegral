@@ -116,11 +116,11 @@ function mostrarUsuarios(usuarios) {
         
         const botonEstado = usuario.activo
             ? '<button onclick="cambiarEstado(' + usuario.id + ', false, \'' + escapeHtml(usuario.usuario) + '\')" ' +
-              'class="text-orange-600 hover:text-orange-900 transition duration-150" title="Desactivar usuario">' +
-              '<i class="fas fa-ban text-base sm:text-xl"></i></button>'
+              'class="bg-slate-700 hover:bg-slate-800 text-white p-1.5 sm:p-2 rounded transition" title="Desactivar usuario">' +
+              '<i class="fas fa-ban text-sm sm:text-base"></i></button>'
             : '<button onclick="cambiarEstado(' + usuario.id + ', true, \'' + escapeHtml(usuario.usuario) + '\')" ' +
-              'class="text-green-600 hover:text-green-900 transition duration-150" title="Activar usuario">' +
-              '<i class="fas fa-check-circle text-base sm:text-xl"></i></button>';
+              'class="bg-slate-700 hover:bg-slate-800 text-white p-1.5 sm:p-2 rounded transition" title="Activar usuario">' +
+              '<i class="fas fa-check-circle text-sm sm:text-base"></i></button>';
         
         return '<tr class="hover:bg-gray-50 transition duration-150' + (usuario.activo ? '' : ' opacity-60') + '">' +
             '<td class="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">' +
@@ -157,12 +157,12 @@ function mostrarUsuarios(usuarios) {
                 '<button onclick="abrirModalCarnet(' + usuario.id + ', \'' + escapeHtml(usuario.nombre + ' ' + usuario.apellido) + '\', \'' + 
                         escapeHtml(usuario.usuario) + '\', \'' + escapeHtml(usuario.email || '') + '\', \'' + 
                         escapeHtml(usuario.telefono || '') + '\', \'' + escapeHtml(usuario.nombreRol) + '\')" ' +
-                        'class="text-purple-600 hover:text-purple-900 transition duration-150" title="Generar/Ver Carnet">' +
-                    '<i class="fas fa-id-card text-base sm:text-xl"></i>' +
+                        'class="bg-slate-700 hover:bg-slate-800 text-white p-1.5 sm:p-2 rounded transition" title="Generar/Ver Carnet">' +
+                    '<i class="fas fa-id-card text-sm sm:text-base"></i>' +
                 '</button>' +
                 '<button onclick=\'editarUsuario(' + JSON.stringify(usuario) + ')\' ' +
-                        'class="text-blue-600 hover:text-blue-900 transition duration-150" title="Editar usuario">' +
-                    '<i class="fas fa-edit text-base sm:text-xl"></i>' +
+                        'class="bg-slate-700 hover:bg-slate-800 text-white p-1.5 sm:p-2 rounded transition" title="Editar usuario">' +
+                    '<i class="fas fa-edit text-sm sm:text-base"></i>' +
                 '</button>' +
                 botonEstado +
             '</td>' +

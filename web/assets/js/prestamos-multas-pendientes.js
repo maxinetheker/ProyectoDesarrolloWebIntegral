@@ -140,19 +140,19 @@ function renderizarMultasPendientes(prestamos) {
                 </td>
                 <td class="px-3 sm:px-6 py-4">
                     <button onclick="verDetalleMultaPendiente(${prestamo.id})" 
-                        class="text-blue-600 hover:text-blue-800 p-2 rounded hover:bg-blue-50 transition mr-2" 
+                        class="bg-slate-700 hover:bg-slate-800 text-white p-1.5 sm:p-2 rounded transition mr-2" 
                         title="Ver Detalle">
-                        <i class="fas fa-info-circle"></i>
+                        <i class="fas fa-info-circle text-sm sm:text-base"></i>
                     </button>
                     <button onclick="modificarMulta(${prestamo.id}, ${multa})" 
-                        class="text-orange-600 hover:text-orange-800 p-2 rounded hover:bg-orange-50 transition mr-2" 
+                        class="bg-slate-700 hover:bg-slate-800 text-white p-1.5 sm:p-2 rounded transition mr-2" 
                         title="Modificar Multa">
-                        <i class="fas fa-edit"></i>
+                        <i class="fas fa-edit text-sm sm:text-base"></i>
                     </button>
                     <button onclick="marcarMultaComoPagada(${prestamo.id}, ${multa})" 
-                        class="text-green-600 hover:text-green-800 p-2 rounded hover:bg-green-50 transition" 
+                        class="bg-slate-700 hover:bg-slate-800 text-white p-1.5 sm:p-2 rounded transition" 
                         title="Marcar como Pagado">
-                        <i class="fas fa-check-circle"></i>
+                        <i class="fas fa-check-circle text-sm sm:text-base"></i>
                     </button>
                 </td>
             </tr>
