@@ -16,7 +16,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-<body class="bg-[rgba(255,255,255,0.7)] bg-blend-overlay bg-[url('../assets/images/fondo_login.jpg')] bg-cover bg-center min-h-screen flex items-center justify-center">
+<body class="bg-[rgba(255,255,255,0.7)] bg-blend-overlay bg-cover bg-center min-h-screen flex items-center justify-center" style="background-image: url('${pageContext.request.contextPath}/assets/images/fondo_login.jpg');">
     <div class="container mx-auto px-4">
         <div class="max-w-md mx-auto">
             <!-- Card de Login -->
@@ -24,7 +24,7 @@
                 <!-- Header -->
                 <div class="bg-slate-800 p-8 text-center">
                     <div class="inline-block p-4 bg-white rounded-lg mb-4 shadow-md">
-                        <a href="${pageContext.request.contextPath}/index.html"><img src="../assets/images/logo.png" alt="I.E. Sagrado Corazón de María" class="h-14 w-14 "></a>
+                        <a href="${pageContext.request.contextPath}/"><img src="${pageContext.request.contextPath}/assets/images/logo.png" alt="I.E. Sagrado Corazón de María" class="h-14 w-14 "></a>
                     </div>
                     <h1 class="text-3xl font-bold text-white mb-2">Sistema de Biblioteca</h1>
                     <p class="text-slate-300">Gestión Integral de Préstamos</p>

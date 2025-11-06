@@ -134,12 +134,12 @@ aca va el codigo de la biblioteca del colegio
                     En nuestra biblioteca encontrarás las llaves para abrir todas las puertas del saber."
                 </p>
                 <div class="space-y-4 md:space-y-0 md:space-x-4 md:flex md:justify-center">
-                    <button class="bg-teal-600 hover:bg-teal-700 text-white px-8 py-4 rounded-full text-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-xl">
+                    <a href="<%= contextPath %>/pages/catalogo.jsp" class="inline-block bg-teal-600 hover:bg-teal-700 text-white px-8 py-4 rounded-full text-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-xl">
                         Explorar Catálogo
-                    </button>
-                    <button class="bg-transparent border-2 border-white hover:bg-white hover:text-gray-900 text-white px-8 py-4 rounded-full text-lg font-semibold transition-all duration-300 transform hover:scale-105">
+                    </a>
+                    <a href="#nosotros" class="inline-block bg-transparent border-2 border-white hover:bg-white hover:text-gray-900 text-white px-8 py-4 rounded-full text-lg font-semibold transition-all duration-300 transform hover:scale-105">
                         Conocer Más
-                    </button>
+                    </a>
                 </div>
             </div>
 

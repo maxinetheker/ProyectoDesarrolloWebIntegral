@@ -26,115 +26,40 @@
     <title>Catálogo de Libros - Sistema de Biblioteca</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        .book-card {
-            position: relative;
-            overflow: hidden;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .book-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-        }
-        
-        .book-image-container {
-            position: relative;
-            width: 100%;
-            padding-bottom: 140%; /* Aspect ratio 5:7 for book covers */
-            overflow: hidden;
-            background: #f3f4f6;
-        }
-        
-        .book-image {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .book-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.7), transparent);
-            padding: 1rem;
-            color: white;
-        }
-        
-        .book-hover-info {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(51, 65, 85, 0.97);
-            color: white;
-            padding: 1.5rem;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-        
-        .book-card:hover .book-hover-info {
-            opacity: 1;
-        }
-        
-        .modal-backdrop {
-            backdrop-filter: blur(4px);
-        }
-        
-        .modal-image-container {
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .search-input-container {
-            position: relative;
-        }
-        
-        .search-input-container i {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #64748b;
-        }
-        
-        .search-input {
-            padding-left: 2.75rem;
-        }
-    </style>
+    <link href="${pageContext.request.contextPath}/assets/css/catalogo.css" rel="stylesheet">
 </head>
 <body class="bg-gray-50">
+    <!-- Navbar Principal -->
     <nav class="bg-slate-800 shadow-md border-b border-slate-700">
         <div class="container mx-auto px-2 sm:px-4">
             <div class="flex justify-between items-center py-3 sm:py-4">
                 <div class="flex items-center space-x-2 sm:space-x-4">
-                    <i class="fas fa-book-open text-white text-xl sm:text-2xl"></i>
-                    <h1 class="text-white text-base sm:text-xl font-bold">Sistema de Biblioteca</h1>
+                    <a href="${pageContext.request.contextPath}/index.jsp" class="flex items-center space-x-2 sm:space-x-4 hover:opacity-80 transition-opacity">
+                        <div class=""><img src="${pageContext.request.contextPath}/assets/images/logo.png" alt="I.E. Sagrado Corazón de María" class="h-10 w-10 sm:h-14 sm:w-14"></div>
+                        
+                        <div>
+                            <h1 class="text-white text-base sm:text-2xl font-bold">Sistema de Biblioteca</h1>
+                            <p class="text-slate-300 text-xs sm:text-sm hidden sm:block">Gestión Integral</p>
+                        </div>
+                    </a>
                 </div>
                 <div class="flex items-center space-x-2 sm:space-x-4">
-                    <span class="text-white text-xs sm:text-sm hidden sm:inline">
-                        <i class="fas fa-user mr-1"></i>${usuario.nombre}
-                    </span>
-                    <span class="px-2 sm:px-3 py-1 bg-slate-700 text-white rounded-full text-xs font-medium">
-                        ${usuario.nombreRol}
-                    </span>
-                    <a href="${pageContext.request.contextPath}/logout" 
-                       class="bg-red-600 hover:bg-red-700 text-white px-2 sm:px-4 py-1 sm:py-2 rounded text-xs sm:text-sm transition">
-                        <i class="fas fa-sign-out-alt mr-0 sm:mr-1"></i>
-                        <span class="hidden sm:inline">Salir</span>
+                    <div class="text-right hidden md:block">
+                        <p class="text-white font-semibold text-sm"><c:out value="${usuario.nombreCompleto}" /></p>
+                        <p class="text-slate-300 text-xs">
+                            <i class="fas fa-user-shield"></i> <c:out value="${usuario.nombreRol}" />
+                        </p>
+                    </div>
+                    <a href="${pageContext.request.contextPath}/logout" class="bg-white text-slate-700 px-2 py-1.5 sm:px-4 sm:py-2 rounded-md text-xs sm:text-sm font-semibold hover:bg-gray-100 transition duration-200 shadow-sm flex items-center">
+                        <i class="fas fa-sign-out-alt sm:mr-2"></i>
+                        <span class="hidden sm:inline">Cerrar Sesión</span>
                     </a>
                 </div>
             </div>
         </div>
     </nav>
+
+    <!-- Subheader con Pestañas -->
 
     <div class="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-40">
         <div class="container mx-auto px-2 sm:px-4 relative">
