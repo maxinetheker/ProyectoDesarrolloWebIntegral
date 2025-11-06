@@ -81,7 +81,6 @@ async function cargarEstadisticasPersonales() {
     }
 }
 
-// ==================== GRÁFICOS DE BIBLIOTECA ====================
 
 // Gráfico de Libros Nuevos (gráfico creciente)
 function renderLibrosNuevos(data) {
