@@ -3,6 +3,7 @@ package model;
 import java.math.BigDecimal;
 import java.util.Date;
 
+// Maneja toda la info de un préstamo: quién, qué libro, cuándo se debe devolver, multas, etc
 public class Prestamo {
     private int id;
     private int libroId;
@@ -10,13 +11,13 @@ public class Prestamo {
     private Date fechaPrestamo;
     private Date fechaDevolucionEsperada;
     private Date fechaDevolucionReal;
-    private String estado; // prestado, devuelto, vencido, perdido
+    private String estado; // puede ser: prestado, devuelto, vencido o perdido
     private BigDecimal multa;
     private boolean pagado;
     private String observacionesEntrega;
     private String observacionesDevolucion;
     
-    // Campos joined para mostrar información completa
+    // Estos campos vienen del JOIN con las tablas libro y usuario
     private String libroNombre;
     private String libroAutor;
     private String libroIsbn;
@@ -28,7 +29,6 @@ public class Prestamo {
         this.pagado = false;
     }
     
-    // Getters y Setters
     public int getId() {
         return id;
     }
@@ -158,7 +158,7 @@ public class Prestamo {
         this.usuarioDni = usuarioDni;
     }
     
-    // Métodos de conveniencia para compatibilidad con servlets
+    // Métodos alias para mantener compatibilidad con código antiguo del servlet
     public String getLibroTitulo() {
         return this.libroNombre;
     }

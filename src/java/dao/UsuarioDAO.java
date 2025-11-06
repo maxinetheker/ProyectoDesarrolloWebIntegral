@@ -6,14 +6,10 @@ import java.util.List;
 import model.Usuario;
 import singleton.DatabaseConnection;
 
-/**
- * Data Access Object para Usuario
- */
+// Aquí van todos los métodos para trabajar con usuarios en la base de datos
 public class UsuarioDAO {
     
-    /**
-     * Valida las credenciales de un usuario
-     */
+    // Verifica usuario y contraseña para el login
     public Usuario validarUsuario(String usuario, String contrasena) {
         String sql = "SELECT u.*, r.rol as nombre_rol FROM USUARIO u " +
                      "INNER JOIN ROL r ON u.id_rol = r.id " +
@@ -51,9 +47,7 @@ public class UsuarioDAO {
         return null;
     }
     
-    /**
-     * Obtiene un usuario por ID
-     */
+    // Busca un usuario por su ID
     public Usuario obtenerPorId(int id) {
         String sql = "SELECT u.*, r.rol as nombre_rol FROM USUARIO u " +
                      "INNER JOIN ROL r ON u.id_rol = r.id " +
@@ -88,9 +82,7 @@ public class UsuarioDAO {
         return null;
     }
     
-    /**
-     * Lista todos los usuarios activos
-     */
+    // Trae todos los usuarios activos ordenados por nombre
     public List<Usuario> listarTodos() {
         List<Usuario> usuarios = new ArrayList<>();
         String sql = "SELECT u.*, r.rol as nombre_rol FROM USUARIO u " +
@@ -112,9 +104,7 @@ public class UsuarioDAO {
         return usuarios;
     }
     
-    /**
-     * Lista usuarios con paginación
-     */
+    // Lista usuarios con paginación para no cargar todos de golpe
     public List<Usuario> listarConPaginacion(int pagina, int registrosPorPagina) {
         List<Usuario> usuarios = new ArrayList<>();
         int offset = (pagina - 1) * registrosPorPagina;
@@ -152,7 +142,7 @@ public class UsuarioDAO {
                     usuario.setIdRol(rs.getInt(10));        // id_rol
                     int activoInt = rs.getInt(11);          // activo
                     usuario.setActivo(activoInt == 1);
-                    usuario.setNombreRol(rs.getString(12)); // nombre_rol
+                    usuario.setNombreRol(rs.getString(12)); 
                     usuarios.add(usuario);
                 } catch (SQLException e) {
                     System.err.println("Error al mapear usuario: " + e.getMessage());
@@ -167,7 +157,7 @@ public class UsuarioDAO {
             System.err.println("Error al listar usuarios con paginacion: " + e.getMessage());
             e.printStackTrace();
         } finally {
-            // CRITICO: Devolver la conexion al pool
+            // IMPORTANTE: hay que devolver siempre la conexión al pool
             if (conn != null) {
                 DatabaseConnection.getInstance().releaseConnection(conn);
             }
@@ -176,9 +166,7 @@ public class UsuarioDAO {
         return usuarios;
     }
     
-    /**
-     * Cuenta el total de usuarios (activos e inactivos)
-     */
+    // Cuenta cuántos usuarios hay en total (tanto activos como inactivos)
     public int contarUsuarios() {
         String sql = "SELECT COUNT(*) as total FROM USUARIO";
         Connection conn = null;
@@ -209,9 +197,7 @@ public class UsuarioDAO {
         return 0;
     }
     
-    /**
-     * Busca usuarios con paginación
-     */
+    // Busca usuarios por nombre, apellido, email, etc. con paginación
     public List<Usuario> buscarConPaginacion(String busqueda, int pagina, int registrosPorPagina) {
         List<Usuario> usuarios = new ArrayList<>();
         int offset = (pagina - 1) * registrosPorPagina;
@@ -281,9 +267,7 @@ public class UsuarioDAO {
         return usuarios;
     }
     
-    /**
-     * Cuenta el total de usuarios que coinciden con la búsqueda
-     */
+    // Cuenta cuántos usuarios coinciden con la búsqueda
     public int contarUsuariosPorBusqueda(String busqueda) {
         String sql = "SELECT COUNT(*) as total FROM USUARIO u " +
                      "WHERE LOWER(u.usuario) LIKE ? " +
@@ -327,9 +311,7 @@ public class UsuarioDAO {
         return 0;
     }
     
-    /**
-     * Crea un nuevo usuario
-     */
+    // Crea un nuevo usuario en la base de datos
     public boolean crear(Usuario usuario) {
         String sql = "INSERT INTO USUARIO (usuario, nombre, apellido, email, contrasena, " +
                      "telefono, direccion, id_rol, activo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -363,9 +345,7 @@ public class UsuarioDAO {
         }
     }
     
-    /**
-     * Actualiza un usuario existente
-     */
+    // Actualiza los datos de un usuario (nombre, email, teléfono, etc)
     public boolean actualizar(Usuario usuario) {
         String sql = "UPDATE USUARIO SET nombre = ?, apellido = ?, email = ?, " +
                      "telefono = ?, direccion = ?, id_rol = ? WHERE id = ?";
@@ -397,9 +377,7 @@ public class UsuarioDAO {
         }
     }
     
-    /**
-     * Actualiza la contraseña de un usuario
-     */
+    // Cambia la contraseña de un usuario (ya debe venir hasheada)
     public boolean actualizarContrasena(int id, String nuevaContrasenaHash) {
         String sql = "UPDATE USUARIO SET contrasena = ? WHERE id = ?";
         
@@ -425,9 +403,7 @@ public class UsuarioDAO {
         }
     }
     
-    /**
-     * Desactiva un usuario por id
-     */
+    // Desactiva un usuario por su ID (no se elimina, solo se marca como inactivo)
     public boolean desactivar(int id) {
         String sql = "UPDATE USUARIO SET activo = 0 WHERE id = ?";
         
@@ -451,9 +427,7 @@ public class UsuarioDAO {
         }
     }
     
-    /**
-     * Activa un usuario por id
-     */
+    // Reactiva un usuario que estaba desactivado
     public boolean activar(int id) {
         String sql = "UPDATE USUARIO SET activo = 1 WHERE id = ?";
         
@@ -477,9 +451,7 @@ public class UsuarioDAO {
         }
     }
     
-    /**
-     * Cambia el estado activo de un usuario
-     */
+    // Cambia el estado activo/inactivo de un usuario
     public boolean cambiarEstado(int id, boolean activo) {
         String sql = "UPDATE USUARIO SET activo = ? WHERE id = ?";
         
@@ -504,9 +476,7 @@ public class UsuarioDAO {
         }
     }
     
-    /**
-     * Desactiva un usuario por nombre de usuario 
-     */
+    // Desactiva por nombre de usuario (útil cuando bloqueamos por intentos fallidos)
     public boolean desactivar(String usuario) {
         String sql = "UPDATE USUARIO SET activo = 0 WHERE usuario = ?";
         
@@ -530,9 +500,7 @@ public class UsuarioDAO {
         }
     }
     
-    /**
-     * Activa/desbloquea un usuario por nombre de usuario
-     */
+    // Reactiva un usuario por nombre de usuario (para desbloquear cuentas)
     public boolean activar(String usuario) {
         String sql = "UPDATE USUARIO SET activo = 1 WHERE usuario = ?";
         
@@ -548,9 +516,7 @@ public class UsuarioDAO {
         }
     }
     
-    /**
-     * Busca un usuario por nombre de usuario (sin validar contraseña ni estado activo)
-     */
+    // Busca un usuario por su nombre de usuario (sin validar contraseña ni estado)
     public Usuario buscarPorUsuario(String usuario) {
         String sql = "SELECT u.*, r.rol as nombre_rol FROM USUARIO u " +
                      "INNER JOIN ROL r ON u.id_rol = r.id " +
@@ -586,10 +552,7 @@ public class UsuarioDAO {
         return null;
     }
     
-    /**
-     * Busca usuarios activos para autocompletado (por nombre, apellido o usuario)
-     * Retorna máximo 10 resultados
-     */
+    // Para el autocompletado en formularios, trae max 10 usuarios que coincidan
     public List<Usuario> buscarParaAutocompletado(String busqueda) {
         List<Usuario> usuarios = new ArrayList<>();
         String sql = "SELECT u.*, r.rol as nombre_rol FROM USUARIO u " +
@@ -629,10 +592,7 @@ public class UsuarioDAO {
         return usuarios;
     }
     
-    /**
-     * Busca usuarios activos por código de barras con validación de caducidad
-     * Retorna máximo 10 resultados con información del carnet
-     */
+    // Busca usuarios por código de barras del carnet (verifica si está vencido también)
     public List<java.util.Map<String, Object>> buscarPorCodigoBarras(String codigo) {
         List<java.util.Map<String, Object>> resultados = new ArrayList<>();
         String sql = "SELECT u.id, u.usuario, u.nombre, u.apellido, u.email, " +
@@ -680,9 +640,7 @@ public class UsuarioDAO {
         return resultados;
     }
     
-    /**
-     * Mapea un ResultSet a un Usuario
-     */
+    // Convierte un ResultSet de la BD a un objeto Usuario
     private Usuario mapearUsuario(ResultSet rs) throws SQLException {
         Usuario usuario = new Usuario();
         usuario.setId(rs.getInt("id"));

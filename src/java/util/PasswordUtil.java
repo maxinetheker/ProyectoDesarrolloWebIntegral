@@ -5,14 +5,11 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
 
-/**
- * Utilidad para encriptar contraseñas con SHA-256 y salt
- */
+// Funciones para hashear contraseñas (usamos SHA-256)
+// NOTA: el método generateSalt existe pero no se está usando actualmente
 public class PasswordUtil {
     
-    /**
-     * Genera un salt aleatorio
-     */
+    // Genera un salt aleatorio (útil para futuras mejoras de seguridad)
     public static String generateSalt() {
         SecureRandom random = new SecureRandom();
         byte[] salt = new byte[16];
@@ -20,9 +17,7 @@ public class PasswordUtil {
         return Base64.getEncoder().encodeToString(salt);
     }
     
-    /**
-     * Encripta una contraseña con SHA-256
-     */
+    // Convierte la contraseña a SHA-256 hash
     public static String hashPassword(String password) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
@@ -41,9 +36,7 @@ public class PasswordUtil {
         }
     }
     
-    /**
-     * Verifica si una contraseña coincide con el hash
-     */
+    // Compara una contraseña en texto plano con su hash
     public static boolean verifyPassword(String password, String hashedPassword) {
         String hashAttempt = hashPassword(password);
         return hashAttempt.equals(hashedPassword);

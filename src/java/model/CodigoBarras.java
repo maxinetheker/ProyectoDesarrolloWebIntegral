@@ -2,9 +2,8 @@ package model;
 
 import java.time.LocalDateTime;
 
-/**
- * Modelo para la tabla CODIGOS_BARRAS
- */
+// Representa el código de barras del carnet de un usuario
+// Puede ser temporal (1 año) o permanente
 public class CodigoBarras {
     private int id;
     private int idUsuario;
@@ -12,9 +11,9 @@ public class CodigoBarras {
     private LocalDateTime fechaCreacion;
     private LocalDateTime fechaCaducidad;
     private boolean activo;
-    private String tipo; // 'temporal' o 'permanente'
+    private String tipo; // puede ser 'temporal' o 'permanente'
     
-    // Datos del usuario (para JOIN)
+    // Info del usuario cuando hacemos JOIN con la tabla usuarios
     private String nombreUsuario;
     private String nombreCompleto;
     
@@ -30,7 +29,6 @@ public class CodigoBarras {
         this.tipo = tipo;
     }
 
-    // Getters y Setters
     public int getId() {
         return id;
     }
@@ -103,9 +101,7 @@ public class CodigoBarras {
         this.nombreCompleto = nombreCompleto;
     }
     
-    /**
-     * Verifica si el carnet está vencido
-     */
+    // Chequea si ya pasó la fecha de caducidad
     public boolean estaVencido() {
         return LocalDateTime.now().isAfter(fechaCaducidad);
     }

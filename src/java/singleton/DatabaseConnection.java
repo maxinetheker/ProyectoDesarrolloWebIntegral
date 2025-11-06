@@ -7,9 +7,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Pool de conexiones simple para gestionar múltiples conexiones simultáneas
- */
+// Pool de conexiones básico para no crear y cerrar conexiones todo el tiempo
+// Mucho más eficiente que crear una conexión nueva cada vez
 public class DatabaseConnection {
     private static DatabaseConnection instance;
     private final List<Connection> connectionPool;
@@ -19,7 +18,7 @@ public class DatabaseConnection {
     
     static {
         try {
-            // Cargar el driver de MySQL una sola vez
+            // Cargamos el driver de MySQL una sola vez al inicio
             Class.forName(DatabaseConfig.DB_DRIVER);
             System.out.println("Driver MySQL cargado correctamente");
         } catch (ClassNotFoundException e) {
@@ -31,7 +30,7 @@ public class DatabaseConnection {
         connectionPool = new ArrayList<>(INITIAL_POOL_SIZE);
         
         
-        // Crear conexiones iniciales
+        // Creamos las conexiones iniciales del pool
         for (int i = 0; i < INITIAL_POOL_SIZE; i++) {
             try {
                 connectionPool.add(createConnection());
@@ -59,10 +58,8 @@ public class DatabaseConnection {
         return instance;
     }
     
-    /**
-     * Obtiene una conexión del pool
-     * Si no hay conexiones disponibles, crea una nueva 
-     */
+    // Obtiene una conexión del pool (o crea una nueva si es necesario)
+    // Si el pool está vacío pero no llegamos al max, crea nuevas
     public synchronized Connection getConnection() throws SQLException {
         // Si el pool está vacío pero no hemos alcanzado el máximo, crear nueva conexión
         if (connectionPool.isEmpty()) {
@@ -79,7 +76,7 @@ public class DatabaseConnection {
         
         Connection connection = connectionPool.remove(connectionPool.size() - 1);
         
-        // Verificar que la conexión esté válida
+        // Checamos que la conexión esté viva antes de devolverla
         if (connection == null || connection.isClosed()) {
             connection = createConnection();
         }
@@ -88,9 +85,8 @@ public class DatabaseConnection {
         return connection;
     }
     
-    /**
-     * Devuelve una conexión al pool para reutilización
-     */
+    // IMPORTANTE: siempre hay que devolver la conexión al pool cuando termines de usarla
+    // Si no, se van a acabar las conexiones disponibles
     public synchronized void releaseConnection(Connection connection) {
         if (connection != null) {
             usedConnections.remove(connection);
@@ -98,10 +94,8 @@ public class DatabaseConnection {
         }
     }
     
-    /**
-     * Cierra todas las conexiones del pool
-     * Usar solo al apagar la aplicación
-     */
+    // Cierra todas las conexiones cuando apagamos la aplicación
+    // NO usar esto mientras la app está corriendo
     public synchronized void shutdown() {
         System.out.println("Cerrando pool de conexiones...");
         

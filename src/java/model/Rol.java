@@ -2,9 +2,7 @@ package model;
 
 import java.sql.Timestamp;
 
-/**
- * Modelo de Rol
- */
+// Define los diferentes roles del sistema (admin, bibliotecario, usuario)
 public class Rol {
     private int id;
     private String rol;
@@ -12,7 +10,6 @@ public class Rol {
     private Timestamp fechaCreacion;
     private boolean activo;
     
-    // Constructores
     public Rol() {}
     
     public Rol(int id, String rol, String descripcion, boolean activo) {
@@ -22,7 +19,6 @@ public class Rol {
         this.activo = activo;
     }
     
-    // Getters y Setters
     public int getId() {
         return id;
     }

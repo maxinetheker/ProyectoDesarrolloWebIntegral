@@ -6,14 +6,10 @@ import java.util.List;
 import model.Rol;
 import singleton.DatabaseConnection;
 
-/**
- * Data Access Object para Rol
- */
+// Manejo de roles del sistema (admin, bibliotecario, usuario)
 public class RolDAO {
     
-    /**
-     * Lista todos los roles activos
-     */
+    // Obtiene todos los roles activos ordenados alfabéticamente
     public List<Rol> listarTodos() {
         List<Rol> roles = new ArrayList<>();
         String sql = "SELECT * FROM ROL WHERE activo = 1 ORDER BY rol";
@@ -42,9 +38,7 @@ public class RolDAO {
         return roles;
     }
     
-    /**
-     * Obtiene un rol por ID
-     */
+    // Busca un rol específico por su ID
     public Rol obtenerPorId(int id) {
         String sql = "SELECT * FROM ROL WHERE id = ? AND activo = 1";
         
@@ -77,9 +71,7 @@ public class RolDAO {
         return null;
     }
     
-    /**
-     * Mapea un ResultSet a un Rol
-     */
+    // Método auxiliar que convierte ResultSet a objeto Rol
     private Rol mapearRol(ResultSet rs) throws SQLException {
         Rol rol = new Rol();
         rol.setId(rs.getInt("id"));

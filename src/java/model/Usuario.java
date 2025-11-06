@@ -2,9 +2,7 @@ package model;
 
 import java.sql.Timestamp;
 
-/**
- * Modelo de Usuario
- */
+// Representa a un usuario del sistema, puede ser estudiante, bibliotecario o admin
 public class Usuario {
     private int id;
     private String usuario;
@@ -20,7 +18,6 @@ public class Usuario {
     private String nombreRol;
     private boolean activo;
     
-    // Constructores
     public Usuario() {}
     
     public Usuario(int id, String usuario, String nombre, String apellido, String email, 
@@ -35,7 +32,6 @@ public class Usuario {
         this.activo = activo;
     }
     
-    // Getters y Setters
     public int getId() {
         return id;
     }
