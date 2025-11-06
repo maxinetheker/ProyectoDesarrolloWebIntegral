@@ -197,8 +197,8 @@ public class LibroDAO {
     
     public boolean crear(Libro libro) {
         String sql = "INSERT INTO libro (nombre, autor, isbn, editorial, año_publicacion, " +
-                    "genero, descripcion, stock, stock_disponible, ubicacion, fecha_registro, activo) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), 1)";
+                    "genero, descripcion, stock, stock_disponible, ubicacion, url_portada, fecha_registro, activo) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), 1)";
         
         Connection conn = null;
         PreparedStatement ps = null;
@@ -217,6 +217,7 @@ public class LibroDAO {
             ps.setInt(8, libro.getStock());
             ps.setInt(9, libro.getStockDisponible());
             ps.setString(10, libro.getUbicacion());
+            ps.setString(11, libro.getUrlPortada());
             
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -237,7 +238,7 @@ public class LibroDAO {
     public boolean actualizar(Libro libro) {
         String sql = "UPDATE libro SET nombre = ?, autor = ?, isbn = ?, editorial = ?, " +
                     "año_publicacion = ?, genero = ?, descripcion = ?, stock = ?, " +
-                    "stock_disponible = ?, ubicacion = ?, fecha_actualizacion = NOW() " +
+                    "stock_disponible = ?, ubicacion = ?, url_portada = ?, fecha_actualizacion = NOW() " +
                     "WHERE id = ?";
         
         Connection conn = null;
@@ -257,7 +258,8 @@ public class LibroDAO {
             ps.setInt(8, libro.getStock());
             ps.setInt(9, libro.getStockDisponible());
             ps.setString(10, libro.getUbicacion());
-            ps.setInt(11, libro.getId());
+            ps.setString(11, libro.getUrlPortada());
+            ps.setInt(12, libro.getId());
             
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -452,6 +454,7 @@ public class LibroDAO {
         libro.setUbicacion(rs.getString("ubicacion"));
         libro.setFechaRegistro(rs.getTimestamp("fecha_registro"));
         libro.setFechaActualizacion(rs.getTimestamp("fecha_actualizacion"));
+        libro.setUrlPortada(rs.getString("url_portada"));
         libro.setActivo(rs.getBoolean("activo"));
         return libro;
     }

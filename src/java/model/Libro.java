@@ -16,6 +16,7 @@ public class Libro {
     private String ubicacion;
     private Timestamp fechaRegistro;
     private Timestamp fechaActualizacion;
+    private String urlPortada;
     private boolean activo;
     
     public Libro() {}
@@ -130,5 +131,13 @@ public class Libro {
     
     public void setActivo(boolean activo) {
         this.activo = activo;
+    }
+    
+    public String getUrlPortada() {
+        return urlPortada;
+    }
+    
+    public void setUrlPortada(String urlPortada) {
+        this.urlPortada = urlPortada;
     }
 }

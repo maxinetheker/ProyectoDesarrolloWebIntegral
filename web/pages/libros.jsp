@@ -162,7 +162,7 @@
     </div>
 
     <div id="modalLibro" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 p-2 sm:p-0">
-        <div class="relative top-4 sm:top-10 mx-auto p-3 sm:p-5 border w-full max-w-3xl shadow-lg rounded-md bg-white mb-4">
+        <div class="relative top-4 sm:top-10 mx-auto p-3 sm:p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white mb-4">
             <div class="mt-2 sm:mt-3">
                 <div class="flex justify-between items-center pb-2 sm:pb-3 border-b border-gray-200">
                     <h3 id="modal-titulo" class="text-lg sm:text-2xl font-bold text-gray-900">
@@ -252,6 +252,32 @@
                             </label>
                             <textarea id="libro-descripcion" name="descripcion" rows="3"
                                 class="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-500"></textarea>
+                        </div>
+                        
+                        <div class="col-span-1 md:col-span-2">
+                            <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
+                                Portada del Libro
+                            </label>
+                            <div class="flex flex-col items-center">
+                                <div class="relative border-2 border-gray-300 rounded-lg overflow-hidden" style="width: 141px; height: 225px;">
+                                    <img id="portada-preview" src="../assets/images/portadas/portada.jpg" alt="Vista previa" class="w-full h-full object-cover">
+                                    <button type="button" id="btn-eliminar-portada" onclick="eliminarPortada()" class="hidden absolute top-2 right-2 bg-red-600 text-white rounded-full w-8 h-8 hover:bg-red-700 transition">
+                                        <i class="fas fa-trash text-sm"></i>
+                                    </button>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-1">Relación 564x900px</p>
+                                
+                                <input type="file" id="portada-file" name="portada" accept="image/*" class="hidden">
+                                <input type="hidden" id="libro-urlPortada" name="urlPortada">
+                                
+                                <button type="button" onclick="document.getElementById('portada-file').click()" class="mt-3 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition text-sm">
+                                    <i class="fas fa-upload mr-2"></i>Seleccionar Portada
+                                </button>
+                                <p class="text-xs text-gray-500 mt-2 text-center">
+                                    <i class="fas fa-info-circle mr-1"></i>
+                                    Formatos: JPG, PNG (máx. 10MB)
+                                </p>
+                            </div>
                         </div>
                     </div>
 
@@ -352,6 +378,93 @@
                     </button>
                     <button onclick="cerrarModalISBN()" class="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 text-sm">
                         Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalDetalleLibro" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 p-2 sm:p-0">
+        <div class="relative top-4 sm:top-10 mx-auto p-3 sm:p-5 border w-full max-w-4xl shadow-lg rounded-md bg-white mb-4">
+            <div class="mt-2 sm:mt-3">
+                <div class="flex justify-between items-center pb-2 sm:pb-3 border-b border-gray-200">
+                    <h3 class="text-lg sm:text-2xl font-bold text-gray-900">
+                        <i class="fas fa-info-circle text-slate-600 mr-2"></i>Detalles del Libro
+                    </h3>
+                    <button onclick="cerrarModalDetalle()" class="text-gray-400 hover:text-gray-600 transition duration-150">
+                        <i class="fas fa-times text-xl sm:text-2xl"></i>
+                    </button>
+                </div>
+
+                <div class="mt-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <!-- Portada -->
+                        <div class="col-span-1">
+                            <div class="border-2 border-gray-200 rounded-lg overflow-hidden" style="width: 100%; max-width: 282px; margin: 0 auto;">
+                                <img id="detalle-portada" src="../assets/images/portadas/portada.jpg" alt="Portada" class="w-full h-auto" style="aspect-ratio: 564/900; object-fit: cover;">
+                            </div>
+                        </div>
+
+                        <!-- Información del libro -->
+                        <div class="col-span-1 md:col-span-2">
+                            <h4 id="detalle-nombre" class="text-xl font-bold text-gray-900 mb-3"></h4>
+                            
+                            <div class="grid grid-cols-2 gap-3 text-sm">
+                                <div>
+                                    <p class="text-gray-500 font-medium">Autor</p>
+                                    <p id="detalle-autor" class="text-gray-900"></p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500 font-medium">ISBN</p>
+                                    <p id="detalle-isbn" class="text-gray-900"></p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500 font-medium">Editorial</p>
+                                    <p id="detalle-editorial" class="text-gray-900"></p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500 font-medium">Año</p>
+                                    <p id="detalle-anio" class="text-gray-900"></p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500 font-medium">Género</p>
+                                    <p id="detalle-genero" class="text-gray-900"></p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500 font-medium">Ubicación</p>
+                                    <p id="detalle-ubicacion" class="text-gray-900"></p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500 font-medium">Stock Total</p>
+                                    <p id="detalle-stock" class="text-gray-900 font-semibold"></p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500 font-medium">Stock Disponible</p>
+                                    <p id="detalle-stock-disponible" class="text-gray-900 font-semibold"></p>
+                                </div>
+                            </div>
+
+                            <div class="mt-3">
+                                <p class="text-gray-500 font-medium mb-1">Descripción</p>
+                                <p id="detalle-descripcion" class="text-gray-700 text-sm"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Préstamos Pendientes -->
+                    <div class="mt-6 border-t pt-4">
+                        <h5 class="text-lg font-semibold text-gray-900 mb-3">
+                            <i class="fas fa-clock text-orange-500 mr-2"></i>Préstamos Pendientes
+                        </h5>
+                        <div id="tabla-prestamos-pendientes" class="overflow-x-auto">
+                            <!-- Se llenará dinámicamente -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-3 mt-6 pt-4 border-t">
+                    <button onclick="cerrarModalDetalle()" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition duration-200 font-medium text-sm">
+                        <i class="fas fa-times mr-2"></i>Cerrar
                     </button>
                 </div>
             </div>

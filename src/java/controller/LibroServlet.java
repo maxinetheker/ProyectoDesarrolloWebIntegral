@@ -219,6 +219,9 @@ public class LibroServlet extends HttpServlet {
             String ubicacion = request.getParameter("ubicacion");
             libro.setUbicacion(ubicacion != null && !ubicacion.trim().isEmpty() ? ubicacion.trim() : "");
             
+            String urlPortada = request.getParameter("urlPortada");
+            libro.setUrlPortada(urlPortada != null && !urlPortada.trim().isEmpty() ? urlPortada.trim() : null);
+            
             int stock = 0;
             if (stockStr != null && !stockStr.trim().isEmpty()) {
                 try {
@@ -278,6 +281,9 @@ public class LibroServlet extends HttpServlet {
             libro.setGenero(request.getParameter("genero"));
             libro.setDescripcion(request.getParameter("descripcion"));
             libro.setUbicacion(request.getParameter("ubicacion"));
+            
+            String urlPortada = request.getParameter("urlPortada");
+            libro.setUrlPortada(urlPortada != null && !urlPortada.trim().isEmpty() ? urlPortada.trim() : null);
             
             if (libroDAO.existeIsbn(libro.getIsbn(), id)) {
                 respuesta.put("success", false);
@@ -419,6 +425,7 @@ public class LibroServlet extends HttpServlet {
                 libroNode.put("stock", libro.getStock());
                 libroNode.put("stockDisponible", libro.getStockDisponible());
                 libroNode.put("ubicacion", libro.getUbicacion());
+                libroNode.put("urlPortada", libro.getUrlPortada());
                 libroNode.put("activo", libro.isActivo());
                 
                 respuesta.put("success", true);

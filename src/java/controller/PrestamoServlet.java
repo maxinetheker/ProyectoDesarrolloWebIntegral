@@ -59,6 +59,7 @@ public class PrestamoServlet extends HttpServlet {
                 obtenerPrestamo(request, response);
                 break;
             case "historialLibro":
+            case "historialPorLibro":
                 obtenerHistorialLibro(request, response);
                 break;
             default:
