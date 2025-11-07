@@ -308,20 +308,15 @@ public class PrestamoServlet extends HttpServlet {
                 enviarError(response, "El carnet del usuario está inactivo. Por favor, genere uno nuevo.");
                 return;
             }
-            
-            // Verificar si el código está vencido
             if (codigoBarras.getFechaCaducidad().isBefore(java.time.LocalDateTime.now())) {
                 enviarError(response, "El carnet del usuario está vencido. Por favor, renueve el carnet desde la sección de usuarios.");
                 return;
             }
-            
-            // Verificar que el libro tenga stock disponible
-            var libro = libroDAO.obtenerPorId(libroId);
+                        var libro = libroDAO.obtenerPorId(libroId);
             if (libro == null) {
                 enviarError(response, "Libro no encontrado");
                 return;
             }
-            
             if (libro.getStockDisponible() <= 0) {
                 enviarError(response, "No hay stock disponible de este libro");
                 return;

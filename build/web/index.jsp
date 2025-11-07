@@ -298,9 +298,11 @@ aca va el codigo de la biblioteca del colegio
                     <div>
                         <h4 class="font-semibold text-lg mb-4 text-teal-300">Contacto</h4>
                         <div class="space-y-2 text-gray-300">
-                            <p>📍 Pachacútec, Ventanilla</p>
-                            <p>📞 +51 XXX XXX XXX</p>
-                            <p>✉️ biblioteca@sagradocorazon.edu.pe</p>
+                            <p>📍 Colegio 5128, Calle Los Chasquis, Ventanilla 07071</p>
+                            <!--Facebook-->
+                            <p>🔵 <a href="https://www.facebook.com/p/IE-5128-Sagrado-Coraz%C3%B3n-de-Mar%C3%ADa-100068142510728/?locale=es_LA" target="_blank" class="hover:underline">facebook.com/IE-5128-Sagrado-Corazón-de-María</a></p>
+              <%--               <p>📞 +51 XXX XXX XXX</p>
+                            <p>✉️ biblioteca@sagradocorazon.edu.pe</p> --%>
                         </div>
                     </div>
                 </div>

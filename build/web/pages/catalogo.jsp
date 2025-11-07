@@ -86,7 +86,7 @@
                     <i class="fas fa-book-reader mr-2"></i>Mis Préstamos
                 </a>
                 <a href="mis-multas.jsp" class="px-4 sm:px-6 py-3 font-medium text-xs sm:text-sm transition-all duration-200 border-b-2 border-transparent text-gray-600 hover:text-slate-700 hover:border-slate-300">
-                    <i class="fas fa-exclamation-circle mr-2"></i>Mis Multas
+                    <i class="fas fa-money-bill-wave mr-2"></i>Mis Multas
                 </a>
             </nav>
             
@@ -114,7 +114,7 @@
                     <i class="fas fa-book-reader mr-2"></i>Mis Préstamos
                 </a>
                 <a href="mis-multas.jsp" class="block px-4 py-3 font-medium text-sm border-l-4 border-transparent text-gray-600 hover:bg-gray-50 hover:border-slate-300">
-                    <i class="fas fa-exclamation-circle mr-2"></i>Mis Multas
+                    <i class="fas fa-money-bill-wave mr-2"></i>Mis Multas
                 </a>
             </nav>
         </div>
