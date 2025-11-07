@@ -10,6 +10,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
 
@@ -32,8 +33,15 @@ public class CatalogoServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         response.setContentType("application/json;charset=UTF-8");
         
-        String accion = request.getParameter("accion");
+        // Validar que el usuario esté autenticado
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("usuario") == null) {
+            enviarRespuestaError(response, "Sesión expirada", 401);
+            return;
+        }
         
+        String accion = request.getParameter("accion");
+        //hola
         try {
             if ("listar".equals(accion)) {
                 listarCatalogo(request, response);

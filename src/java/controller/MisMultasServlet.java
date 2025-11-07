@@ -47,7 +47,6 @@ public class MisMultasServlet extends HttpServlet {
         if ("obtener".equals(accion)) {
             obtenerMultasUsuario(request, response, usuario);
         } else {
-            // Redirigir a la página principal
             request.getRequestDispatcher("pages/mis-multas.jsp").forward(request, response);
         }
     }

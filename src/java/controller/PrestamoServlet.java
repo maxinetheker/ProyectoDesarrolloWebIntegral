@@ -9,6 +9,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -36,6 +37,15 @@ public class PrestamoServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        
+        // Validar que el usuario esté autenticado
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("usuario") == null) {
+            enviarError(response, "Sesión expirada");
+            response.setStatus(401);
+            return;
+        }
+        
         String accion = request.getParameter("accion");
         
         if (accion == null) {
@@ -70,6 +80,25 @@ public class PrestamoServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        
+        // Validar autenticación y permisos - solo admin y bibliotecario pueden gestionar prestamos
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("usuario") == null) {
+            enviarError(response, "Sesión expirada");
+            response.setStatus(401);
+            return;
+        }
+        
+        model.Usuario usuarioSesion = (model.Usuario) session.getAttribute("usuario");
+        boolean puedeGestionar = "Administrador".equals(usuarioSesion.getNombreRol()) || 
+                                "Bibliotecario".equals(usuarioSesion.getNombreRol());
+        
+        if (!puedeGestionar) {
+            enviarError(response, "No tiene permisos para gestionar préstamos");
+            response.setStatus(403);
+            return;
+        }
+        
         String accion = request.getParameter("accion");
         
         if (accion == null) {

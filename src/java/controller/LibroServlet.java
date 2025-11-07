@@ -10,6 +10,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
 import java.util.Random;
@@ -32,6 +33,13 @@ public class LibroServlet extends HttpServlet {
         
         request.setCharacterEncoding("UTF-8");
         response.setContentType("application/json;charset=UTF-8");
+        
+        // Validar que el usuario esté autenticado
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("usuario") == null) {
+            enviarRespuestaError(response, "Sesión expirada", 401);
+            return;
+        }
         
         String accion = request.getParameter("accion");
         
@@ -64,6 +72,22 @@ public class LibroServlet extends HttpServlet {
         
         request.setCharacterEncoding("UTF-8");
         response.setContentType("application/json;charset=UTF-8");
+        
+        // Validar autenticación y permisos - solo admin y bibliotecario
+        jakarta.servlet.http.HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("usuario") == null) {
+            enviarRespuestaError(response, "Sesión expirada", 401);
+            return;
+        }
+        
+        model.Usuario usuarioSesion = (model.Usuario) session.getAttribute("usuario");
+        boolean puedeGestionar = "Administrador".equals(usuarioSesion.getNombreRol()) || 
+                                "Bibliotecario".equals(usuarioSesion.getNombreRol());
+        
+        if (!puedeGestionar) {
+            enviarRespuestaError(response, "No tiene permisos para gestionar libros", 403);
+            return;
+        }
         
         String accion = request.getParameter("accion");
         
