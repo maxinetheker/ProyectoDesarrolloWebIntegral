@@ -118,7 +118,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <img src="${contextPath}/assets/images/bot.jpg" alt="Bot" class="w-full h-full object-cover">
             </div>
             <div class="bg-white rounded-lg rounded-tl-none shadow-md p-3 max-w-[80%]">
-                <p class="text-sm text-gray-800 whitespace-pre-line">${formatearMensaje(mensaje)}</p>
+                <div class="text-sm text-gray-800 formatted-message">${formatearMensaje(mensaje)}</div>
                 <p class="text-xs text-gray-400 mt-1">${tiempo}</p>
             </div>
         `;
@@ -152,10 +152,56 @@ document.addEventListener('DOMContentLoaded', function() {
         return typingDiv;
     }
     
-    // Formatear mensaje (convertir saltos de línea)
+    // Formatear mensaje (convertir saltos de línea y formato Markdown básico)
     function formatearMensaje(mensaje) {
-        // Escapar HTML pero permitir saltos de línea
-        return escapeHtml(mensaje);
+        // Escapar HTML primero
+        let formatted = escapeHtml(mensaje);
+        
+        // Convertir negritas: **texto** o __texto__ a <strong>
+        formatted = formatted.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+        formatted = formatted.replace(/__(.+?)__/g, '<strong>$1</strong>');
+        
+        // Convertir cursivas: *texto* o _texto_ a <em>
+        formatted = formatted.replace(/\*(.+?)\*/g, '<em>$1</em>');
+        formatted = formatted.replace(/_(.+?)_/g, '<em>$1</em>');
+        
+        // Convertir listas con asteriscos: * item
+        const lines = formatted.split('\n');
+        let inList = false;
+        let result = [];
+        
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i].trim();
+            
+            // Detectar items de lista
+            if (line.match(/^[\*\-\•]\s+/)) {
+                if (!inList) {
+                    result.push('<ul class="list-disc list-inside space-y-1 my-2">');
+                    inList = true;
+                }
+                // Remover el asterisco/guion y agregar como item de lista
+                const itemText = line.replace(/^[\*\-\•]\s+/, '');
+                result.push(`<li class="ml-2">${itemText}</li>`);
+            } else {
+                if (inList) {
+                    result.push('</ul>');
+                    inList = false;
+                }
+                if (line) {
+                    result.push(line);
+                } else if (i > 0 && i < lines.length - 1) {
+                    // Agregar saltos de línea solo si no es el inicio o fin
+                    result.push('<br>');
+                }
+            }
+        }
+        
+        // Cerrar lista si quedó abierta
+        if (inList) {
+            result.push('</ul>');
+        }
+        
+        return result.join('\n');
     }
     
     // Escapar HTML
