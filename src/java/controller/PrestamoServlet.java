@@ -2,7 +2,9 @@ package controller;
 
 import dao.PrestamoDAO;
 import dao.LibroDAO;
+import dao.CodigoBarrasDAO;
 import model.Prestamo;
+import model.CodigoBarras;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -24,12 +26,14 @@ public class PrestamoServlet extends HttpServlet {
     
     private PrestamoDAO prestamoDAO;
     private LibroDAO libroDAO;
+    private CodigoBarrasDAO codigoBarrasDAO;
     private ObjectMapper objectMapper;
     
     @Override
     public void init() throws ServletException {
         prestamoDAO = new PrestamoDAO();
         libroDAO = new LibroDAO();
+        codigoBarrasDAO = new CodigoBarrasDAO();
         objectMapper = new ObjectMapper();
         objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd"));
     }
@@ -293,8 +297,23 @@ public class PrestamoServlet extends HttpServlet {
             int diasPrestamo = Integer.parseInt(request.getParameter("diasPrestamo"));
             String observaciones = request.getParameter("observaciones");
             
-            // Validar que el usuario esté activo
-            // TODO: Agregar validación de multas pendientes
+            // Validar que el usuario tenga un código de barras activo y no vencido
+            CodigoBarras codigoBarras = codigoBarrasDAO.buscarPorUsuario(usuarioId);
+            if (codigoBarras == null) {
+                enviarError(response, "El usuario no tiene un código de barras/carnet generado. Por favor, genere el carnet desde la sección de usuarios.");
+                return;
+            }
+            
+            if (!codigoBarras.isActivo()) {
+                enviarError(response, "El carnet del usuario está inactivo. Por favor, genere uno nuevo.");
+                return;
+            }
+            
+            // Verificar si el código está vencido
+            if (codigoBarras.getFechaCaducidad().isBefore(java.time.LocalDateTime.now())) {
+                enviarError(response, "El carnet del usuario está vencido. Por favor, renueve el carnet desde la sección de usuarios.");
+                return;
+            }
             
             // Verificar que el libro tenga stock disponible
             var libro = libroDAO.obtenerPorId(libroId);

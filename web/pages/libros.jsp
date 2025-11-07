@@ -200,7 +200,7 @@
                             <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
                                 Título <span class="text-red-500">*</span>
                             </label>
-                            <input type="text" id="libro-nombre" name="nombre" required
+                            <input type="text" id="libro-nombre" name="nombre" required maxlength="255"
                                 class="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-500">
                         </div>
 
@@ -208,7 +208,7 @@
                             <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
                                 Autor <span class="text-red-500">*</span>
                             </label>
-                            <input type="text" id="libro-autor" name="autor" required
+                            <input type="text" id="libro-autor" name="autor" required maxlength="255"
                                 class="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-500">
                         </div>
 
@@ -217,7 +217,7 @@
                                 ISBN <span class="text-red-500">*</span>
                             </label>
                             <div class="flex gap-2">
-                                <input type="text" id="libro-isbn" name="isbn" required maxlength="13"
+                                <input type="text" id="libro-isbn" name="isbn" required maxlength="20"
                                     class="flex-1 px-2 sm:px-3 py-1.5 sm:py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-500">
                                 <button type="button" onclick="generarISBN()" class="px-3 py-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition text-xs sm:text-sm">
                                     <i class="fas fa-sync-alt"></i>
@@ -229,7 +229,7 @@
                             <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
                                 Editorial
                             </label>
-                            <input type="text" id="libro-editorial" name="editorial"
+                            <input type="text" id="libro-editorial" name="editorial" maxlength="100"
                                 class="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-500">
                         </div>
 
@@ -245,7 +245,7 @@
                             <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
                                 Género
                             </label>
-                            <input type="text" id="libro-genero" name="genero"
+                            <input type="text" id="libro-genero" name="genero" maxlength="50"
                                 class="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-500">
                         </div>
 
@@ -253,7 +253,7 @@
                             <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
                                 Ubicación
                             </label>
-                            <input type="text" id="libro-ubicacion" name="ubicacion"
+                            <input type="text" id="libro-ubicacion" name="ubicacion" maxlength="50"
                                 class="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-500">
                         </div>
 

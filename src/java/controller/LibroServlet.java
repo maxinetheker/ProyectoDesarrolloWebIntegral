@@ -199,9 +199,23 @@ public class LibroServlet extends HttpServlet {
                 return;
             }
             
+            if (nombre.trim().length() > 255) {
+                respuesta.put("success", false);
+                respuesta.put("message", "El nombre no puede exceder 255 caracteres");
+                enviarRespuestaJSON(response, respuesta);
+                return;
+            }
+            
             if (autor == null || autor.trim().isEmpty()) {
                 respuesta.put("success", false);
                 respuesta.put("message", "El autor es requerido");
+                enviarRespuestaJSON(response, respuesta);
+                return;
+            }
+            
+            if (autor.trim().length() > 255) {
+                respuesta.put("success", false);
+                respuesta.put("message", "El autor no puede exceder 255 caracteres");
                 enviarRespuestaJSON(response, respuesta);
                 return;
             }
@@ -213,13 +227,30 @@ public class LibroServlet extends HttpServlet {
                 return;
             }
             
+            if (isbn.trim().length() > 20) {
+                respuesta.put("success", false);
+                respuesta.put("message", "El ISBN no puede exceder 20 caracteres");
+                enviarRespuestaJSON(response, respuesta);
+                return;
+            }
+            
             Libro libro = new Libro();
             libro.setNombre(nombre.trim());
             libro.setAutor(autor.trim());
             libro.setIsbn(isbn.trim());
             
             String editorial = request.getParameter("editorial");
-            libro.setEditorial(editorial != null && !editorial.trim().isEmpty() ? editorial.trim() : "");
+            if (editorial != null && !editorial.trim().isEmpty()) {
+                if (editorial.trim().length() > 100) {
+                    respuesta.put("success", false);
+                    respuesta.put("message", "La editorial no puede exceder 100 caracteres");
+                    enviarRespuestaJSON(response, respuesta);
+                    return;
+                }
+                libro.setEditorial(editorial.trim());
+            } else {
+                libro.setEditorial("");
+            }
             
             int anio = 0;
             if (anioStr != null && !anioStr.trim().isEmpty()) {
@@ -235,13 +266,33 @@ public class LibroServlet extends HttpServlet {
             libro.setAnioPublicacion(anio);
             
             String genero = request.getParameter("genero");
-            libro.setGenero(genero != null && !genero.trim().isEmpty() ? genero.trim() : "");
+            if (genero != null && !genero.trim().isEmpty()) {
+                if (genero.trim().length() > 50) {
+                    respuesta.put("success", false);
+                    respuesta.put("message", "El género no puede exceder 50 caracteres");
+                    enviarRespuestaJSON(response, respuesta);
+                    return;
+                }
+                libro.setGenero(genero.trim());
+            } else {
+                libro.setGenero("");
+            }
             
             String descripcion = request.getParameter("descripcion");
             libro.setDescripcion(descripcion != null && !descripcion.trim().isEmpty() ? descripcion.trim() : "");
             
             String ubicacion = request.getParameter("ubicacion");
-            libro.setUbicacion(ubicacion != null && !ubicacion.trim().isEmpty() ? ubicacion.trim() : "");
+            if (ubicacion != null && !ubicacion.trim().isEmpty()) {
+                if (ubicacion.trim().length() > 50) {
+                    respuesta.put("success", false);
+                    respuesta.put("message", "La ubicación no puede exceder 50 caracteres");
+                    enviarRespuestaJSON(response, respuesta);
+                    return;
+                }
+                libro.setUbicacion(ubicacion.trim());
+            } else {
+                libro.setUbicacion("");
+            }
             
             String urlPortada = request.getParameter("urlPortada");
             libro.setUrlPortada(urlPortada != null && !urlPortada.trim().isEmpty() ? urlPortada.trim() : null);
@@ -297,14 +348,63 @@ public class LibroServlet extends HttpServlet {
                 return;
             }
             
-            libro.setNombre(request.getParameter("nombre"));
-            libro.setAutor(request.getParameter("autor"));
-            libro.setIsbn(request.getParameter("isbn"));
-            libro.setEditorial(request.getParameter("editorial"));
+            // Validar campos con límites de caracteres
+            String nombre = request.getParameter("nombre");
+            if (nombre != null && nombre.trim().length() > 255) {
+                respuesta.put("success", false);
+                respuesta.put("message", "El nombre no puede exceder 255 caracteres");
+                enviarRespuestaJSON(response, respuesta);
+                return;
+            }
+            
+            String autor = request.getParameter("autor");
+            if (autor != null && autor.trim().length() > 255) {
+                respuesta.put("success", false);
+                respuesta.put("message", "El autor no puede exceder 255 caracteres");
+                enviarRespuestaJSON(response, respuesta);
+                return;
+            }
+            
+            String isbn = request.getParameter("isbn");
+            if (isbn != null && isbn.trim().length() > 20) {
+                respuesta.put("success", false);
+                respuesta.put("message", "El ISBN no puede exceder 20 caracteres");
+                enviarRespuestaJSON(response, respuesta);
+                return;
+            }
+            
+            String editorial = request.getParameter("editorial");
+            if (editorial != null && editorial.trim().length() > 100) {
+                respuesta.put("success", false);
+                respuesta.put("message", "La editorial no puede exceder 100 caracteres");
+                enviarRespuestaJSON(response, respuesta);
+                return;
+            }
+            
+            String genero = request.getParameter("genero");
+            if (genero != null && genero.trim().length() > 50) {
+                respuesta.put("success", false);
+                respuesta.put("message", "El género no puede exceder 50 caracteres");
+                enviarRespuestaJSON(response, respuesta);
+                return;
+            }
+            
+            String ubicacion = request.getParameter("ubicacion");
+            if (ubicacion != null && ubicacion.trim().length() > 50) {
+                respuesta.put("success", false);
+                respuesta.put("message", "La ubicación no puede exceder 50 caracteres");
+                enviarRespuestaJSON(response, respuesta);
+                return;
+            }
+            
+            libro.setNombre(nombre);
+            libro.setAutor(autor);
+            libro.setIsbn(isbn);
+            libro.setEditorial(editorial);
             libro.setAnioPublicacion(Integer.parseInt(request.getParameter("anioPublicacion")));
-            libro.setGenero(request.getParameter("genero"));
+            libro.setGenero(genero);
             libro.setDescripcion(request.getParameter("descripcion"));
-            libro.setUbicacion(request.getParameter("ubicacion"));
+            libro.setUbicacion(ubicacion);
             
             String urlPortada = request.getParameter("urlPortada");
             libro.setUrlPortada(urlPortada != null && !urlPortada.trim().isEmpty() ? urlPortada.trim() : null);
