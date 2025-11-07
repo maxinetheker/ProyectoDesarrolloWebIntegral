@@ -25,43 +25,43 @@ function inicializarModalPerfilCarnet() {
                 </div>
                 
                 <!-- Contenido del Modal -->
-                <div class="p-4 sm:p-6">
+                <div class="p-2 sm:p-6">
                     <!-- Carnet Digital -->
                     <div id="carnet-digital" class="mb-6">
                         <div class="flex justify-center">
-                            <div class="border-2 border-slate-700 rounded-lg p-3 sm:p-4 bg-gradient-to-br from-slate-50 to-gray-50 shadow-xl" style="width: 100%; max-width: 350px;">
+                            <div class="border-2 border-slate-700 rounded-lg p-2 sm:p-6 bg-gradient-to-br from-slate-50 to-gray-50 shadow-xl" style="width: 100%; max-width: 500px;">
                                 <!-- Header del Carnet -->
-                                <div class="text-center border-b-2 border-slate-700 pb-2 mb-3">
-                                    <h4 class="text-lg sm:text-xl font-bold text-slate-900">Carnet de Biblioteca</h4>
-                                    <p class="text-xs sm:text-sm text-slate-700">I.E. Sagrado Corazón de María</p>
+                                <div class="text-center border-b-2 border-slate-700 pb-3 mb-4">
+                                    <h4 class="text-xl sm:text-2xl font-bold text-slate-900">Carnet de Biblioteca</h4>
+                                    <p class="text-sm sm:text-base text-slate-700">I.E. Sagrado Corazón de María</p>
                                 </div>
                                 
                                 <!-- Datos del Usuario -->
-                                <div class="space-y-2 mb-3">
+                                <div class="space-y-3 mb-4">
                                     <div class="flex items-start">
-                                        <span class="text-xs sm:text-sm font-semibold text-slate-900 w-24 flex-shrink-0">Nombre:</span>
-                                        <span id="carnet-nombre" class="text-xs sm:text-sm text-gray-700 flex-1"></span>
+                                        <span class="text-sm sm:text-base font-semibold text-slate-900 w-28 flex-shrink-0">Nombre:</span>
+                                        <span id="carnet-nombre" class="text-sm sm:text-base text-gray-700 flex-1"></span>
                                     </div>
                                     <div class="flex items-start">
-                                        <span class="text-xs sm:text-sm font-semibold text-slate-900 w-24 flex-shrink-0">Usuario:</span>
-                                        <span id="carnet-usuario" class="text-xs sm:text-sm text-gray-700 flex-1"></span>
+                                        <span class="text-sm sm:text-base font-semibold text-slate-900 w-28 flex-shrink-0">Usuario:</span>
+                                        <span id="carnet-usuario" class="text-sm sm:text-base text-gray-700 flex-1"></span>
                                     </div>
                                     <div class="flex items-start">
-                                        <span class="text-xs sm:text-sm font-semibold text-slate-900 w-24 flex-shrink-0">Email:</span>
-                                        <span id="carnet-email" class="text-xs sm:text-sm text-gray-700 flex-1 break-all"></span>
+                                        <span class="text-sm sm:text-base font-semibold text-slate-900 w-28 flex-shrink-0">Email:</span>
+                                        <span id="carnet-email" class="text-sm sm:text-base text-gray-700 flex-1 break-all"></span>
                                     </div>
                                     <div class="flex items-start">
-                                        <span class="text-xs sm:text-sm font-semibold text-slate-900 w-24 flex-shrink-0">Rol:</span>
-                                        <span id="carnet-rol" class="text-xs sm:text-sm text-gray-700 flex-1"></span>
+                                        <span class="text-sm sm:text-base font-semibold text-slate-900 w-28 flex-shrink-0">Rol:</span>
+                                        <span id="carnet-rol" class="text-sm sm:text-base text-gray-700 flex-1"></span>
                                     </div>
                                 </div>
                                 
                                 <!-- Código de Barras -->
-                                <div class="border-t-2 border-slate-300 pt-2">
-                                    <div class="w-full overflow-hidden">
-                                        <svg id="codigo-barras-perfil" class="mx-auto" style="max-width: 100%;"></svg>
+                                <div class="border-t-2 border-slate-300 pt-3">
+                                    <div class="w-full ">
+                                        <svg id="codigo-barras-perfil" class="mx-auto" style="max-width: 100%; height: auto;"></svg>
                                     </div>
-                                    <p id="codigo-texto-perfil" class="text-center text-xs font-mono text-gray-600 mt-1"></p>
+                                    <p id="codigo-texto-perfil" class="text-center text-sm font-mono text-gray-600 mt-2"></p>
                                 </div>
                             </div>
                         </div>
@@ -209,7 +209,7 @@ function generarCodigoBarrasPerfil() {
                     width: 1.5,
                     height: 50,
                     displayValue: false,
-                    margin: 2
+                    margin: 4
                 });
                 document.getElementById('codigo-texto-perfil').textContent = data.codigo;
             } else {

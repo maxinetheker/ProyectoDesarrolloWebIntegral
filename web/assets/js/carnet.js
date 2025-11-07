@@ -1,14 +1,9 @@
-/**
- * Módulo para gestión de carnets de biblioteca
- * Utiliza JsBarcode para generar códigos de barras
- */
+
 
 // Obtener contexto de la aplicación
 const contextPath = window.CONTEXT_PATH || '';
 
-/**
- * Abre el modal para generar/mostrar carnet
- */
+
 async function abrirModalCarnet(usuarioId, nombreCompleto, usuario, email, telefono, rol) {
     try {
         // Primero verificar si ya tiene carnet
@@ -127,7 +122,7 @@ function mostrarCarnet(usuario, codigo, fechaCaducidad, estaVencido, tipo) {
     try {
         JsBarcode('#codigo-barras', codigo, {
             format: 'CODE128',
-            width: 1,
+            width: 1.5,
             height: 30,
             displayValue: true,
             fontSize: 9,
@@ -250,7 +245,7 @@ function imprimirCarnet() {
     ventanaImpresion.document.write('<style>');
     ventanaImpresion.document.write('* { margin: 0; padding: 0; box-sizing: border-box; }');
     ventanaImpresion.document.write('body { font-family: Arial, sans-serif; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }');
-    ventanaImpresion.document.write('.carnet { width: 8.5cm; height: 5.4cm; border: 2px solid #334155; border-radius: 8px; padding: 8px; background: linear-gradient(to bottom right, #f8fafc, white); box-sizing: border-box; display: flex; flex-direction: column; }');
+    ventanaImpresion.document.write('.carnet { width: 10cm; height: 6cm; border: 2px solid #334155; border-radius: 8px; padding: 10px; background: linear-gradient(to bottom right, #f8fafc, white); box-sizing: border-box; display: flex; flex-direction: column; }');
     ventanaImpresion.document.write('.header { text-align: center; border-bottom: 2px solid #334155; padding-bottom: 4px; margin-bottom: 4px; flex-shrink: 0; }');
     ventanaImpresion.document.write('.header h2 { margin: 0; font-size: 13px; color: #1e293b; font-weight: bold; }');
     ventanaImpresion.document.write('.header p { margin: 2px 0 0 0; font-size: 10px; color: #475569; }');

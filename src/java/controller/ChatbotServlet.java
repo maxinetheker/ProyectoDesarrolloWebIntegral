@@ -21,7 +21,7 @@ import java.util.*;
 @WebServlet("/chatbot")
 public class ChatbotServlet extends HttpServlet {
     
-    private static final String GEMINI_API_KEY = "";
+    private static final String GEMINI_API_KEY = "AIzaSyCH-13YdHQG_kj2FYoTX7PZtPtfrjJx0Rk";
     private static final String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
     
     private ChatbotDAO chatbotDAO;

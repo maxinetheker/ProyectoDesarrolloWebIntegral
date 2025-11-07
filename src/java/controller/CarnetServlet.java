@@ -376,10 +376,10 @@ public class CarnetServlet extends HttpServlet {
      */
     private String generarCodigoUnico(int usuarioId) {
         int año = LocalDateTime.now().getYear();
-        String idFormateado = String.format("%05d", usuarioId);
+        String idFormateado = String.format("%04d", usuarioId);
         // Agregar timestamp para garantizar unicidad en renovaciones
-        long timestamp = System.currentTimeMillis() % 1000000; // Últimos 6 dígitos
-        return String.format("LIB-%d-%s-%06d", año, idFormateado, timestamp);
+        long timestamp = System.currentTimeMillis() % 1000;  // Últimos 6 dígitos
+        return String.format("U%d-%s-%03d", año, idFormateado, timestamp);
     }
     
     /**
