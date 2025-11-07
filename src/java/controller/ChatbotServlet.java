@@ -150,7 +150,6 @@ public class ChatbotServlet extends HttpServlet {
         // Agregar historial de conversación si existe
         if (historial != null && !historial.isEmpty()) {
             prompt.append("HISTORIAL DE CONVERSACIÓN RECIENTE (del más reciente al más antiguo):\n");
-            // Invertir el orden para mostrar del más antiguo al más reciente
             for (int i = historial.size() - 1; i >= 0; i--) {
                 Chatbot msg = historial.get(i);
                 prompt.append("Usuario: ").append(msg.getMensajeRecibido()).append("\n");

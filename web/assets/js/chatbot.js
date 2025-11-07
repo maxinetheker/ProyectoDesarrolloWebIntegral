@@ -165,35 +165,71 @@ document.addEventListener('DOMContentLoaded', function() {
         formatted = formatted.replace(/\*(.+?)\*/g, '<em>$1</em>');
         formatted = formatted.replace(/_(.+?)_/g, '<em>$1</em>');
         
-        // Convertir listas con asteriscos: * item
+        // Resaltar texto entre comillas simples 'texto' con color azul
+        formatted = formatted.replace(/'([^']+)'/g, '<span class="text-blue-600 font-semibold">\'$1\'</span>');
+        
+        // Procesar líneas para listas y tablas
         const lines = formatted.split('\n');
         let inList = false;
+        let inTable = false;
+        let tableRows = [];
         let result = [];
         
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i].trim();
             
-            // Detectar items de lista
-            if (line.match(/^[\*\-\•]\s+/)) {
-                if (!inList) {
-                    result.push('<ul class="list-disc list-inside space-y-1 my-2">');
-                    inList = true;
-                }
-                // Remover el asterisco/guion y agregar como item de lista
-                const itemText = line.replace(/^[\*\-\•]\s+/, '');
-                result.push(`<li class="ml-2">${itemText}</li>`);
-            } else {
+            // Detectar tablas (líneas con |)
+            if (line.includes('|') && line.split('|').length >= 3) {
+                // Cerrar lista si estaba abierta
                 if (inList) {
                     result.push('</ul>');
                     inList = false;
                 }
-                if (line) {
-                    result.push(line);
-                } else if (i > 0 && i < lines.length - 1) {
-                    // Agregar saltos de línea solo si no es el inicio o fin
-                    result.push('<br>');
+                
+                if (!inTable) {
+                    inTable = true;
+                    tableRows = [];
+                }
+                
+                // Ignorar líneas separadoras de encabezado (|---|---| o :---: formato)
+                if (line.match(/^\|?[\s:]*[-:]+[\s:]*(\|[\s:]*[-:]+[\s:]*)+\|?$/)) {
+                    continue;
+                }
+                
+                tableRows.push(line);
+            } else {
+                // Si salimos de una tabla, procesarla
+                if (inTable) {
+                    result.push(procesarTabla(tableRows));
+                    inTable = false;
+                    tableRows = [];
+                }
+                
+                // Detectar items de lista
+                if (line.match(/^[\*\-\•]\s+/)) {
+                    if (!inList) {
+                        result.push('<ul class="list-disc list-inside space-y-1 my-2">');
+                        inList = true;
+                    }
+                    const itemText = line.replace(/^[\*\-\•]\s+/, '');
+                    result.push(`<li class="ml-2">${itemText}</li>`);
+                } else {
+                    if (inList) {
+                        result.push('</ul>');
+                        inList = false;
+                    }
+                    if (line) {
+                        result.push(line);
+                    } else if (i > 0 && i < lines.length - 1) {
+                        result.push('<br>');
+                    }
                 }
             }
+        }
+        
+        // Cerrar tabla si quedó abierta
+        if (inTable) {
+            result.push(procesarTabla(tableRows));
         }
         
         // Cerrar lista si quedó abierta
@@ -202,6 +238,37 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         return result.join('\n');
+    }
+    
+    // Procesar tabla Markdown a HTML
+    function procesarTabla(rows) {
+        if (rows.length === 0) return '';
+        
+        let html = '<div class="overflow-x-auto my-3"><table class="min-w-full border-collapse border border-gray-300 text-sm">';
+        
+        rows.forEach((row, index) => {
+            // Dividir por | y limpiar espacios
+            const cells = row.split('|').map(cell => cell.trim()).filter(cell => cell);
+            
+            if (index === 0) {
+                // Primera fila como encabezado
+                html += '<thead class="bg-blue-50"><tr>';
+                cells.forEach(cell => {
+                    html += `<th class="border border-gray-300 px-3 py-2 text-left font-semibold text-gray-700">${cell}</th>`;
+                });
+                html += '</tr></thead><tbody>';
+            } else {
+                // Filas de datos
+                html += '<tr class="hover:bg-gray-50">';
+                cells.forEach(cell => {
+                    html += `<td class="border border-gray-300 px-3 py-2 text-gray-600">${cell}</td>`;
+                });
+                html += '</tr>';
+            }
+        });
+        
+        html += '</tbody></table></div>';
+        return html;
     }
     
     // Escapar HTML
