@@ -11,7 +11,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 
-// Maneja el login de usuarios al sistema
+/**
+ * Servlet para gestionar el inicio de sesión
+ */
 @WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
 public class LoginServlet extends HttpServlet {
     
