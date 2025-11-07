@@ -361,7 +361,7 @@ CHATBOT (id_usuario) → USUARIO (id)
 
 ### Generación de Códigos de Barras
 
-- Formato: `LIB-YYYY-NNNNN-RANDOM`
+- Formato: `UYYYY-NNNN-TTT` (Ejemplo: `U2025-0001-123`)
 - Códigos temporales (1 año) o permanentes
 - Validación de fecha de caducidad
 - Generación con JsBarcode en el frontend
