@@ -1,0 +1,54 @@
+# English language file
+# Format: key=value
+
+# Encabezado
+encabezado.titulo=School Library - I.E. Sagrado Corazón de María
+encabezado.escuela.codigo=I.E. 5128
+encabezado.escuela.nombre=Sagrado Corazón de María
+encabezado.nav.inicio=Home
+encabezado.nav.nosotros=About Us
+encabezado.nav.libros=Our Books
+encabezado.nav.dashboard=Dashboard
+encabezado.nav.login=Sign In
+encabezado.selector.idioma=Language
+
+# Sección Hero
+hero.titulo.bienvenida=Welcome to Our
+hero.titulo.biblioteca=Digital Library
+hero.descripcion=Knowledge is the most valuable treasure we can acquire. In our library you will find the keys to open all the doors of knowledge.
+hero.boton.catalogo=Explore Catalog
+hero.boton.mas=Learn More
+
+# Sección Nosotros
+nosotros.titulo=About Us
+nosotros.mision.titulo=Our Mission
+nosotros.mision.descripcion=To provide an effective quality service aimed at values-based education, promoting holistic learning, with a climate of harmony and democracy for the development of emotional and affective intelligence.
+nosotros.vision.titulo=Our Vision
+nosotros.vision.descripcion=To be consolidated through democratic and productive education based on values, forming creative, critical, entrepreneurial and ecologically committed leaders, supported by teachers who promote humanistic, scientific and technological education.
+nosotros.sistema.titulo=Innovative System
+nosotros.sistema.descripcion=Our web system automates loan and return management, offering a modern and efficient experience for the entire educational community.
+
+# Sección Libros
+libros.titulo=Our Books
+libros.subtitulo=Discover the favorite titles of our educational community
+libros.cargando=Loading books...
+libros.estadistica.total=Total Books
+libros.estadistica.usuarios=Active Users
+
+# Pie de página
+pie.descripcion=Training leaders with values, knowledge and social commitment to build a better future.
+pie.enlaces.titulo=Quick Links
+pie.enlaces.inicio=Home
+pie.enlaces.nosotros=About Us
+pie.enlaces.libros=Our Books
+pie.enlaces.contacto=Contact
+pie.contacto.titulo=Contact
+pie.copyright=© 2025 I.E. Sagrado Corazón de María. All rights reserved.
+
+# Chatbot
+chatbot.nombre=BiblioBot
+chatbot.subtitulo=Virtual assistant 🤖
+chatbot.bienvenida.registrado=Hello {0}! 👋 I'm BiblioBot, your virtual assistant. How can I help you today?
+chatbot.bienvenida.invitado=Hello! 👋 I'm BiblioBot, your virtual assistant. How can I help you? You can ask me about our available books.
+chatbot.placeholder=Type your message...
+chatbot.powered=Powered by Gemini AI

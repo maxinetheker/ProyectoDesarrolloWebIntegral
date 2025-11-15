@@ -1,0 +1,54 @@
+# Fichier de langue française
+# Format: clé=valeur
+
+# Encabezado
+encabezado.titulo=Bibliothèque Scolaire - I.E. Sagrado Corazón de María
+encabezado.escuela.codigo=I.E. 5128
+encabezado.escuela.nombre=Sagrado Corazón de María
+encabezado.nav.inicio=Accueil
+encabezado.nav.nosotros=À Propos
+encabezado.nav.libros=Nos Livres
+encabezado.nav.dashboard=Tableau de Bord
+encabezado.nav.login=Se Connecter
+encabezado.selector.idioma=Langue
+
+# Sección Hero
+hero.titulo.bienvenida=Bienvenue à Notre
+hero.titulo.biblioteca=Bibliothèque Numérique
+hero.descripcion=La connaissance est le trésor le plus précieux que nous puissions acquérir. Dans notre bibliothèque, vous trouverez les clés pour ouvrir toutes les portes du savoir.
+hero.boton.catalogo=Explorer le Catalogue
+hero.boton.mas=En Savoir Plus
+
+# Sección Nosotros
+nosotros.titulo=À Propos
+nosotros.mision.titulo=Notre Mission
+nosotros.mision.descripcion=Fournir un service de qualité efficace axé sur l'éducation aux valeurs, en favorisant un apprentissage holistique, dans un climat d'harmonie et de démocratie pour le développement de l'intelligence émotionnelle et affective.
+nosotros.vision.titulo=Notre Vision
+nosotros.vision.descripcion=Se consolider par une éducation démocratique et productive fondée sur les valeurs, en formant des leaders créatifs, critiques, entrepreneurs et engagés écologiquement, soutenus par des enseignants qui favorisent une éducation humaniste, scientifique et technologique.
+nosotros.sistema.titulo=Système Innovant
+nosotros.sistema.descripcion=Notre système web automatise la gestion des prêts et des retours, offrant une expérience moderne et efficace pour toute la communauté éducative.
+
+# Sección Libros
+libros.titulo=Nos Livres
+libros.subtitulo=Découvrez les titres favoris de notre communauté éducative
+libros.cargando=Chargement des livres...
+libros.estadistica.total=Total de Livres
+libros.estadistica.usuarios=Utilisateurs Actifs
+
+# Pie de página
+pie.descripcion=Former des leaders avec des valeurs, des connaissances et un engagement social pour construire un avenir meilleur.
+pie.enlaces.titulo=Liens Rapides
+pie.enlaces.inicio=Accueil
+pie.enlaces.nosotros=À Propos
+pie.enlaces.libros=Nos Livres
+pie.enlaces.contacto=Contact
+pie.contacto.titulo=Contact
+pie.copyright=© 2025 I.E. Sagrado Corazón de María. Tous droits réservés.
+
+# Chatbot
+chatbot.nombre=BiblioBot
+chatbot.subtitulo=Assistant virtuel 🤖
+chatbot.bienvenida.registrado=Bonjour {0}! 👋 Je suis BiblioBot, votre assistant virtuel. Comment puis-je vous aider aujourd'hui?
+chatbot.bienvenida.invitado=Bonjour! 👋 Je suis BiblioBot, votre assistant virtuel. Comment puis-je vous aider? Vous pouvez me poser des questions sur nos livres disponibles.
+chatbot.placeholder=Tapez votre message...
+chatbot.powered=Propulsé par Gemini AI

@@ -1,0 +1,54 @@
+# Archivo de idioma español
+# Formato: clave=valor
+
+# Encabezado
+encabezado.titulo=Biblioteca Escolar - I.E. Sagrado Corazón de María
+encabezado.escuela.codigo=I.E. 5128
+encabezado.escuela.nombre=Sagrado Corazón de María
+encabezado.nav.inicio=Inicio
+encabezado.nav.nosotros=Nosotros
+encabezado.nav.libros=Nuestros Libros
+encabezado.nav.dashboard=Dashboard
+encabezado.nav.login=Iniciar Sesión
+encabezado.selector.idioma=Idioma
+
+# Sección Hero
+hero.titulo.bienvenida=Bienvenidos a Nuestra
+hero.titulo.biblioteca=Biblioteca Digital
+hero.descripcion=El conocimiento es el tesoro más valioso que podemos adquirir. En nuestra biblioteca encontrarás las llaves para abrir todas las puertas del saber.
+hero.boton.catalogo=Explorar Catálogo
+hero.boton.mas=Conocer Más
+
+# Sección Nosotros
+nosotros.titulo=Nosotros
+nosotros.mision.titulo=Nuestra Misión
+nosotros.mision.descripcion=Brindar un servicio de calidad efectiva proyectado a una educación en valores, impulsando un aprendizaje holístico, con un clima de armonía y democracia para el desarrollo de la inteligencia emocional y afectiva.
+nosotros.vision.titulo=Nuestra Visión
+nosotros.vision.descripcion=Consolidarse mediante una educación democrática y productiva fundamentada en valores, formando líderes creativos, críticos, emprendedores y comprometidos ecológicamente, apoyados por docentes que impulsen una educación humanista, científica y tecnológica.
+nosotros.sistema.titulo=Sistema Innovador
+nosotros.sistema.descripcion=Nuestro sistema web automatiza la gestión de préstamos y devoluciones, ofreciendo una experiencia moderna y eficiente para toda la comunidad educativa.
+
+# Sección Libros
+libros.titulo=Nuestros Libros
+libros.subtitulo=Descubre los títulos favoritos de nuestra comunidad educativa
+libros.cargando=Cargando libros...
+libros.estadistica.total=Total de Libros
+libros.estadistica.usuarios=Usuarios Activos
+
+# Pie de página
+pie.descripcion=Formando líderes con valores, conocimiento y compromiso social para construir un futuro mejor.
+pie.enlaces.titulo=Enlaces Rápidos
+pie.enlaces.inicio=Inicio
+pie.enlaces.nosotros=Nosotros
+pie.enlaces.libros=Nuestros Libros
+pie.enlaces.contacto=Contacto
+pie.contacto.titulo=Contacto
+pie.copyright=© 2025 I.E. Sagrado Corazón de María. Todos los derechos reservados.
+
+# Chatbot
+chatbot.nombre=BiblioBot
+chatbot.subtitulo=Asistente virtual 🤖
+chatbot.bienvenida.registrado=¡Hola {0}! 👋 Soy BiblioBot, tu asistente virtual. ¿En qué puedo ayudarte hoy?
+chatbot.bienvenida.invitado=¡Hola! 👋 Soy BiblioBot, tu asistente virtual. ¿En qué puedo ayudarte? Puedes preguntarme sobre nuestros libros disponibles.
+chatbot.placeholder=Escribe tu mensaje...
+chatbot.powered=Powered by Gemini AI

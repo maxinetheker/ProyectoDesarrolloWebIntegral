@@ -1,16 +1,22 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="model.Usuario"%>
+<%@page import="util.I18N"%>
+<%
+    // Configurar idioma
+    String lang = (String) session.getAttribute("lang");
+    if (lang == null) {
+        lang = "es";
+        session.setAttribute("lang", lang);
+    }
+    I18N i18n = new I18N(application, lang);
+%>
 <!DOCTYPE html>
-<!--
-aca va el codigo de la biblioteca del colegio
--->
 <html class="scroll-smooth">
     <head>
-        <title>Biblioteca Escolar - I.E. Sagrado Corazón de María</title>
+        <title><%= i18n.get("encabezado.titulo") %></title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-        <!-- Swiper CSS -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
     </head>
     <body class="bg-gray-50">
@@ -39,10 +45,10 @@ aca va el codigo de la biblioteca del colegio
                         </div>
                         <div class="font-bold">
                             <div class="text-lg bg-gradient-to-r from-red-600 to-red-700 bg-clip-text text-transparent">
-                                I.E. 5128
+                                <%= i18n.get("encabezado.escuela.codigo") %>
                             </div>
                             <div class="text-sm bg-gradient-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent font-medium">
-                                Sagrado Corazón de María
+                                <%= i18n.get("encabezado.escuela.nombre") %>
                             </div>
                         </div>
                     </div>
@@ -50,17 +56,27 @@ aca va el codigo de la biblioteca del colegio
                     <!-- botones de navegacion -->
                     <div class="hidden md:flex items-center space-x-8">
                         <a href="#inicio" class="text-gray-700 hover:text-blue-600 transition-colors duration-300 font-medium relative group">
-                            Inicio
+                            <%= i18n.get("encabezado.nav.inicio") %>
                             <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-cyan-500 transition-all duration-300 group-hover:w-full"></span>
                         </a>
                         <a href="#nosotros" class="text-gray-700 hover:text-blue-600 transition-colors duration-300 font-medium relative group">
-                            Nosotros
+                            <%= i18n.get("encabezado.nav.nosotros") %>
                             <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-cyan-500 transition-all duration-300 group-hover:w-full"></span>
                         </a>
                         <a href="#libros" class="text-gray-700 hover:text-blue-600 transition-colors duration-300 font-medium relative group">
-                            Nuestros Libros
+                            <%= i18n.get("encabezado.nav.libros") %>
                             <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-cyan-500 transition-all duration-300 group-hover:w-full"></span>
                         </a>
+                        
+                        <!-- Selector de idioma -->
+                        <div class="relative group">
+                            <select onchange="cambiarIdioma(this.value)" class="px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer bg-white">
+                                <option value="es" <%= lang.equals("es") ? "selected" : "" %>>🇪🇸 Español</option>
+                                <option value="en" <%= lang.equals("en") ? "selected" : "" %>>🇺🇸 English</option>
+                                <option value="fr" <%= lang.equals("fr") ? "selected" : "" %>>🇫🇷 Français</option>
+                                <option value="zh" <%= lang.equals("zh") ? "selected" : "" %>>🇨🇳 中文</option>
+                            </select>
+                        </div>
                         
                         <% if (usuarioLogueado) { %>
                             <!-- Botón Dashboard para usuario logueado -->
@@ -71,7 +87,7 @@ aca va el codigo de la biblioteca del colegio
                                     <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                         <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
                                     </svg>
-                                    Dashboard
+                                    <%= i18n.get("encabezado.nav.dashboard") %>
                                 </span>
                             </a>
                         <% } else { %>
@@ -83,7 +99,7 @@ aca va el codigo de la biblioteca del colegio
                                     <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd" d="M3 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1zm7.707 3.293a1 1 0 010 1.414L9.414 9H17a1 1 0 110 2H9.414l1.293 1.293a1 1 0 01-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0z" clip-rule="evenodd"/>
                                     </svg>
-                                    Iniciar Sesión
+                                    <%= i18n.get("encabezado.nav.login") %>
                                 </span>
                             </a>
                         <% } %>
@@ -102,17 +118,25 @@ aca va el codigo de la biblioteca del colegio
                 <!-- menu para telefonos -->
                 <div id="mobileMenu" class="hidden md:hidden mt-4 pb-4">
                     <div class="flex flex-col space-y-3">
-                        <a href="#inicio" class="text-gray-700 hover:text-red-600 transition-colors duration-300 font-medium">Inicio</a>
-                        <a href="#nosotros" class="text-gray-700 hover:text-red-600 transition-colors duration-300 font-medium">Nosotros</a>
-                        <a href="#libros" class="text-gray-700 hover:text-red-600 transition-colors duration-300 font-medium">Nuestros Libros</a>
+                        <a href="#inicio" class="text-gray-700 hover:text-red-600 transition-colors duration-300 font-medium"><%= i18n.get("encabezado.nav.inicio") %></a>
+                        <a href="#nosotros" class="text-gray-700 hover:text-red-600 transition-colors duration-300 font-medium"><%= i18n.get("encabezado.nav.nosotros") %></a>
+                        <a href="#libros" class="text-gray-700 hover:text-red-600 transition-colors duration-300 font-medium"><%= i18n.get("encabezado.nav.libros") %></a>
+                        
+                        <!-- Selector de idioma móvil -->
+                        <select onchange="cambiarIdioma(this.value)" class="px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer bg-white">
+                            <option value="es" <%= lang.equals("es") ? "selected" : "" %>>🇪🇸 Español</option>
+                            <option value="en" <%= lang.equals("en") ? "selected" : "" %>>🇺🇸 English</option>
+                            <option value="fr" <%= lang.equals("fr") ? "selected" : "" %>>🇫🇷 Français</option>
+                            <option value="zh" <%= lang.equals("zh") ? "selected" : "" %>>🇨🇳 中文</option>
+                        </select>
                         
                         <% if (usuarioLogueado) { %>
                             <a href="<%= contextPath %>/pages/dashboard.jsp" class="group relative inline-flex items-center justify-center px-6 py-2.5 overflow-hidden font-medium text-white transition duration-300 ease-out bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900 rounded-lg shadow-lg w-fit">
-                                <span class="relative">Dashboard</span>
+                                <span class="relative"><%= i18n.get("encabezado.nav.dashboard") %></span>
                             </a>
                         <% } else { %>
                             <a href="<%= contextPath %>/pages/login.jsp" class="group relative inline-flex items-center justify-center px-6 py-2.5 overflow-hidden font-medium text-white transition duration-300 ease-out bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900 rounded-lg shadow-lg w-fit">
-                                <span class="relative">Iniciar Sesión</span>
+                                <span class="relative"><%= i18n.get("encabezado.nav.login") %></span>
                             </a>
                         <% } %>
                     </div>
@@ -131,19 +155,18 @@ aca va el codigo de la biblioteca del colegio
             <!-- el texto principal -->
             <div class="relative z-10 text-center text-white px-4 max-w-4xl mx-auto">
                 <h1 class="text-5xl md:text-7xl font-bold mb-6 animate-fade-in">
-                    Bienvenidos a Nuestra
-                    <span class="text-teal-300">Biblioteca Digital</span>
+                    <%= i18n.get("hero.titulo.bienvenida") %>
+                    <span class="text-teal-300"><%= i18n.get("hero.titulo.biblioteca") %></span>
                 </h1>
                 <p class="text-xl md:text-2xl mb-8 text-gray-200 leading-relaxed">
-                    "El conocimiento es el tesoro más valioso que podemos adquirir.
-                    En nuestra biblioteca encontrarás las llaves para abrir todas las puertas del saber."
+                    "<%= i18n.get("hero.descripcion") %>"
                 </p>
                 <div class="space-y-4 md:space-y-0 md:space-x-4 md:flex md:justify-center">
                     <a href="<%= contextPath %>/pages/catalogo.jsp" class="inline-block bg-teal-600 hover:bg-teal-700 text-white px-8 py-4 rounded-full text-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-xl">
-                        Explorar Catálogo
+                        <%= i18n.get("hero.boton.catalogo") %>
                     </a>
                     <a href="#nosotros" class="inline-block bg-transparent border-2 border-white hover:bg-white hover:text-gray-900 text-white px-8 py-4 rounded-full text-lg font-semibold transition-all duration-300 transform hover:scale-105">
-                        Conocer Más
+                        <%= i18n.get("hero.boton.mas") %>
                     </a>
                 </div>
             </div>
@@ -163,21 +186,17 @@ aca va el codigo de la biblioteca del colegio
             <div class="container mx-auto px-4">
                 <div class="max-w-4xl mx-auto text-center">
                     <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-8">
-                        <span class="text-red-600">Nosotros</span>
+                        <span class="text-red-600"><%= i18n.get("nosotros.titulo") %></span>
                     </h2>
                     <div class="grid md:grid-cols-2 gap-12 items-center">
                         <div class="text-left">
-                            <h3 class="text-2xl font-semibold text-teal-600 mb-4">Nuestra Misión</h3>
+                            <h3 class="text-2xl font-semibold text-teal-600 mb-4"><%= i18n.get("nosotros.mision.titulo") %></h3>
                             <p class="text-gray-600 text-lg leading-relaxed mb-6">
-                                Brindar un servicio de calidad efectiva proyectado a una educación en valores,
-                                impulsando un aprendizaje holístico, con un clima de armonía y democracia para
-                                el desarrollo de la inteligencia emocional y afectiva.
+                                <%= i18n.get("nosotros.mision.descripcion") %>
                             </p>
-                            <h3 class="text-2xl font-semibold text-teal-600 mb-4">Nuestra Visión</h3>
+                            <h3 class="text-2xl font-semibold text-teal-600 mb-4"><%= i18n.get("nosotros.vision.titulo") %></h3>
                             <p class="text-gray-600 text-lg leading-relaxed">
-                                Consolidarse mediante una educación democrática y productiva fundamentada en valores,
-                                formando líderes creativos, críticos, emprendedores y comprometidos ecológicamente,
-                                apoyados por docentes que impulsen una educación humanista, científica y tecnológica.
+                                <%= i18n.get("nosotros.vision.descripcion") %>
                             </p>
                         </div>
                         <div class="bg-gradient-to-br from-teal-50 to-red-50 p-8 rounded-sm shadow-xl">
@@ -187,10 +206,9 @@ aca va el codigo de la biblioteca del colegio
                                         <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                                     </svg>
                                 </div>
-                                <h4 class="text-xl font-bold text-gray-800 mb-3">Sistema Innovador</h4>
+                                <h4 class="text-xl font-bold text-gray-800 mb-3"><%= i18n.get("nosotros.sistema.titulo") %></h4>
                                 <p class="text-gray-600">
-                                    Nuestro sistema web automatiza la gestión de préstamos y devoluciones,
-                                    ofreciendo una experiencia moderna y eficiente para toda la comunidad educativa.
+                                    <%= i18n.get("nosotros.sistema.descripcion") %>
                                 </p>
                             </div>
                         </div>
@@ -205,11 +223,11 @@ aca va el codigo de la biblioteca del colegio
                 <div class="text-center mb-16">
                     <h2 class="text-4xl md:text-5xl font-bold mb-6">
                         <span class="bg-gradient-to-r from-slate-800 via-gray-700 to-slate-900 bg-clip-text text-transparent">
-                            Nuestros Libros
+                            <%= i18n.get("libros.titulo") %>
                         </span>
                     </h2>
                     <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                        Descubre los títulos favoritos de nuestra comunidad educativa
+                        <%= i18n.get("libros.subtitulo") %>
                     </p>
                 </div>
 
@@ -222,7 +240,7 @@ aca va el codigo de la biblioteca del colegio
                                 <div class="flex items-center justify-center h-96">
                                     <div>
                                         <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-slate-600 mx-auto"></div>
-                                        <p class="mt-4 text-gray-600">Cargando libros...</p>
+                                        <p class="mt-4 text-gray-600"><%= i18n.get("libros.cargando") %></p>
                                     </div>
                                 </div>
                             </div>
@@ -240,7 +258,7 @@ aca va el codigo de la biblioteca del colegio
                     <div class="bg-gradient-to-br from-slate-50 to-slate-100  rounded-sm p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-slate-600 font-semibold text-sm uppercase tracking-wide mb-2">Total de Libros</p>
+                                <p class="text-slate-600 font-semibold text-sm uppercase tracking-wide mb-2"><%= i18n.get("libros.estadistica.total") %></p>
                                 <p id="total-libros" class="text-5xl font-bold text-slate-800">0</p>
                             </div>
                             <div class="bg-slate-200 p-4 rounded-full">
@@ -253,7 +271,7 @@ aca va el codigo de la biblioteca del colegio
                     <div class="bg-gradient-to-br from-blue-50 to-blue-100  rounded-sm p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-blue-700 font-semibold text-sm uppercase tracking-wide mb-2">Usuarios Activos</p>
+                                <p class="text-blue-700 font-semibold text-sm uppercase tracking-wide mb-2"><%= i18n.get("libros.estadistica.usuarios") %></p>
                                 <p id="usuarios-activos" class="text-5xl font-bold text-blue-900">0</p>
                             </div>
                             <div class="bg-blue-200 p-4 rounded-full">
@@ -275,28 +293,27 @@ aca va el codigo de la biblioteca del colegio
                         <div class="flex items-center space-x-3 mb-4">
                             <img src="<%= contextPath %>/assets/images/logo.png" alt="Logo" class="h-10 w-10">
                             <div>
-                                <h3 class="font-bold text-lg">I.E. 5128</h3>
-                                <p class="text-teal-300 text-sm">Sagrado Corazón de María</p>
+                                <h3 class="font-bold text-lg"><%= i18n.get("encabezado.escuela.codigo") %></h3>
+                                <p class="text-teal-300 text-sm"><%= i18n.get("encabezado.escuela.nombre") %></p>
                             </div>
                         </div>
                         <p class="text-gray-300 leading-relaxed">
-                            Formando líderes con valores, conocimiento y compromiso social
-                            para construir un futuro mejor.
+                            <%= i18n.get("pie.descripcion") %>
                         </p>
                     </div>
 
                     <div>
-                        <h4 class="font-semibold text-lg mb-4 text-teal-300">Enlaces Rápidos</h4>
+                        <h4 class="font-semibold text-lg mb-4 text-teal-300"><%= i18n.get("pie.enlaces.titulo") %></h4>
                         <ul class="space-y-2">
-                            <li><a href="#inicio" class="text-gray-300 hover:text-white transition-colors">Inicio</a></li>
-                            <li><a href="#nosotros" class="text-gray-300 hover:text-white transition-colors">Nosotros</a></li>
-                            <li><a href="#libros" class="text-gray-300 hover:text-white transition-colors">Nuestros Libros</a></li>
-                            <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Contacto</a></li>
+                            <li><a href="#inicio" class="text-gray-300 hover:text-white transition-colors"><%= i18n.get("pie.enlaces.inicio") %></a></li>
+                            <li><a href="#nosotros" class="text-gray-300 hover:text-white transition-colors"><%= i18n.get("pie.enlaces.nosotros") %></a></li>
+                            <li><a href="#libros" class="text-gray-300 hover:text-white transition-colors"><%= i18n.get("pie.enlaces.libros") %></a></li>
+                            <li><a href="#" class="text-gray-300 hover:text-white transition-colors"><%= i18n.get("pie.enlaces.contacto") %></a></li>
                         </ul>
                     </div>
 
                     <div>
-                        <h4 class="font-semibold text-lg mb-4 text-teal-300">Contacto</h4>
+                        <h4 class="font-semibold text-lg mb-4 text-teal-300"><%= i18n.get("pie.contacto.titulo") %></h4>
                         <div class="space-y-2 text-gray-300">
                             <p>📍 Colegio 5128, Calle Los Chasquis, Ventanilla 07071</p>
                             <!--Facebook-->
@@ -309,7 +326,7 @@ aca va el codigo de la biblioteca del colegio
 
                 <div class="border-t border-gray-700 mt-8 pt-8 text-center">
                     <p class="text-gray-400">
-                        © 2025 I.E. Sagrado Corazón de María. Todos los derechos reservados.
+                        <%= i18n.get("pie.copyright") %>
                     </p>
                 </div>
             </div>
@@ -333,8 +350,8 @@ aca va el codigo de la biblioteca del colegio
                             <img src="<%= contextPath %>/assets/images/bot.jpg" alt="BiblioBot" class="w-full h-full object-cover">
                         </div>
                         <div>
-                            <h3 class="font-bold text-lg">BiblioBot</h3>
-                            <p class="text-xs text-blue-100">Asistente virtual 🤖</p>
+                            <h3 class="font-bold text-lg"><%= i18n.get("chatbot.nombre") %></h3>
+                            <p class="text-xs text-blue-100"><%= i18n.get("chatbot.subtitulo") %></p>
                         </div>
                     </div>
                     <button id="chatbot-close" class="text-white hover:bg-white/20 rounded-full p-2 transition-colors">
@@ -354,9 +371,9 @@ aca va el codigo de la biblioteca del colegio
                         <div class="bg-white rounded-lg rounded-tl-none shadow-md p-3 max-w-[80%]">
                             <p class="text-sm text-gray-800">
                                 <% if (usuarioLogueado) { %>
-                                    ¡Hola <%= nombreUsuario %>! 👋 Soy BiblioBot, tu asistente virtual. ¿En qué puedo ayudarte hoy?
+                                    <%= i18n.get("chatbot.bienvenida.registrado", nombreUsuario) %>
                                 <% } else { %>
-                                    ¡Hola! 👋 Soy BiblioBot, tu asistente virtual. ¿En qué puedo ayudarte? Puedes preguntarme sobre nuestros libros disponibles.
+                                    <%= i18n.get("chatbot.bienvenida.invitado") %>
                                 <% } %>
                             </p>
                             <p class="text-xs text-gray-400 mt-1">Ahora</p>
@@ -370,7 +387,7 @@ aca va el codigo de la biblioteca del colegio
                         <input 
                             type="text" 
                             id="chatbot-input" 
-                            placeholder="Escribe tu mensaje..."
+                            placeholder="<%= i18n.get("chatbot.placeholder") %>"
                             class="flex-1 border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                             autocomplete="off"
                         >
@@ -384,18 +401,22 @@ aca va el codigo de la biblioteca del colegio
                             </svg>
                         </button>
                     </form>
-                    <p class="text-xs text-gray-400 mt-2 text-center">Powered by Gemini AI</p>
+                    <p class="text-xs text-gray-400 mt-2 text-center"><%= i18n.get("chatbot.powered") %></p>
                 </div>
             </div>
         </div>
 
-        <!-- Swiper JS -->
         <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
         
-        <!-- Script principal -->
-        <script src="<%= contextPath %>/assets/js/index.js"></script>
+        <script>
+            function cambiarIdioma(lang) {
+                window.location.href = '<%= contextPath %>/language?lang=' + lang + '&redirect=' + encodeURIComponent(window.location.href);
+            }
+            
+            window.currentLang = '<%= lang %>';
+        </script>
         
-        <!-- Script del chatbot -->
+        <script src="<%= contextPath %>/assets/js/index.js"></script>
         <script src="<%= contextPath %>/assets/js/chatbot.js"></script>
     </body>
 </html>

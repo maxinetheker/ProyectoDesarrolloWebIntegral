@@ -51,13 +51,19 @@ document.addEventListener('DOMContentLoaded', function() {
         const typingIndicator = mostrarIndicadorEscritura();
         
         try {
+            // Obtener idioma actual
+            const idioma = window.currentLang || 'es';
+            
             // Enviar mensaje al servidor
             const response = await fetch(contextPath + '/chatbot', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ mensaje: mensaje })
+                body: JSON.stringify({ 
+                    mensaje: mensaje,
+                    idioma: idioma
+                })
             });
             
             const data = await response.json();
@@ -66,7 +72,7 @@ document.addEventListener('DOMContentLoaded', function() {
             typingIndicator.remove();
             
             if (data.error) {
-                agregarMensajeBot('Lo siento, hubo un error. Por favor intenta de nuevo.');
+                agregarMensajeBot(data.error);
             } else {
                 agregarMensajeBot(data.respuesta);
             }
@@ -74,7 +80,18 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
             console.error('Error al enviar mensaje:', error);
             typingIndicator.remove();
-            agregarMensajeBot('Lo siento, no pude conectarme con el servidor. Por favor intenta de nuevo.');
+            
+            // Mensaje de error según idioma
+            const idioma = window.currentLang || 'es';
+            let errorMsg = 'Lo siento, no pude conectarme con el servidor. Por favor intenta de nuevo.';
+            if (idioma === 'en') {
+                errorMsg = 'Sorry, I could not connect to the server. Please try again.';
+            } else if (idioma === 'fr') {
+                errorMsg = 'Désolé, je n\'ai pas pu me connecter au serveur. Veuillez réessayer.';
+            } else if (idioma === 'zh') {
+                errorMsg = '抱歉，无法连接到服务器。请重试。';
+            }
+            agregarMensajeBot(errorMsg);
         } finally {
             // Rehabilitar input
             chatbotInput.disabled = false;

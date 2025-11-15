@@ -1,0 +1,54 @@
+# 中文语言文件
+# 格式: 键=值
+
+# Encabezado
+encabezado.titulo=学校图书馆 - I.E. Sagrado Corazón de María
+encabezado.escuela.codigo=I.E. 5128
+encabezado.escuela.nombre=Sagrado Corazón de María
+encabezado.nav.inicio=首页
+encabezado.nav.nosotros=关于我们
+encabezado.nav.libros=我们的书籍
+encabezado.nav.dashboard=仪表板
+encabezado.nav.login=登录
+encabezado.selector.idioma=语言
+
+# Sección Hero
+hero.titulo.bienvenida=欢迎来到我们的
+hero.titulo.biblioteca=数字图书馆
+hero.descripcion=知识是我们能够获得的最宝贵的财富。在我们的图书馆，你会找到打开所有知识之门的钥匙。
+hero.boton.catalogo=浏览目录
+hero.boton.mas=了解更多
+
+# Sección Nosotros
+nosotros.titulo=关于我们
+nosotros.mision.titulo=我们的使命
+nosotros.mision.descripcion=提供以价值观教育为目标的有效优质服务，促进整体学习，营造和谐民主的氛围，以发展情感和情绪智力。
+nosotros.vision.titulo=我们的愿景
+nosotros.vision.descripcion=通过基于价值观的民主和富有成效的教育来巩固，培养具有创造力、批判性思维、企业家精神和生态承诺的领导者，并得到推动人文、科学和技术教育的教师的支持。
+nosotros.sistema.titulo=创新系统
+nosotros.sistema.descripcion=我们的网络系统自动化借阅和归还管理，为整个教育社区提供现代化和高效的体验。
+
+# Sección Libros
+libros.titulo=我们的书籍
+libros.subtitulo=发现我们教育社区最喜欢的书籍
+libros.cargando=加载书籍中...
+libros.estadistica.total=书籍总数
+libros.estadistica.usuarios=活跃用户
+
+# Pie de página
+pie.descripcion=培养具有价值观、知识和社会承诺的领导者，共建美好未来。
+pie.enlaces.titulo=快速链接
+pie.enlaces.inicio=首页
+pie.enlaces.nosotros=关于我们
+pie.enlaces.libros=我们的书籍
+pie.enlaces.contacto=联系方式
+pie.contacto.titulo=联系方式
+pie.copyright=© 2025 I.E. Sagrado Corazón de María. 版权所有。
+
+# Chatbot
+chatbot.nombre=BiblioBot
+chatbot.subtitulo=虚拟助手 🤖
+chatbot.bienvenida.registrado=你好 {0}！👋 我是BiblioBot，你的虚拟助手。今天我能帮你什么忙？
+chatbot.bienvenida.invitado=你好！👋 我是BiblioBot，你的虚拟助手。我能帮你什么忙？你可以问我关于我们可用书籍的信息。
+chatbot.placeholder=输入你的消息...
+chatbot.powered=由 Gemini AI 提供支持

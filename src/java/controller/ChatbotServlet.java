@@ -21,7 +21,7 @@ import java.util.*;
 @WebServlet("/chatbot")
 public class ChatbotServlet extends HttpServlet {
     
-    private static final String GEMINI_API_KEY = "";
+    private static final String GEMINI_API_KEY = "AIzaSyClBDBdbBrP6P8ugqGKuid0qZW82cPF7B8";
     private static final String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
     
     private ChatbotDAO chatbotDAO;
@@ -54,11 +54,22 @@ public class ChatbotServlet extends HttpServlet {
         
         Map<String, Object> requestData = objectMapper.readValue(sb.toString(), Map.class);
         String mensajeUsuario = (String) requestData.get("mensaje");
+        String idioma = (String) requestData.get("idioma");
         
         if (mensajeUsuario == null || mensajeUsuario.trim().isEmpty()) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().write("{\"error\": \"Mensaje vacío\"}");
             return;
+        }
+        
+        // Si no se envía idioma, usar el de la sesión o español por defecto
+        if (idioma == null || idioma.trim().isEmpty()) {
+            HttpSession session = request.getSession(false);
+            if (session != null && session.getAttribute("lang") != null) {
+                idioma = (String) session.getAttribute("lang");
+            } else {
+                idioma = "es";
+            }
         }
         
         // Obtener información del usuario si está logueado
@@ -84,7 +95,7 @@ public class ChatbotServlet extends HttpServlet {
             
             String contextoLibros = obtenerContextoLibros();
             
-            String prompt = construirPrompt(mensajeUsuario, nombreUsuario, contextoLibros, usuario != null, historial);
+            String prompt = construirPrompt(mensajeUsuario, nombreUsuario, contextoLibros, usuario != null, historial, idioma);
             
             String respuestaIA = llamarGeminiAPI(prompt);
             
@@ -104,8 +115,21 @@ public class ChatbotServlet extends HttpServlet {
             
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("error", "Lo siento, hubo un error al procesar tu mensaje. Por favor intenta de nuevo.");
+            errorResponse.put("error", getErrorMessage(idioma));
             response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
+        }
+    }
+    
+    private String getErrorMessage(String idioma) {
+        switch (idioma) {
+            case "en":
+                return "Sorry, there was an error processing your message. Please try again.";
+            case "fr":
+                return "Désolé, une erreur s'est produite lors du traitement de votre message. Veuillez réessayer.";
+            case "zh":
+                return "抱歉，处理您的消息时出错。请重试。";
+            default:
+                return "Lo siento, hubo un error al procesar tu mensaje. Por favor intenta de nuevo.";
         }
     }
     
@@ -132,12 +156,29 @@ public class ChatbotServlet extends HttpServlet {
     // Construir el prompt para Gemini
     private String construirPrompt(String mensajeUsuario, String nombreUsuario, 
                                    String contextoLibros, boolean usuarioAutenticado, 
-                                   List<Chatbot> historial) {
+                                   List<Chatbot> historial, String idioma) {
         
         StringBuilder prompt = new StringBuilder();
         
+        // Configurar idioma del bot
+        String idiomaInstruccion = "";
+        switch (idioma) {
+            case "en":
+                idiomaInstruccion = "You must respond ONLY in English.";
+                break;
+            case "fr":
+                idiomaInstruccion = "Vous devez répondre UNIQUEMENT en français.";
+                break;
+            case "zh":
+                idiomaInstruccion = "你必须只用中文回答。";
+                break;
+            default:
+                idiomaInstruccion = "Debes responder SOLO en español.";
+        }
+        
         prompt.append("Eres un asistente virtual amigable de una biblioteca llamado BiblioBot. ");
-        prompt.append("Tu función es ayudar a los usuarios a encontrar libros y responder preguntas sobre la biblioteca del colegio sagrado corazón de maria.\n\n");
+        prompt.append("Tu función es ayudar a los usuarios a encontrar libros y responder preguntas sobre la biblioteca del colegio sagrado corazón de maria.\n");
+        prompt.append("IMPORTANTE: ").append(idiomaInstruccion).append("\n\n");
         
         if (usuarioAutenticado) {
             prompt.append("El usuario está registrado y su nombre es: ").append(nombreUsuario).append(".\n");
@@ -166,7 +207,8 @@ public class ChatbotServlet extends HttpServlet {
         prompt.append("6. Si preguntan sobre cómo usar la biblioteca, explica que pueden registrarse, buscar libros y solicitar préstamos\n");
         prompt.append("7. Mantén respuestas concisas (máximo 150 palabras)\n");
         prompt.append("8. Usa emojis ocasionalmente para ser más amigable 📚\n");
-        prompt.append("9. Ten en cuenta el historial de conversación para dar respuestas coherentes y contextuales\n\n");
+        prompt.append("9. Ten en cuenta el historial de conversación para dar respuestas coherentes y contextuales\n");
+        prompt.append("10. RESPONDE EN EL IDIOMA: ").append(idiomaInstruccion).append("\n\n");
         
         prompt.append(contextoLibros);
         
